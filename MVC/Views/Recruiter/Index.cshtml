@@ -1,0 +1,1390 @@
+﻿@{
+    ViewData["Title"] = "index Page";
+    Layout = "~/Views/Shared/_RecruiterLayout.cshtml";
+
+    var username = @Context.Session.GetString("Name");
+}
+
+<head>
+    <style>
+/* Edit Modal Styling */
+#editJobModal .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+#editJobModal .modal-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: white;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    padding: 20px 24px;
+}
+
+#editJobModal .modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+#editJobModal .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+#editJobModal .modal-body {
+    padding: 24px;
+}
+
+#editJobModal .form-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+#editJobModal .form-label.required::after {
+    content: " *";
+    color: #ef4444;
+}
+
+#editJobModal .form-control,
+#editJobModal .k-dropdown-wrap,
+#editJobModal .k-numeric-wrap,
+#editJobModal .k-combobox {
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+#editJobModal .form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+#editJobModal textarea.form-control {
+    resize: vertical;
+    min-height: 150px;
+}
+
+#editJobModal .modal-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 20px 24px;
+}
+
+#editJobModal .btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    border: none;
+    padding: 10px 24px;
+    font-weight: 600;
+}
+
+#editJobModal .btn-primary:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+}
+        /* Delete button styling */
+.delete-job-btn {
+    position: absolute;
+    bottom: 25px;
+    left: 64px; /* Position to the right of edit button */
+    background: #fef2f2;
+    color: #dc2626;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-job-btn:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.delete-job-btn i {
+    font-size: 16px;
+}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            @* margin-bottom: 20px; *@
+            color: #1f2937;
+        }
+
+         .page-subtitle {
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+
+        /* Job Cards using Kendo ListView */
+        .k-listview {
+            border: none;
+            background-color: transparent;
+        }
+
+        .k-listview-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        @@media (max-width: 768px) {
+            .k-listview-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Job Card Styling */
+        .job-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e5e7eb;
+            height: 100%;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .job-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        @* .job-type-badge {
+            background-color: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        } *@
+
+        .job-type-badge {
+    background: #eef2ff;
+    color:#10b981;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+        .contract-badge {
+        background: #eef2ff;
+    color:#f59e0b;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+
+        }
+
+        .remote-badge {
+                    background: #eef2ff;
+    color:#8b5cf6;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+        }
+
+        .parttime-badge {
+    background: #eef2ff;
+    color: #0ea5e9; /* sky blue */
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.hybrid-badge {
+    background: #eef2ff;
+    color: #ec4899; /* pink */
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+        .company-name {
+            font-size: 16px;
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .job-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #6b7280;
+        }
+
+        .job-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .time-posted {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .job-description {
+            color: #4b5563;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .skill-tag {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .job-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .downloadjd-btn {
+            background-color: #15803d;
+            /* green */
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .downloadjd-btn:hover {
+            background-color: #16a34a;
+        }
+
+        .downloadjd-btn:active {
+            background-color: #166534;
+        }
+
+        .downloadjd-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.3);
+        }
+
+        .downloadjd-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+
+
+        .viewapplicant-btn {
+            background-color: #1565c0;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .viewapplicant-btn:hover {
+            background-color: #3b82f6;
+        }
+
+        /* Kendo Pagination Styling */
+        .k-pager-wrap {
+            border: none;
+            background-color: transparent;
+            margin-top: 40px;
+            padding: 15px 0;
+        }
+
+        .k-pager-numbers .k-state-selected {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 6px;
+        }
+
+        /* Remove Kendo TextBox styling */
+        .k-textbox {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .page-title {
+            color: #000;
+            /* black for "Welcome" */
+        }
+
+        .user-name {
+            color: #2563eb;
+            /* blue for username */
+            font-weight: bold;
+        }
+
+/* =====================================================
+   KENDO DROPDOWN – FINAL BLUE THEME (NO ORANGE)
+   ===================================================== */
+
+/* -------------------------
+   Dropdown (closed state)
+-------------------------- */
+.k-dropdownlist {
+    height: 48px;
+    border-radius: 8px !important;
+    border: 1px solid #d1d5db !important;
+    background: #ffffff;
+}
+
+.k-dropdownlist .k-input-inner {
+    color: #1f2937;
+    font-size: 15px;
+}
+
+/* Focused dropdown */
+.k-dropdownlist.k-focus {
+    border-color: #93c5fd !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.25) !important;
+}
+
+/* -------------------------
+   Popup container
+-------------------------- */
+.k-animation-container .k-list {
+    border-radius: 10px;
+    padding: 6px;
+}
+
+/* -------------------------
+   List items
+-------------------------- */
+.k-list .k-list-item,
+.k-list-optionlabel {
+    border-radius: 6px;
+    margin: 2px 0;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #374151;
+}
+
+/* Hover */
+.k-list .k-list-item:hover,
+.k-list-optionlabel:hover {
+    background: #eff6ff !important;
+    color: #1e40af !important;
+}
+
+
+.add-job-container {
+    text-align: right;
+    margin-bottom: 30px;
+    margin-top: 10px;
+}
+
+.add-job-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.3px;
+}
+
+.add-job-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+}
+
+.add-job-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+    color: white;
+    text-decoration: none;
+}
+
+.add-job-btn:hover::before {
+    left: 100%;
+}
+
+.add-job-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.add-job-btn i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.add-job-btn:hover i {
+    transform: scale(1.1) rotate(90deg);
+}
+
+/* Animation for button */
+@@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+    }
+    50% {
+        box-shadow: 0 4px 24px rgba(37, 99, 235, 0.4);
+    }
+    100% {
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+    }
+}
+
+.add-job-btn {
+    animation: pulse 3s infinite;
+}
+
+/* Mobile responsive */
+@@media (max-width: 768px) {
+    .add-job-container {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .add-job-btn {
+        width: 100%;
+        max-width: 300px;
+        padding: 16px 24px;
+        font-size: 15px;
+    }
+}
+
+/* -------------------------
+   SELECTED (normal)
+-------------------------- */
+.k-list .k-list-item.k-selected,
+.k-list .k-list-item.k-state-selected,
+.k-list-optionlabel.k-selected,
+.k-list-optionlabel.k-state-selected,
+.k-list-item[aria-selected="true"] {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+    font-weight: 500;
+    border-color: #93c5fd !important;
+}
+
+/* -------------------------
+   FOCUSED
+-------------------------- */
+.k-list .k-list-item.k-state-focused {
+    background: #eff6ff !important;
+    box-shadow: inset 0 0 0 2px #93c5fd;
+}
+
+/* -------------------------
+   SELECTED + FOCUSED
+-------------------------- */
+.k-list .k-list-item.k-selected.k-state-focused,
+.k-list .k-list-item.k-state-selected.k-state-focused,
+.k-list-item[aria-selected="true"].k-state-focused {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+    color: #1e40af !important;
+}
+
+/* -------------------------
+   NUCLEAR OVERRIDE
+   Kill any remaining orange
+-------------------------- */
+.k-selected,
+.k-state-selected {
+    background-color: #dbeafe !important;
+    background-image: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+    border-color: #93c5fd !important;
+}
+
+/* Edit button bottom-left */
+.job-card {
+    position: relative; /* required for absolute positioning */
+}
+
+.edit-job-btn {
+    position: absolute;
+    bottom: 25px;
+    left: 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-job-btn:hover {
+    background: #e0e7ff;
+    color: #2563eb;
+}
+
+.edit-job-btn i {
+    font-size: 16px;
+}
+
+
+
+    </style>
+</head>
+
+<body>
+
+   <div class="add-job-container">
+    <a asp-controller="Recruiter" asp-action="CreateJob" 
+       class="add-job-btn">
+        <i class="bi bi-plus-circle me-2"></i>Add Job
+    </a>
+</div>
+
+    <!-- Main Content -->
+    <main class="container">
+        <h1 class="page-title text-center">
+            Welcome, <span class="user-name">@username</span>
+        </h1>
+        <h6 class="page-subtitle text-center">  Post opportunities, review applicants, and manage hiring efficiently</h6>
+
+
+        <!-- Filter Section - UPDATED -->
+        <div
+            style="margin-bottom: 30px; padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; width: 100%; align-items: end;">
+                <!-- Search Field -->
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Search jobs
+                    </div>
+                    <div style="position: relative;">
+                        <input id="searchBox" placeholder="Job title, keywords, or company"
+                            style="width: 100%; padding: 12px 15px 12px 40px; font-size: 16px; border: 1px solid #d1d5db; border-radius: 8px; background: white; height: 48px; box-sizing: border-box;" />
+                        <span
+                            style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280; font-size: 16px;"><i
+                                class="bi bi-search"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Location Filter -->
+                <div>
+                    <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Filter by
+                        location</div>
+                    <div style="position: relative;">
+                        <input id="locationFilter" placeholder="All locations"
+                            style="width: 100%; padding: 12px 15px 12px 40px; font-size: 16px; border: 1px solid #d1d5db; border-radius: 8px; background: white; height: 48px; box-sizing: border-box;" />
+                        <span
+                            style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280; font-size: 16px;"><i
+                                class="bi bi-geo-alt"></i></span>
+                    </div>
+                </div>
+
+                <!-- Job Type Filter with Count -->
+                <div>
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div style="font-size: 14px; font-weight: 600; color: #374151;">Job Type</div>
+                        <span id="jobsCount"
+                            style="font-size: 13px; color: #6b7280; background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-weight: 500;">8
+                            results</span>
+                    </div>
+                    <div style="position: relative;">
+                        <select id="jobTypeFilter"
+                            style="width: 100%; padding: 12px 15px 12px 40px; font-size: 16px; border: 1px solid #d1d5db; border-radius: 8px; appearance: none; background: white; color: #374151; height: 48px; box-sizing: border-box; line-height: 24px;">
+                            <option value="">All types</option>
+                            <option value="Full Time">Full Time</option>
+                            <option value="Part Time">Part Time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                        <span
+                            style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #6b7280; font-size: 16px;"><i
+                                class="bi bi-briefcase"></i></span>
+                        <span
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #6b7280; font-size: 12px;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kendo ListView -->
+        <div id="jobListView"></div>
+
+        <!-- Empty Template -->
+        <script id="emptyTemplate" type="text/x-kendo-template">
+            <div class="empty-state">
+                <h3>No jobs found</h3>
+                <p>Try adjusting your search filters or check back later for new opportunities.</p>
+                
+            </div>
+        </script>
+        <!-- Edit Job Modal -->
+<div class="modal fade" id="editJobModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Job Posting</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editJobForm">
+                    <input type="hidden" id="editJobId" />
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">Job Role</label>
+                            <input id="editJobRole" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Job Type</label>
+                            <input id="editJobType" class="form-control" />
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">Location</label>
+                            <input id="editLocation" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Experience (Years)</label>
+                            <input id="editExperience" class="form-control" />
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label required">Required Skills</label>
+                        <input id="editSkills" class="form-control" />
+                        <small class="form-text">Enter skills separated by commas</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label required">Salary (LPA)</label>
+                        <input id="editSalary" class="form-control" />
+                    </div>
+                    
+                   
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </main>
+
+    @section Scripts{
+        <script>
+
+            const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+    console.log("JWT Token:", token);
+            $(document).ready(function () {
+
+                // Save edit button click
+$(document).off('click', '#saveEditBtn').on('click', '#saveEditBtn', async function () {
+
+    const jobId = $('#editJobId').val();
+
+    const jobData = {
+        c_job_id: parseInt(jobId),
+        c_role: $('#editJobRole').val(),
+        c_job_type: $("#editJobType").data("kendoDropDownList").value(),
+        c_location: $("#editLocation").data("kendoComboBox").value(),
+        c_experience: $("#editExperience").data("kendoNumericTextBox").value().toString(),
+        c_skills: $('#editSkills').val(),
+        c_salary: $('#editSalary').val(),
+
+         c_description: ""
+    };
+
+    try {
+        const response = await fetch(
+            'http://localhost:5140/api/RecruiterApi/UpdateJob',
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(jobData)
+            }
+        );
+
+        if (!response.ok) throw new Error("Update failed");
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('editJobModal')
+        );
+        modal.hide();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        dataSource.read();
+
+    } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+    }
+});
+
+
+
+                // Function to get badge class based on job type
+                function getBadgeClass(type) {
+    switch (type) {
+        case 'Contract':
+            return 'contract-badge';
+        case 'Remote':
+            return 'remote-badge';
+        case 'Part Time':
+            return 'parttime-badge';
+        case 'Hybrid':
+            return 'hybrid-badge';
+        default:
+            return 'job-type-badge';
+    }
+}
+
+
+                // Function to format job type text
+                function formatJobType(type) {
+    switch (type) {
+        case 'Contract':
+            return 'Contract';
+        case 'Remote':
+            return 'Remote';  
+        case 'Part Time':
+            return 'Part Time';
+        case 'Hybrid':
+            return 'Hybrid';
+        default:
+            return 'Full Time';
+    }
+}
+
+
+                // DO NOT initialize Kendo TextBox for search inputs to avoid double borders
+                // Just use regular event listeners
+
+                $("#jobTypeFilter").kendoDropDownList({
+                    optionLabel: "All types",
+                    dataTextField: "text",
+                    dataValueField: "value",
+                    dataSource: [
+                        { text: "Full Time", value: "Full Time" },
+        { text: "Part Time", value: "Part Time" },   
+        { text: "Contract", value: "Contract" },
+        { text: "Remote", value: "Remote" },
+        { text: "Hybrid", value: "Hybrid" }
+
+                    ],
+                    change: filterJobs
+                });
+
+                // Initialize Kendo DataSource
+                const dataSource = new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: "http://localhost:5140/api/RecruiterApi/jobsById/me",
+                            dataType: "json",
+                             type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+                        }
+                    },
+                    pageSize: 6,
+                    schema: {
+                        model: {
+                            id: "c_job_id",
+                            fields: {
+                                c_job_id: { type: "number" },
+                                c_role: { type: "string" },
+                                c_location: { type: "string" },
+                                c_salary: { type: "string" },
+                                c_description: { type: "string" },
+                                c_skills: { type: "string" },
+                                c_job_type: { type: "string" },
+                                c_experience: { type: "string" },
+                                c_name: { type: "string" }
+                            }
+                        }
+                    },
+                    change: function () {
+                        updateJobsCount();
+                    }
+                });
+
+
+                // Initialize Kendo ListView
+                $("#jobListView").kendoListView({
+                    dataSource: dataSource,
+                    template: function (data) {
+                        return `
+                                                     <div class="job-card" data-job-id="${data.c_job_id}">
+                
+                                                        <div class="job-header">
+                                                            <div>
+                                                                <h3 class="job-title">
+                                                                    ${kendo.htmlEncode(data.c_role)}
+                                                                </h3>
+
+                                                                <div class="company">
+                                                                    <i class="bi bi-building"></i>
+                                                                    <span class="company-name">
+                                                                        ${kendo.htmlEncode(data.c_name)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <span class="${getBadgeClass(data.c_job_type)}">
+                                                                ${formatJobType(data.c_job_type)}
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="job-details">
+                                                            <div class="job-detail">
+                                                                <i class="bi bi-geo-alt"></i>
+                                                                ${kendo.htmlEncode(data.c_location)}
+                                                            </div>
+
+                                                            <div class="job-detail">
+                                                                <i class="bi bi-currency-rupee"></i>
+                                                                ${kendo.htmlEncode(data.c_salary)} LPA
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="time-posted">
+                                                            Experience: ${kendo.htmlEncode(data.c_experience)}
+                                                        </div>
+
+                                                        @* <p class="job-description">
+                                                            ${kendo.htmlEncode(data.c_description)}
+                                                        </p> *@
+
+                                                      <div class="skills-tags">
+                                                            ${data.c_skills
+                                ? data.c_skills
+                                    .split(",")
+                                    .map(skill =>
+                                        `<span class="skill-tag">${kendo.htmlEncode(skill.trim())}</span>`
+                                    )
+                                    .join("")
+                                : ""
+                            }
+                                                        </div>
+
+                                                        <button class="edit-job-btn"
+        title="Edit Job"
+        data-job-id="${data.c_job_id}">
+    <i class="bi bi-pencil-square"></i>
+</button>
+<button class="delete-job-btn" 
+        title="Delete Job" 
+        data-job-id="${data.c_job_id}">
+    <i class="bi bi-trash"></i>
+</button>
+
+
+                                                        <div class="job-actions">
+                                                            ${data.c_jd_file
+                                ? `<button class="downloadjd-btn" data-job-id="${data.c_job_id}" data-file-name="${data.c_jd_file}">
+                                                                    <i class="bi bi-download"></i> &nbsp; Job Description
+                                                                </button>`
+                                : `<button class="downloadjd-btn" disabled title="JD not uploaded">
+                                                                    No Job Description
+                                                                </button>`
+                            }
+                                                            <button class="viewapplicant-btn" data-job-id="${data.c_job_id}">
+                                                                View Applicant
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                `;
+                    },
+                    autoBind: true,
+                    pageable: {
+                        pageSizes: [6, 12, 18],
+                        buttonCount: 5,
+                        messages: {
+                            display: "Showing {0}-{1} of {2} jobs",
+                            empty: "No jobs to display"
+                        }
+                    },
+                    selectable: false
+                });
+//================================================================
+
+// Delete button click handler
+$(document).on("click", ".delete-job-btn", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const jobId = $(this).data("job-id");
+    
+    Swal.fire({
+        title: 'Delete Job?',
+        text: "Are you sure you want to delete this job posting? This action cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteJob(jobId);
+        }
+    });
+});
+
+// Function to delete job
+async function deleteJob(jobId) {
+    try {
+        Swal.fire({
+            title: 'Deleting...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => Swal.showLoading()
+        });
+
+        const response = await fetch(`http://localhost:5140/api/RecruiterApi/DeleteJob/${jobId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Job has been deleted successfully.',
+                confirmButtonColor: '#10b981'
+            }).then(() => {
+                // Remove the job card from UI
+                $(`.job-card[data-job-id="${jobId}"]`).remove();
+                updateJobsCount();
+            });
+        } else {
+            throw new Error('Failed to delete job');
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to delete job',
+            confirmButtonColor: '#ef4444'
+        });
+    }
+}
+
+                // Update jobs count
+                function updateJobsCount() {
+                    const total = dataSource.total();
+                    const count = total || 0;
+                    $("#jobsCount").text(`${count} results`);
+                }
+
+                // Filter jobs function
+                function filterJobs() {
+                    const searchText = $("#searchBox").val().toLowerCase();
+                    const locationText = $("#locationFilter").val().toLowerCase();
+                    const jobType = $("#jobTypeFilter").val();
+
+                    const filters = [];
+
+                    if (searchText) {
+                        filters.push({
+                            logic: "or",
+                            filters: [
+                                { field: "c_role", operator: "contains", value: searchText },
+                                { field: "c_name", operator: "contains", value: searchText }
+                            ]
+                        });
+                    }
+
+                    if (locationText) {
+                        filters.push({
+                            field: "c_location",
+                            operator: "contains",
+                            value: locationText
+                        });
+                    }
+
+                    if (jobType) {
+                        filters.push({
+                            field: "c_job_type",
+                            operator: "eq",
+                            value: jobType
+                        });
+                    }
+
+                    dataSource.filter(filters);
+                }
+
+
+                // Add event listeners for search inputs (instead of Kendo TextBox)
+                $("#searchBox").on("input", function () {
+                    filterJobs();
+                });
+
+                $("#locationFilter").on("input", function () {
+                    filterJobs();
+                });
+
+              // Edit button click handler - Open modal with job data
+$(document).on("click", ".edit-job-btn", async function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const jobId = $(this).data("job-id");
+    const jobCard = $(this).closest('.job-card');
+    
+    // Try to get job data from the current job card first (faster)
+    const jobData = getJobDataFromCard(jobCard);
+    
+    // If we have the data, use it immediately
+    if (jobData) {
+        populateEditModal(jobData);
+        const editModal = new bootstrap.Modal(document.getElementById('editJobModal'));
+        editModal.show();
+    } else {
+        // Otherwise fetch from API
+        await fetchAndShowJob(jobId);
+    }
+});
+
+
+// Function to fetch job details from API
+async function fetchAndShowJob(jobId) {
+    try {
+        // Show loading
+        Swal.fire({
+            title: 'Loading...',
+            text: 'Fetching job details',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => Swal.showLoading()
+        });
+
+        // Fetch job details
+        const response = await fetch(`http://localhost:5140/api/RecruiterApi/GetJob/${jobId}`, {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch job details');
+        }
+
+        const job = await response.json();
+        
+        // Close loading
+        Swal.close();
+        
+        // Populate modal with job data
+        populateEditModal(job);
+        
+        // Show modal
+        const editModal = new bootstrap.Modal(document.getElementById('editJobModal'));
+        editModal.show();
+        
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to load job details',
+            confirmButtonColor: '#ef4444'
+        });
+    }
+}
+
+function getFullJobDescription(jobCard) {
+    // Check if description is stored in data attribute
+    const fullDesc = jobCard.data('full-description');
+    if (fullDesc) return fullDesc;
+    
+    // Otherwise get truncated description from card
+    const truncatedDesc = jobCard.find('.job-description').text();
+    if (truncatedDesc && !truncatedDesc.includes('...')) {
+        return truncatedDesc;
+    }
+    
+    return null; // Need to fetch from API
+}
+// Function to extract job data from the job card
+function getJobDataFromCard(jobCard) {
+    try {
+        const jobRole = jobCard.find('.job-title').text().trim();
+        const jobType = jobCard.find('.job-type-badge, .contract-badge, .remote-badge, .parttime-badge, .hybrid-badge').text().trim();
+        const location = jobCard.find('.job-detail:has(.bi-geo-alt)').contents().last().text().trim();
+        const experience = jobCard.find('.time-posted').text().replace('Experience:', '').trim();
+        const skills = jobCard.find('.skill-tag').map(function() {
+            return $(this).text().trim();
+        }).get().join(', ');
+        const salary = jobCard.find('.job-detail:has(.bi-currency-rupee)').contents().last().text().replace('LPA', '').trim();
+        
+        return {
+            c_job_id: jobCard.data('job-id'),
+            c_role: jobRole,
+            c_job_type: jobType,
+            c_location: location,
+            c_experience: experience,
+            c_skills: skills,
+            c_salary: salary
+            // Note: Description is truncated in card view, we'll fetch it from API if needed
+        };
+    } catch (error) {
+        console.log('Could not extract job data from card:', error);
+        return null;
+    }
+}
+
+
+function populateEditModal(job) {
+    $('#editJobId').val(job.c_job_id);
+    $('#editJobRole').val(job.c_role || '');
+    $('#editSkills').val(job.c_skills || '');
+    $('#editSalary').val(job.c_salary || '');
+    $('#editDescription').val(job.c_description || '');
+    
+    // Destroy existing Kendo controls before re-initializing
+   
+    
+    initOrUpdateKendoControls(job);
+    // Initialize Kendo controls with current values
+   
+}
+
+function initOrUpdateKendoControls(job) {
+
+    // Job Type
+    const jobType = $("#editJobType").data("kendoDropDownList");
+    if (jobType) {
+        jobType.value(job.c_job_type || "");
+    } else {
+        $("#editJobType").kendoDropDownList({
+            optionLabel: "Select Job Type",
+            dataSource: ["Full Time", "Part Time", "Contract", "Remote", "Hybrid"],
+            value: job.c_job_type || ""
+        });
+    }
+
+    // Location
+    const location = $("#editLocation").data("kendoComboBox");
+    if (location) {
+        location.value(job.c_location || "");
+    } else {
+        $("#editLocation").kendoComboBox({
+            placeholder: "Select or type location...",
+            filter: "contains",
+            dataSource: [
+                "Ahmedabad", "Mumbai", "Pune", "Bangalore", "Hyderabad",
+                "Delhi", "Chennai", "Kolkata", "Surat", "Remote", "Hybrid"
+            ],
+            suggest: true,
+            value: job.c_location || ""
+        });
+    }
+
+    // Experience
+    const experience = $("#editExperience").data("kendoNumericTextBox");
+    if (experience) {
+        experience.value(parseFloat(job.c_experience) || 0);
+    } else {
+        $("#editExperience").kendoNumericTextBox({
+            min: 0,
+            max: 30,
+            step: 0.5,
+            format: "n1",
+            decimals: 1,
+            value: parseFloat(job.c_experience) || 0
+        });
+    }
+}
+
+
+
+// Initialize Kendo controls in modal
+function initializeEditModalControls(job) {
+    // Job Type Dropdown with current value
+    $("#editJobType").kendoDropDownList({
+        optionLabel: "Select Job Type",
+        dataSource: ["Full Time", "Part Time", "Contract", "Remote", "Hybrid"],
+        value: job.c_job_type || ""
+    });
+
+    // Location ComboBox
+    $("#editLocation").kendoComboBox({
+        placeholder: "Select or type location...",
+        filter: "contains",
+        dataSource: [
+            "Ahmedabad", "Mumbai", "Pune", "Bangalore", "Hyderabad", 
+            "Delhi", "Chennai", "Kolkata", "Surat", "Remote", "Hybrid"
+        ],
+        suggest: true,
+        value: job.c_location || ""
+    });
+
+    // Experience NumericTextBox with current value
+    $("#editExperience").kendoNumericTextBox({
+        min: 0,
+        max: 30,
+        step: 0.5,
+        format: "n1",
+        decimals: 1,
+        spinners: true,
+        value: parseFloat(job.c_experience) || 0
+    });
+
+
+// Save edit button click
+
+
+
+
+
+
+
+
+
+}               $(document).on("click", ".viewapplicant-btn", function (e) {
+    e.preventDefault();
+
+    const jobId = $(this).data("job-id");
+    console.log("Job ID for View Applicant:", jobId);
+ 
+    // Redirect to MVC page
+   window.location.href = `/Recruiter/ViewApplication?jobId=${jobId}`;
+});
+
+
+                $(document).on("click", ".downloadjd-btn", function (e) {
+                    e.preventDefault();
+
+                    const jobId = $(this).data("job-id");
+                    const fileName = $(this).data("file-name");
+
+                    if (!fileName) {
+                        alert("JD file not available");
+                        return;
+                    }
+                    else {
+                        const encodedFileName = encodeURIComponent(fileName);
+
+                        window.location.href = `http://localhost:5140/api/RecruiterApi/DownloadJD?fileName=${encodedFileName}`;
+
+                    }
+
+                });
+
+
+                // Initial update of jobs count
+                updateJobsCount();
+            });
+        </script>
+    }
+</body>

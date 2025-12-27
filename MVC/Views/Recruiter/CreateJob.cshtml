@@ -1,0 +1,1309 @@
+@{
+    ViewData["Title"] = "Create Job";
+    Layout = "~/Views/Shared/_RecruiterLayout.cshtml";
+    var username = @Context.Session.GetString("Name");
+}
+
+
+<style>
+    /* =================== THEME VARIABLES (Match Apply Page) =================== */
+    :root {
+        --primary-blue: #1e40af;
+        --primary-blue-light: #60a5fa;
+        --primary-blue-dark: #1e3a8a;
+        --secondary-blue: #3b82f6;
+        --light-blue: #dbeafe;
+        --background: #f1f5f9;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --text-light: #64748b;
+        --border: #e2e8f0;
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+        --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+        --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    #btnGenerate {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#btnGenerate:hover:not(:disabled) {
+    background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+#btnGenerate:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+#btnGenerate i {
+    font-size: 16px;
+}
+
+/* Textarea Enhancements */
+#jobDescription {
+    min-height: 250px;
+    resize: vertical;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    transition: border-color 0.2s ease;
+}
+
+#jobDescription:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Word Count Indicator */
+#wordCount {
+    font-weight: 600;
+    font-size: 12px;
+    transition: color 0.3s ease;
+}
+
+/* Loading Spinner */
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+    vertical-align: middle;
+}
+
+/* Responsive Adjustments */
+@@media (max-width: 768px) {
+    #btnGenerate {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .d-flex.justify-content-between.align-items-center.mb-2 {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .d-flex.justify-content-between.align-items-center.mb-2 span {
+        margin-bottom: 10px;
+    }
+}
+
+    /* =================== BASE STYLES =================== */
+    body {
+        background: var(--background);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    /* =================== KENDO THEME OVERRIDES (Blue Theme) =================== */
+    /* Dropdown */
+    .k-dropdown .k-dropdown-wrap,
+    .k-combobox .k-dropdown-wrap,
+    .k-multiselect {
+        border: 1.5px solid var(--border) !important;
+        border-radius: var(--radius-sm) !important;
+        background: var(--surface) !important;
+        transition: all 0.2s ease !important;
+        padding: 8px 12px !important;
+        min-height: 44px !important;
+    }
+
+    .k-dropdown .k-dropdown-wrap:hover,
+    .k-combobox .k-dropdown-wrap:hover,
+    .k-multiselect:hover {
+        border-color: var(--secondary-blue) !important;
+        box-shadow: var(--shadow-sm) !important;
+    }
+
+    .k-dropdown .k-dropdown-wrap.k-state-focused,
+    .k-combobox .k-dropdown-wrap.k-state-focused,
+    .k-multiselect.k-state-focused {
+        border-color: var(--secondary-blue) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Dropdown items */
+    .k-list-item {
+        padding: 10px 12px !important;
+        border-radius: 6px !important;
+        margin: 2px !important;
+        transition: all 0.2s ease !important;
+        color: var(--text-primary) !important;
+    }
+
+    .k-list-item:hover,
+    .k-list-item.k-state-hover {
+        background: var(--light-blue) !important;
+        color: var(--primary-blue-dark) !important;
+    }
+
+    .k-list-item.k-selected,
+    .k-list-item.k-state-selected {
+        background: var(--secondary-blue) !important;
+        color: white !important;
+        font-weight: 600 !important;
+    }
+
+    /* MultiSelect */
+    .k-multiselect .k-chip {
+        background: linear-gradient(135deg, var(--light-blue) 0%, #dbeafe 100%) !important;
+        color: var(--primary-blue) !important;
+        border: 2px solid #bfdbfe !important;
+        border-radius: 20px !important;
+        padding: 6px 12px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+    }
+
+    .k-multiselect .k-chip .k-chip-action {
+        color: var(--primary-blue) !important;
+    }
+
+    .k-multiselect .k-chip .k-chip-action:hover {
+        background: rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Numeric Textbox */
+    .k-numerictextbox .k-numeric-wrap {
+        border: 1.5px solid var(--border) !important;
+        border-radius: var(--radius-sm) !important;
+        background: var(--surface) !important;
+        padding: 8px 12px !important;
+    }
+
+    .k-numerictextbox .k-numeric-wrap:hover {
+        border-color: var(--secondary-blue) !important;
+    }
+
+    .k-numerictextbox .k-numeric-wrap.k-state-focused {
+        border-color: var(--secondary-blue) !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* =================== PAGE LAYOUT =================== */
+    .container-fluid {
+        max-width: 1400px;
+    }
+
+    /* =================== CARD STYLES (Match Apply Page) =================== */
+    .card-modern {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+        transition: box-shadow 0.3s ease;
+        overflow: hidden;
+    }
+
+    .card-modern:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* =================== BANNER SECTION =================== */
+    .job-banner {
+        background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--secondary-blue) 100%);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .banner-content {
+        position: relative;
+        z-index: 1;
+        padding: 40px 30px;
+    }
+
+    .banner-icon {
+        font-size: 4rem;
+        opacity: 0.9;
+        color: white;
+        margin-bottom: 20px;
+    }
+
+    .banner-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .banner-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 24px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .feature-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(5px);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .feature-icon {
+        font-size: 1.5rem;
+        color: white;
+        margin-right: 16px;
+        opacity: 0.9;
+    }
+
+    .feature-text h6 {
+        font-size: 15px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 4px;
+        letter-spacing: -0.2px;
+    }
+
+    .feature-text small {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* =================== FORM SECTION =================== */
+    .form-section {
+        padding: 40px;
+        position: relative;
+    }
+
+    .company-logo-wrapper {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 80px;
+        height: 80px;
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 5px;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        border: 3px solid var(--light-blue);
+        transition: transform 0.3s ease;
+    }
+
+    .company-logo-wrapper:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .company-logo {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary-blue-dark);
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+        color: var(--text-secondary);
+        font-size: 15px;
+        margin-bottom: 32px;
+    }
+
+    /* =================== FORM ELEMENTS =================== */
+    .form-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary-blue-dark);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-label.required::after {
+        content: ' *';
+        color: #ef4444;
+    }
+
+    .form-control {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 10px 16px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        background: var(--surface);
+        height: 44px;
+    }
+
+    .form-control:focus {
+        border-color: var(--secondary-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background: var(--surface);
+    }
+
+    textarea.form-control {
+        height: auto;
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .input-with-icon {
+        padding-left: 44px;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--secondary-blue);
+        font-size: 18px;
+        pointer-events: none;
+    }
+
+    .form-text {
+        font-size: 13px;
+        color: var(--text-light);
+        margin-top: 6px;
+    }
+
+    /* =================== FILE UPLOAD =================== */
+    .file-upload-wrapper {
+        border: 2px dashed var(--secondary-blue);
+        background: linear-gradient(135deg, #eff6ff 0%, var(--light-blue) 100%);
+        border-radius: var(--radius-sm);
+        padding: 40px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-upload-wrapper:hover {
+        border-color: var(--primary-blue);
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .file-upload-wrapper.has-file {
+        border-color: #10b981;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    }
+
+    .file-upload-icon {
+        font-size: 48px;
+        color: var(--secondary-blue);
+        margin-bottom: 16px;
+    }
+
+    .file-upload-wrapper.has-file .file-upload-icon {
+        color: #10b981;
+    }
+
+    .upload-text h6 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary-blue-dark);
+        margin-bottom: 8px;
+    }
+
+    .upload-text p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .file-name-display {
+        background: var(--surface);
+        border-radius: var(--radius-sm);
+        padding: 12px 20px;
+        border: 1px solid var(--border);
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .file-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .file-remove-btn {
+        color: #ef4444;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.2s ease;
+    }
+
+    .file-remove-btn:hover {
+        color: #dc2626;
+        transform: scale(1.1);
+    }
+
+    /* =================== BUTTONS =================== */
+    .btn-outline-secondary {
+        border: 2px solid var(--border) !important;
+        color: var(--text-secondary) !important;
+        border-radius: var(--radius-sm);
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--background) !important;
+        border-color: var(--secondary-blue) !important;
+        color: var(--secondary-blue) !important;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-create-job {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        padding: 12px 32px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-create-job:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-create-job:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* =================== RESPONSIVE =================== */
+    @@media (max-width: 768px) {
+        .form-section {
+            padding: 24px;
+        }
+
+        .company-logo-wrapper {
+            position: relative;
+            top: 0;
+            right: 0;
+            margin: 0 auto 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            text-align: center;
+        }
+
+        .btn-create-job,
+        .btn-outline-secondary {
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .job-banner {
+            display: none;
+        }
+    }
+
+    /* =================== UTILITIES =================== */
+    .mb-32 {
+        margin-bottom: 32px;
+    }
+
+    .mt-32 {
+        margin-top: 32px;
+    }
+
+    .text-gradient {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .border-left-primary {
+        border-left: 4px solid var(--secondary-blue);
+        padding-left: 16px;
+    }
+</style>
+
+
+<div class="container-fluid mt-4 px-md-4">
+    <div class="card card-modern">
+        <div class="row g-0">
+
+            <!-- ================= LEFT BANNER ================= -->
+            <div class="col-lg-3 col-md-4 p-0 d-none d-md-block">
+                <div class="job-banner h-100">
+                    <div class="banner-content">
+                        <div class="text-center mb-4">
+                            <i class="bi bi-briefcase banner-icon"></i>
+                        </div>
+                        
+                        <h2 class="banner-title text-center">Create Job</h2>
+                        <p class="banner-subtitle text-center">Attract Top Talent</p>
+                        
+                        <div class="feature-item">
+                            <i class="bi bi-search feature-icon"></i>
+                            <div class="feature-text">
+                                <h6>Wide Reach</h6>
+                                <small>Connect with thousands of professionals</small>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <i class="bi bi-people feature-icon"></i>
+                            <div class="feature-text">
+                                <h6>Quality Candidates</h6>
+                                <small>Find the perfect match for your role</small>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <i class="bi bi-lightning feature-icon"></i>
+                            <div class="feature-text">
+                                <h6>Quick Process</h6>
+                                <small>Post jobs in minutes</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= RIGHT FORM ================= -->
+            <div class="col-lg-9 col-md-8">
+                <div class="form-section">
+                    <!-- Company Logo -->
+                    <div class="company-logo-wrapper">
+                        <img src="/logo/default-logo.png"
+                             class="company-logo"
+                             alt="Company Logo" />
+                    </div>
+
+                    <!-- Header -->
+                    <div class="mb-32">
+                        <h2 class="page-title">Create New Job Posting</h2>
+                        <p class="page-subtitle">Fill in the details to find the perfect candidate</p>
+                    </div>
+
+                    <form id="jobForm" enctype="multipart/form-data">
+                        <!-- Row 1: Job Role & Type -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label required">Job Role</label>
+                                <div class="position-relative">
+                                    <i class="bi bi-briefcase input-icon"></i>
+                                    <input id="jobRole" name="c_role" class="input-with-icon" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">Job Type</label>
+                                <div class="position-relative">
+                                    <i class="bi bi-clock input-icon"></i>
+                                    <input id="jobType" name="c_job_type" class="input-with-icon" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Location & Experience -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label class="form-label required">Location</label>
+                                <div class="position-relative">
+                                    <i class="bi bi-geo-alt input-icon"></i>
+                                    <input id="location" name="c_location" class="input-with-icon" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required">Experience (Years)</label>
+                                <div class="position-relative">
+                                    <i class="bi bi-star input-icon"></i>
+                                    <input id="experience" name="c_experience" class="input-with-icon" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="mb-3">
+                            <label class="form-label required">Required Skills</label>
+                            <div class="position-relative">
+                                <i class="bi bi-code-slash input-icon" style="top: 20px;"></i>
+                                <input id="skills" name="c_skills" class="input-with-icon" />
+                            </div>
+                            <small class="form-text">Select skills required for this position</small>
+                        </div>
+
+                        <!-- Salary -->
+                        <div class="mb-3">
+                            <label class="form-label required">Salary Range</label>
+                            <div class="position-relative">
+                                <i class="bi bi-cash-stack input-icon"></i>
+                                <input class="form-control input-with-icon" 
+                                       name="c_salary" 
+                                       placeholder="e.g., 8 (8 LPA) " />
+                            </div>
+                        </div>
+
+                        @* <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label required">Job Description</label>
+                            <textarea class="form-control" 
+                                      rows="5" 
+                                      name="c_description"
+                                      placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                            <small class="form-text">Provide detailed information about the position</small>
+                        </div> *@
+                        <!-- Job Description Section -->
+<div class="mb-4">
+    <label class="form-label required">Job Description</label>
+    
+    <!-- AI Generation Button Row -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted">Generate professional description using AI</span>
+        <button type="button" 
+                id="btnGenerate" 
+                class="btn btn-outline-primary"
+                onclick="generateDescription()"
+                style="padding: 8px 16px; font-size: 14px;">
+            <i class="bi bi-magic me-2"></i>Generate with AI
+        </button>
+    </div>
+    
+    <!-- Description Textarea -->
+    <textarea class="form-control" 
+              rows="8" 
+              name="c_description"
+              id="jobDescription"
+              placeholder="Click 'Generate with AI' or write manually...
+                
+Example format:
+• Job Overview: [Brief introduction]
+• Key Responsibilities: [Bullet points]
+• Requirements: [Skills and qualifications]
+• Benefits: [What you offer]"></textarea>
+    
+    <div class="d-flex justify-content-between mt-2">
+        <small class="form-text">AI will generate a professional description based on your inputs</small>
+        <small class="form-text" id="wordCount">0 words</small>
+    </div>
+</div>
+
+                        <!-- JD File Upload -->
+                        <div class="mb-32">
+                            <label class="form-label">Job Description Document (Optional)</label>
+                            <div class="file-upload-wrapper" id="fileUploadWrapper" onclick="document.getElementById('jdFile').click()">
+                                <div id="uploadText" class="upload-text">
+                                    <i class="bi bi-file-earmark-pdf file-upload-icon" id="uploadIcon"></i>
+                                    <h6>Upload JD Document</h6>
+                                    <p>Click to browse or drag and drop</p>
+                                    <p>PDF files only (Max 5MB)</p>
+                                </div>
+                                <div id="fileNameDisplay" class="file-name-display" style="display: none;">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                    <span id="fileName" class="file-name"></span>
+                                    <i class="bi bi-x-circle file-remove-btn" onclick="removeFile(event)"></i>
+                                </div>
+                            </div>
+                            <input type="file" 
+                                   id="jdFile" 
+                                   name="jdform" 
+                                   accept=".pdf"
+                                   style="display: none;"
+                                   onchange="handleFileSelect(event)" />
+                            <small class="form-text">Upload a detailed job description PDF document</small>
+                        </div>
+
+                       
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between align-items-center mt-32">
+                            <button type="button" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </button>
+                            <button type="button"
+                                    class="btn btn-create-job"
+                                    onclick="submitJob()">
+                                <i class="bi bi-check-circle me-2"></i>Create Job Posting
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+<!-- ================= KENDO INITIALIZATION ================= -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Job Role Dropdown
+            $("#jobRole").kendoDropDownList({
+                optionLabel: "Select Job Role",
+                dataSource: [
+                    "Software Developer",
+                    "Backend Developer",
+                    "Frontend Developer",
+                    "Full Stack Developer",
+                    "Data Analyst",
+                    "DevOps Engineer",
+                    "UI/UX Designer",
+                    "Product Manager",
+                    "QA Engineer",
+                    "System Administrator",
+                    "Database Administrator",
+                    "Network Engineer",
+                    "Security Analyst",
+                    "Business Analyst",
+                    "Project Manager",
+                    "Technical Lead"
+                ],
+                height: 300,
+                filter: "contains",
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+
+            // Job Type Dropdown
+            $("#jobType").kendoDropDownList({
+                optionLabel: "Select Job Type",
+                dataSource: [
+                    "Full Time",
+                    "Part Time",
+                    "Contract",
+                    "Remote",
+                    "Hybrid"
+                ],
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+
+            // Location ComboBox
+            $("#location").kendoComboBox({
+                placeholder: "Select or type location...",
+                filter: "contains",
+                dataSource: [
+                    "Ahmedabad",
+                    "Mumbai",
+                    "Pune",
+                    "Bangalore",
+                    "Hyderabad",
+                    "Delhi",
+                    "Chennai",
+                    "Kolkata",
+                    "Surat",
+                    "Remote",
+                    "Hybrid",
+                    "Gurgaon",
+                    "Noida"
+                ],
+                suggest: true,
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+
+            // Experience NumericTextBox
+            $("#experience").kendoNumericTextBox({
+                min: 0,
+                max: 30,
+                step: 0.5,
+                format: "n1",
+                placeholder: "Years of experience",
+                decimals: 1,
+                spinners: true
+            });
+
+            // Skills MultiSelect
+            $("#skills").kendoMultiSelect({
+                placeholder: "Select required skills...",
+                dataSource: [
+                    "ASP.NET Core",
+                    "C#",
+                    "SQL Server",
+                    "PostgreSQL",
+                    "JavaScript",
+                    "TypeScript",
+                    "React",
+                    "Angular",
+                    "Vue.js",
+                    "Node.js",
+                    "Python",
+                    "Java",
+                    "Spring Boot",
+                    "Kendo UI",
+                    "Azure",
+                    "AWS",
+                    "Docker",
+                    "Kubernetes",
+                    "Git",
+                    "REST API",
+                    "GraphQL",
+                    "Microservices",
+                    "MongoDB",
+                    "Redis",
+                    "Kafka",
+                    "Agile/Scrum",
+                    "CI/CD",
+                    "Jenkins",
+                    "Terraform",
+                    "Machine Learning"
+                ],
+                autoClose: false,
+                maxSelectedItems: 15,
+                filter: "contains",
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+        // File upload handling
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                // Validate file type
+                if (file.type !== 'application/pdf') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid File Type',
+                        text: 'Please select only PDF files',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    event.target.value = '';
+                    return;
+                }
+                
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: 'File size should not exceed 5MB',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    event.target.value = '';
+                    return;
+                }
+                
+                // Display file name
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileNameDisplay').style.display = 'inline-flex';
+                document.getElementById('uploadText').style.display = 'none';
+                document.getElementById('uploadIcon').className = 'bi bi-file-earmark-pdf-fill file-upload-icon';
+                document.getElementById('fileUploadWrapper').classList.add('has-file');
+            }
+        }
+
+async function generateDescription() {
+    // Get values from form
+    const jobRole = $("#jobRole").data("kendoDropDownList").value();
+    const jobType = $("#jobType").data("kendoDropDownList").value();
+    const location = $("#location").data("kendoComboBox").value();
+    const experience = $("#experience").data("kendoNumericTextBox").value();
+    const skills = $("#skills").data("kendoMultiSelect").value();
+    const salary = $("input[name='c_salary']").val();
+
+    // Validate required field
+    if (!jobRole) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Job Role Required',
+            text: 'Please select a job role first to generate description',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    // Loading state
+    const generateBtn = $("#btnGenerate");
+    const originalHtml = generateBtn.html();
+    generateBtn.prop("disabled", true)
+        .html('<span class="spinner-border spinner-border-sm me-2"></span>Generating...');
+
+    const requestData = {
+        JobRole: jobRole,
+        JobType: jobType || "Full Time",
+        Location: location || "Remote",
+        Experience: experience || 0,
+        Skills: skills || [],
+        Salary: salary || "Competitive salary"
+    };
+
+    try {
+        const response = await fetch('/Recruiter/GenerateDescription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        // 🔐 SAFE RESPONSE HANDLING
+        const responseText = await response.text();
+        let result = {};
+
+        if (responseText) {
+            try {
+                result = JSON.parse(responseText);
+            } catch {
+                throw new Error("Invalid JSON returned from server");
+            }
+        }
+
+        // ❌ HTTP ERROR
+        if (!response.ok) {
+            throw new Error(result.message || "Server error while generating description");
+        }
+
+        // ❌ AI LOGIC ERROR
+        if (!result.success) {
+            throw new Error(result.error || "AI generation failed");
+        }
+
+        // ✅ SUCCESS
+        $("#jobDescription").val(result.description);
+        updateWordCount(result.description);
+
+        $("#jobDescription")[0].scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Description Generated',
+            text: 'You can edit the AI-generated description as needed.',
+            confirmButtonColor: '#10b981',
+            timer: 2000
+        });
+
+    } catch (error) {
+        console.error("AI generation error:", error);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'AI Generation Failed',
+            html: `
+                <div class="text-start">
+                    <p>❌ ${error.message}</p>
+                    <p class="mt-2">Use template instead?</p>
+                </div>
+            `,
+            confirmButtonColor: '#3b82f6',
+            showCancelButton: true,
+            confirmButtonText: 'Use Template',
+            cancelButtonText: 'Cancel'
+        }).then(res => {
+            if (res.isConfirmed) {
+                const fallback = createFallbackDescription(requestData);
+                $("#jobDescription").val(fallback);
+                updateWordCount(fallback);
+            }
+        });
+
+    } finally {
+        // Restore button
+        generateBtn.prop("disabled", false).html(originalHtml);
+    }
+}
+
+function updateWordCount(text) {
+    const wordCount = text.trim() === '' ? 0 : text.split(/\s+/).length;
+    $("#wordCount").text(`${wordCount} words`);
+    
+    // Color code based on length
+    if (wordCount < 100) {
+        $("#wordCount").css("color", "#ef4444");
+    } else if (wordCount < 300) {
+        $("#wordCount").css("color", "#f59e0b");
+    } else {
+        $("#wordCount").css("color", "#10b981");
+    }
+}
+        function removeFile(event) {
+            event.stopPropagation();
+            
+            // Clear the file input
+            document.getElementById('jdFile').value = '';
+            
+            // Reset UI
+            document.getElementById('fileNameDisplay').style.display = 'none';
+            document.getElementById('uploadText').style.display = 'block';
+            document.getElementById('uploadIcon').className = 'bi bi-file-earmark-pdf file-upload-icon';
+            document.getElementById('fileUploadWrapper').classList.remove('has-file');
+        }
+
+        // Drag and drop support
+        const fileUploadWrapper = document.getElementById('fileUploadWrapper');
+        
+        fileUploadWrapper.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.style.borderColor = '#1e40af';
+            this.style.background = 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)';
+        });
+        
+        fileUploadWrapper.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.style.borderColor = '#3b82f6';
+            this.style.background = 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)';
+        });
+        
+        fileUploadWrapper.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            this.style.borderColor = '#3b82f6';
+            this.style.background = 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('jdFile').files = files;
+                handleFileSelect({ target: { files: files } });
+            }
+        });
+        $("#jobDescription").on("input", function() {
+    updateWordCount($(this).val());
+});
+
+// Initialize word count on page load
+$(document).ready(function() {
+    updateWordCount($("#jobDescription").val());
+});
+
+        function submitJob() {
+    // Get values from Kendo UI controls
+    const jobRole = $("#jobRole").data("kendoDropDownList").value();
+    const jobType = $("#jobType").data("kendoDropDownList").value();
+    const location = $("#location").data("kendoComboBox").value();
+    const experience = $("#experience").data("kendoNumericTextBox").value();
+    const skills = $("#skills").data("kendoMultiSelect").value();
+    const salary = $("input[name='c_salary']").val();
+    const description = $("#jobDescription").val();
+    const jdFile = $("#jdFile")[0].files[0];
+
+    // Validation
+    if (!jobRole) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Job Role Required',
+            text: 'Please select a job role',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    if (!jobType) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Job Type Required',
+            text: 'Please select a job type',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    if (!location) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Location Required',
+            text: 'Please enter a location',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    if (!experience && experience !== 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Experience Required',
+            text: 'Please enter years of experience',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    if (!skills || skills.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Skills Required',
+            text: 'Please select at least one skill',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    if (!salary) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Salary Required',
+            text: 'Please enter salary range',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    if (!description) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Description Required',
+            text: 'Please enter job description',
+            confirmButtonColor: '#3b82f6'
+        });
+        return;
+    }
+
+    // Show loading
+    Swal.fire({
+        title: 'Creating Job Posting...',
+        text: 'Please wait while we process your request',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        willOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Create FormData MANUALLY - Don't use getElementById('jobForm')
+    const formData = new FormData();
+    
+    // Add static IDs
+    @* formData.append('c_userid', '1');
+    formData.append('c_company_id', '1'); *@
+    
+    // Add form values
+    formData.append('c_role', jobRole);
+    formData.append('c_job_type', jobType);
+    formData.append('c_location', location);
+    formData.append('c_experience', experience.toString());
+    formData.append('c_skills', Array.isArray(skills) ? skills.join(', ') : skills);
+    formData.append('c_salary', salary);
+    formData.append('c_description', description);
+    
+    // Add file if exists
+    if (jdFile) {
+        formData.append('jdform', jdFile);
+    } else {
+        formData.append('c_jd_file', '');
+    }
+
+    // Debug: Log what's being sent
+    console.log("=== Form Data ===");
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+    }
+
+    const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+    console.log("JWT Token:", token);
+    // AJAX call
+    $.ajax({   
+      url: 'http://localhost:5140/api/RecruiterApi/AddJob',
+        type: 'POST',
+        headers: {
+ 'Authorization': 'Bearer ' + token
+ },
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function(response) {
+            console.log("Success Response:", response);
+            Swal.fire({
+                icon: 'success',
+                title: 'Job Created!',
+                text: `Job created successfully with ID: ${response.jobId}`,
+                confirmButtonColor: '#10b981'
+            }).then(() => {
+                // Redirect or reset form
+                window.location.href = '/Recruiter/Index';
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error:", error);
+            console.error("Status:", status);
+            console.error("Response:", xhr.responseText);
+            
+            let errorMsg = "An error occurred while creating the job posting";
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg = response.message || response.error || errorMsg;
+            } catch (e) {
+                // Not JSON
+            }
+            
+            Swal.fire({
+                icon: 'error',
+                title: 'Creation Failed',
+                text: errorMsg,
+                confirmButtonColor: '#ef4444'
+            });
+        }
+    });
+}
+    </script>
+}

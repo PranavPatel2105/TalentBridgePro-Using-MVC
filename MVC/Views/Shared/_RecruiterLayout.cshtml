@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - TalentBridgePro</title>
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MVC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/kendo/kendo.default-v2.min.css"/>
+
+    <!-- Icons & Alerts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<style>
+body {
+    padding-top: 20px;
+    background: #f4f7fb;
+}
+
+/* ===== FLOATING NAVBAR ===== */
+.floating-navbar-wrapper {
+    position: sticky;
+    top: 20px;
+    z-index: 1050;
+    padding: 0 24px;
+    margin-bottom: 20px;
+}
+
+.floating-navbar {
+    height: 64px;
+    background: linear-gradient(135deg, #1565c0, #0d47a1);
+    border-radius: 18px;
+    box-shadow: 0 14px 35px rgba(13, 71, 161, 0.35);
+}
+
+/* White text */
+.floating-navbar * {
+    color: #fff !important;
+}
+
+/* Icons */
+.nav-icon {
+    font-size: 1.05rem;
+    padding: 8px 10px;
+    border-radius: 50%;
+    transition: all .25s ease;
+}
+
+.nav-icon:hover {
+    background: rgba(255,255,255,.15);
+    transform: translateY(-1px);
+}
+
+/* Logout hover */
+.logout-icon:hover {
+    background: rgba(255,77,77,.25);
+}
+
+/* Notification badge */
+.notif-dot {
+    position: absolute;
+    top: 2px;
+    right: -2px;
+    background: #ff3b30;
+    font-size: .65rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+}
+
+/* Background decoration */
+.bg-decoration {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: .1;
+    animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 { width:300px;height:300px;top:10%;left:5%;background:#1e88e5; }
+.shape-2 { width:200px;height:200px;top:60%;right:10%;background:#0d47a1; }
+.shape-3 { width:250px;height:250px;bottom:10%;left:50%;background:#1565c0; }
+
+@@keyframes float {
+    0%,100% { transform: translate(0,0); }
+    50% { transform: translate(30px,-30px); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<!-- ===== NAVBAR ===== -->
+<div class="floating-navbar-wrapper">
+    <nav class="navbar floating-navbar">
+        <div class="container-fluid px-4">
+
+            <!-- BRAND -->
+            <a class="navbar-brand d-flex align-items-center gap-2"
+               href="@Url.Action("Index","Recruiter")">
+                <i class="fa-solid fa-briefcase"></i>
+                <span class="fw-bold">
+                    @(ViewData["Title"] ?? "TalentBridgePro")
+                </span>
+            </a>
+
+            <!-- ACTION ICONS -->
+            <div class="d-flex align-items-center gap-3 ms-auto">
+
+                <a class="nav-icon" title="Dashboard"
+                   href="@Url.Action("Index","Recruiter")">
+                    <i class="fa-solid fa-chart-line"></i>
+                </a>
+
+                <a class="nav-icon" title="Applicants"
+                   href="@Url.Action("ViewApplicants","Recruiter")">
+                    <i class="fa-solid fa-users"></i>
+                </a>
+
+                <a class="nav-icon" title="Company Profile"
+                   href="@Url.Action("EditCompany","Recruiter")">
+                    <i class="fa-solid fa-building"></i>
+                </a>
+
+                <a class="nav-icon" title="Change Password"
+                   href="@Url.Action("ChangePassword","Recruiter")">
+                    <i class="fa-solid fa-key"></i>
+                </a>
+
+                <a class="nav-icon position-relative" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notif-dot">3</span>
+                </a>
+
+                <a class="nav-icon logout-icon" title="Logout"
+                   href="/User/Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+
+                <a class="nav-icon" title="My Profile"
+                   href="@Url.Action("EditRecruiter","Recruiter")">
+                    <i class="fa-solid fa-user-circle"></i>
+                </a>
+            </div>
+
+        </div>
+    </nav>
+</div>
+
+<!-- BACKGROUND SHAPES -->
+<div class="bg-decoration">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+</div>
+</header>
+
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<!-- Scripts -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/lib/kendo/kendo.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

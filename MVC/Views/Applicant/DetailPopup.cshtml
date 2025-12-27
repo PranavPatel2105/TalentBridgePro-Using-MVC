@@ -1,0 +1,830 @@
+@{
+    ViewData["Title"] = "Applicant Onboarding";
+
+}
+
+<style>
+    /* Modern overlay with blur */
+.k-overlay {
+    background: rgba(191, 219, 254, 0.4) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Premium popup styling */
+.k-window {
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.3);
+    border: 1px solid rgba(147, 197, 253, 0.3);
+    overflow: hidden;
+    max-width: 90vw !important;
+    max-height: 90vh !important;
+}
+
+.k-window-titlebar {
+    background: linear-gradient(135deg, #0d47a1, #1565c0);
+    color: #fff;
+    font-weight: 600;
+    font-size: 18px;
+    padding: 20px 30px;
+    border-bottom: 1px solid #93c5fd;
+}
+
+.k-window-content {
+    padding: 35px 40px 40px !important;
+    background: #ffffff;
+    overflow-y: auto;
+    max-height: calc(90vh - 80px);
+}
+
+/* Modern progress bar */
+.progress-container {
+    margin-bottom: 35px;
+}
+
+.progress {
+    height: 6px;
+    border-radius: 10px;
+    background-color: #dbeafe;
+    overflow: visible;
+    position: relative;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #93c5fd, #60a5fa);
+    border-radius: 10px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background: #60a5fa;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3);
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* Step styling */
+.step {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.step-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.step-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 28px;
+    font-weight: 400;
+}
+
+/* Form controls */
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control,
+.k-input,
+.k-textbox {
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.form-control:focus,
+.k-input:focus,
+.k-textbox:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    outline: none;
+    background: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 110px;
+}
+
+/* Kendo DropDownList styling */
+.k-dropdown,
+.k-multiselect {
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+}
+
+.k-dropdown:hover,
+.k-multiselect:hover {
+    border-color: #93c5fd;
+    background: #ffffff;
+}
+
+.k-dropdown.k-state-focused,
+.k-multiselect.k-state-focused {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    background: #ffffff;
+}
+
+.k-dropdown .k-input,
+.k-multiselect .k-input {
+    border: none;
+    padding: 12px 16px;
+    background: transparent;
+}
+
+/* MultiSelect wrapper styling */
+.k-multiselect-wrap {
+    padding: 8px 12px;
+    min-height: 44px;
+}
+
+/* MultiSelect selected tags */
+.k-multiselect .k-chip {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin: 2px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.k-multiselect .k-chip:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+}
+
+/* MultiSelect close button (×) - Blue theme */
+.k-multiselect .k-chip .k-chip-action {
+    color: #3b82f6 !important;
+}
+
+.k-multiselect .k-chip .k-chip-action:hover {
+    color: #1e40af !important;
+    background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Additional override for Kendo's default orange */
+.k-chip-remove-button .k-icon {
+    color: #3b82f6 !important;
+}
+
+.k-chip-remove-button:hover .k-icon {
+    color: #1e40af !important;
+}
+
+/* Dropdown popup list styling */
+.k-list-container.k-popup {
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+    background: #ffffff;
+}
+
+.k-list .k-list-item {
+    padding: 10px 16px;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.k-list .k-list-item:hover {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+/* UPDATED: Selected items in dropdown - Blue theme instead of orange */
+.k-list .k-list-item.k-state-selected {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+    font-weight: 500;
+}
+
+.k-list .k-list-item.k-state-focused {
+    background: #eff6ff;
+    box-shadow: inset 0 0 0 2px #93c5fd;
+}
+
+/* UPDATED: Focused + Selected state - Blue theme */
+.k-list .k-list-item.k-state-selected.k-state-focused {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+    color: #1e40af !important;
+}
+
+/* UPDATED: Additional override for Kendo's default orange selected state */
+.k-list-item.k-selected,
+.k-list-optionlabel.k-selected {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+}
+
+/* UPDATED: Force override any remaining orange backgrounds */
+.k-state-selected {
+    background-color: #dbeafe !important;
+    background-image: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    border-color: #93c5fd !important;
+}
+
+/* Checkbox in multiselect dropdown */
+.k-list .k-checkbox:checked {
+    background-color: #60a5fa;
+    border-color: #60a5fa;
+}
+
+.k-list .k-checkbox {
+    border-color: #bfdbfe;
+}
+
+/* Upload component */
+.k-upload {
+    border: 2px dashed #93c5fd;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.k-upload:hover {
+    border-color: #60a5fa;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.k-upload .k-upload-button {
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.25);
+}
+
+.k-upload .k-upload-button:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(96, 165, 250, 0.35);
+}
+
+.k-upload-status {
+    margin-top: 15px;
+}
+
+/* Footer section */
+.wizard-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e7ff;
+}
+
+.wizard-footer .btn {
+    min-width: 120px;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    border: 1.5px solid #bfdbfe !important;
+    color: #64748b;
+}
+
+.btn-outline-secondary:hover {
+    background: #eff6ff;
+    border-color: #93c5fd !important;
+    color: #475569;
+}
+
+.btn-light {
+    background: #eff6ff;
+    color: #475569;
+    margin-right: 10px;
+    border: 1px solid #dbeafe;
+}
+
+.btn-light:hover {
+    background: #dbeafe;
+    color: #334155;
+    border-color: #bfdbfe;
+}
+
+.btn-primary {
+    background:#1e88e5;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25);
+}
+
+.btn-primary:hover {
+    background: #0d47a1;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(30, 136, 229, 0.35);
+}
+
+/* Spacing utilities */
+.mt-3 {
+    margin-top: 20px;
+}
+
+/* Input group for better visual hierarchy */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@@media (max-width: 768px) {
+    .k-window {
+        width: 95vw !important;
+        max-width: 95vw !important;
+    }
+
+    .k-window-titlebar {
+        padding: 16px 20px;
+        font-size: 16px;
+    }
+
+    .k-window-content {
+        padding: 25px 20px 30px !important;
+    }
+
+    .step-title {
+        font-size: 20px;
+    }
+
+    .step-subtitle {
+        font-size: 13px;
+    }
+
+    .progress-container {
+        margin-bottom: 25px;
+    }
+
+    .wizard-footer {
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 25px;
+        padding-top: 20px;
+    }
+
+    .wizard-footer > div {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .wizard-footer .btn {
+        width: 100%;
+        flex: 1;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .k-window-titlebar {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+
+    .k-window-content {
+        padding: 20px 16px 25px !important;
+    }
+
+    .step-title {
+        font-size: 18px;
+        margin-bottom: 6px;
+    }
+
+    .step-subtitle {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-size: 13px;
+    }
+
+    .form-control,
+    .k-input,
+    .k-textbox {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .wizard-footer .btn {
+        padding: 10px 20px;
+        font-size: 13px;
+        min-width: auto;
+    }
+
+    .progress-label {
+        font-size: 12px;
+    }
+}
+
+/* Landscape mobile */
+@@media (max-width: 768px) and (orientation: landscape) {
+    .k-window {
+        max-height: 95vh !important;
+    }
+
+    .k-window-content {
+        max-height: calc(95vh - 70px);
+        overflow-y: auto;
+    }
+
+    .step-title {
+        font-size: 18px;
+    }
+
+    .form-group {
+        margin-bottom: 14px;
+    }
+}
+
+/* Large screens - keep centered */
+@@media (min-width: 1200px) {
+    .k-window {
+        max-width: 650px !important;
+    }
+}
+</style>
+
+<div id="onboardingWindow">
+
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+        <div class="progress">
+            <div id="progressBar" class="progress-bar" style="width:25%;"></div>
+        </div>
+        <div class="progress-label">
+            <span id="stepIndicator">Step 1 of 4</span>
+            <span id="stepName">Personal Info</span>
+        </div>
+    </div>
+
+    <!-- STEP 1: Personal Information -->
+    <div id="step1" class="step">
+        <div class="step-title">Tell us about yourself</div>
+        <div class="step-subtitle">
+            Help recruiters understand your background and experience
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Professional Bio</label>
+            <textarea id="bio" class="form-control" rows="5"
+                      placeholder="Share a brief introduction about your professional background, key achievements, and what drives you..."></textarea>
+        </div>
+    </div>
+
+    <!-- STEP 2: Skills & Role -->
+    <div id="step2" class="step d-none">
+        <div class="step-title">Skills & Expertise</div>
+        <div class="step-subtitle">
+            Showcase your technical abilities and preferred role
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Core Skills</label>
+            <select id="skills" multiple="multiple"></select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Preferred Job Role</label>
+            <input id="jobRole" class="form-control"
+                   placeholder="e.g., Senior Software Engineer, Full Stack Developer" />
+        </div>
+    </div>
+
+    <!-- STEP 3: Job Preferences -->
+    <div id="step3" class="step d-none">
+        <div class="step-title">Job Preferences</div>
+        <div class="step-subtitle">
+            Help us match you with the right opportunities
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Employment Type</label>
+            <select id="jobType" multiple="multiple"></select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Preferred Work Location</label>
+            <input id="location" class="form-control"
+                   placeholder="e.g., Ahmedabad, Remote, Hybrid - Bangalore" />
+        </div>
+    </div>
+
+    <!-- STEP 4: Resume Upload -->
+    <div id="step4" class="step d-none">
+        <div class="step-title">Upload Your Resume</div>
+        <div class="step-subtitle">
+            PDF format only • Maximum file size: 2 MB
+        </div>
+
+        <div class="form-group">
+            <input id="resumeUpload" type="file" />
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <div class="wizard-footer">
+        <button id="skipBtn" class="btn btn-outline-secondary">
+            Skip for Now
+        </button>
+
+        <div>
+            <button id="prevBtn" class="btn btn-light d-none">
+                ← Back
+            </button>
+            <button id="nextBtn" class="btn btn-primary">
+                Next →
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const token = '@Context.Session.GetString("JWT")';
+
+    function authHeaders() {
+        return {
+            'Authorization': 'Bearer ' + token
+        };
+    }
+
+    let step = 1;
+    let data = {};
+
+    const stepNames = {
+        1: "Personal Info",
+        2: "Skills & Role",
+        3: "Job Preferences",
+        4: "Resume Upload"
+    };
+
+    $(document).ready(function () {
+        // Initialize Kendo Window
+        let win = $("#onboardingWindow").kendoWindow({
+            width: "600px",
+            title: "Complete Your Profile",
+            modal: true,
+            visible: true,
+            draggable: false,
+            resizable: false,
+            pinned: true,
+            position: {
+                top: "50%",
+                left: "50%"
+            },
+            animation: {
+                open: {
+                    effects: "fadeIn:in",
+                    duration: 300
+                },
+                close: {
+                    effects: "fadeOut:out",
+                    duration: 200
+                }
+            }
+        }).data("kendoWindow");
+
+        // Center the window properly
+        win.center().open();
+
+        // Re-center on window resize
+        $(window).on('resize', function () {
+            if (win && win.element.is(':visible')) {
+                win.center();
+            }
+        });
+
+        // Initialize Job Type Dropdown
+        $("#jobType").kendoMultiSelect({
+            placeholder: "Select Employment Type",
+            dataSource: ["Full Time", "Part Time", "Hybrid", "Contract", "Remote"],
+            autoClose: false,
+            height: 320,
+            filter: "contains"
+        });
+
+        // Initialize Skills MultiSelect
+        $("#skills").kendoMultiSelect({
+            placeholder: "Select your skills",
+            dataSource: [
+                "C#", "ASP.NET Core", "ASP.NET MVC", ".NET Framework",
+                "JavaScript", "TypeScript", "React", "Angular", "Vue.js",
+                "Node.js", "Python", "Java", "PHP", "Ruby",
+                "SQL Server", "PostgreSQL", "MySQL", "MongoDB", "Oracle",
+                "Azure", "AWS", "Google Cloud", "Docker", "Kubernetes",
+                "Git", "REST API", "GraphQL", "Microservices",
+                "HTML", "CSS", "Bootstrap", "Tailwind CSS",
+                "Entity Framework", "Dapper", "Redis", "RabbitMQ",
+                "Jenkins", "CI/CD", "Agile", "Scrum"
+            ],
+            autoClose: false,
+            height: 320,
+            filter: "contains"
+        });
+
+        // Initialize Resume Upload
+        $("#resumeUpload").kendoUpload({
+            multiple: false,
+            localization: { 
+                select: "📄 Choose Resume (PDF)",
+                dropFilesHere: "or drag and drop your resume here"
+            },
+            validation: {
+                allowedExtensions: [".pdf"],
+                maxFileSize: 2097152
+            }
+        });
+
+        // Button Events
+        $("#nextBtn").click(function(e) {
+            e.preventDefault();
+            nextStep();
+        });
+
+        $("#prevBtn").click(function(e) {
+            e.preventDefault();
+            prevStep();
+        });
+
+        $("#skipBtn").click(function(e) {
+            e.preventDefault();
+            let win = $("#onboardingWindow").data("kendoWindow");
+            if (win) {
+                win.close();
+            }
+            window.location.href = "/Applicant/Dashboard";
+        });
+    });
+
+    function nextStep() {
+        collectData();
+        if (step < 4) {
+            step++;
+            updateUI();
+        } else {
+            submitData();
+        }
+    }
+
+    function prevStep() {
+        if (step > 1) {
+            step--;
+            updateUI();
+        }
+    }
+
+    function updateUI() {
+        $(".step").addClass("d-none");
+        $("#step" + step).removeClass("d-none");
+        $("#prevBtn").toggleClass("d-none", step === 1);
+        $("#nextBtn").html(step === 4 ? "Save & Continue →" : "Next →");
+        const progress = (step * 25);
+        $("#progressBar").css("width", progress + "%");
+        $("#stepIndicator").text("Step " + step + " of 4");
+        $("#stepName").text(stepNames[step]);
+    }
+
+    function collectData() {
+        data.c_bio = $("#bio").val() || "";
+        var skillsWidget = $("#skills").data("kendoMultiSelect");
+        data.c_skills = skillsWidget ? skillsWidget.value().join(", ") : "";
+        data.c_job_role = $("#jobRole").val() || "";
+        var jobTypeWidget = $("#jobType").data("kendoMultiSelect");
+        data.c_job_type = jobTypeWidget ? jobTypeWidget.value().join(", ") : "";
+        data.c_location = $("#location").val() || "";
+    }
+
+function submitData() {
+    let win = $("#onboardingWindow").data("kendoWindow");
+            if (win) {
+                win.close();
+            }
+    Swal.fire({
+        title: 'Saving Your Profile',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    let formData = new FormData();
+    for (let k in data) {
+        if (data[k]) formData.append(k, data[k]);
+    }
+
+    let upload = $("#resumeUpload").data("kendoUpload");
+    if (upload) {
+        let files = upload.getFiles();
+        if (files.length > 0) {
+            formData.append("resumeform", files[0].rawFile);
+        }
+    }
+
+    $.ajax({
+        url: "http://localhost:5140/api/ApplicantApi/add",
+        type: "POST",
+        headers: authHeaders(),
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function() {
+            // Close the Kendo Window
+            
+            
+            // Show success message with setTimeout
+            
+            
+        
+            setTimeout(() => {
+                
+                Swal.close();
+                Swal.fire({
+                title: 'Success!',
+                text: 'Your profile has been completed successfully',
+                icon: 'success',
+                confirmButtonColor: '#60a5fa',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+            });
+                window.location.href = "/Applicant/Dashboard";
+            }, 2000);
+        },
+        error: function() {
+            Swal.fire({
+                title: 'Error',
+                text: 'Unable to save your profile. Please try again.',
+                icon: 'error',
+                confirmButtonColor: '#60a5fa'
+            });
+        }
+    });
+}
+</script>
+}

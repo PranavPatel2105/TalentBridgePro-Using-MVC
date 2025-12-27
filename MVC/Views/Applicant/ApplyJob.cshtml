@@ -1,0 +1,2220 @@
+@{
+    ViewData["Title"] = "Apply for Job";
+    var jobId = ViewBag.JobId;
+    Layout = "~/Views/Shared/_ApplicantLayout.cshtml";
+}
+
+<style>
+    /* Professional Blue Theme */
+    :root {
+        --primary-blue: #1e40af;
+        --primary-blue-light: #60a5fa;
+        --primary-blue-dark: #1e3a8a;
+        --secondary-blue: #3b82f6;
+        --light-blue: #dbeafe;
+        --background: #f1f5f9;
+        --surface: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #475569;
+        --text-light: #64748b;
+        --border: #e2e8f0;
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+        --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+        --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
+    }
+
+      
+    /* Loading spinner should be more visible */
+    .loading-spinner {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+         .company-card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        padding: 32px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+        position: sticky;
+        top: 32px;
+        margin-bottom: 24px;
+        transition: box-shadow 0.3s ease;
+    }
+
+.job-card {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+        transition: box-shadow 0.3s ease;
+    }
+
+       .reviews-section {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        padding: 32px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+    }
+    /* Add to your CSS section */
+    .reviews-pagination {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+    }
+
+    .read-more-btn {
+        background: var(--secondary-blue);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .read-more-btn:hover {
+        background: var(--primary-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .read-more-btn:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .reviews-pagination-info {
+        font-size: 13px;
+        color: var(--text-light);
+        margin-top: 8px;
+    }
+
+    /* For hiding extra reviews initially */
+    .review-card.hidden {
+        display: none;
+    }
+
+    /* Reviews Filter Styling */
+    .reviews-filter {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .filter-btn {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .filter-btn.active {
+        background: var(--secondary-blue) !important;
+        color: white !important;
+        border-color: var(--secondary-blue) !important;
+    }
+
+    .filter-btn:hover:not(.active) {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-outline-warning {
+        border-color: #fbbf24;
+        color: #92400e;
+    }
+
+    .btn-outline-warning:hover:not(.active) {
+        background-color: #fef3c7;
+    }
+
+    .no-reviews-message {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-light);
+        font-style: italic;
+    }
+
+
+    /* IMPORTANT: Keep modal step logic intact */
+    .modal-step {
+        display: none !important;
+    }
+
+    .modal-step.active {
+        display: block !important;
+    }
+
+    body {
+        background: var(--background);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        padding: 80px;
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        margin: 20px 0;
+        box-shadow: var(--shadow-md);
+    }
+
+    .loading-spinner .spinner-border {
+        width: 3.5rem;
+        height: 3.5rem;
+        color: var(--secondary-blue);
+    }
+
+   
+    .company-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .company-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 3px solid var(--light-blue);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        display: block;
+        margin: 0 auto 20px;
+    }
+
+    .company-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-blue-dark);
+        margin-bottom: 8px;
+        text-align: center;
+        letter-spacing: -0.3px;
+    }
+
+    .company-location {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-weight: 500;
+    }
+
+    .company-location i {
+        color: var(--secondary-blue);
+        font-size: 16px;
+    }
+
+    .company-email {
+        color: var(--text-secondary);
+        font-size: 13px;
+        background: var(--background);
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        margin-bottom: 24px;
+        word-break: break-all;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .rating-section {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        padding: 24px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 24px;
+        text-align: center;
+        border: 2px solid #bfdbfe;
+    }
+
+    .rating-stars {
+        font-size: 24px;
+        letter-spacing: 4px;
+        margin-bottom: 12px;
+        color: #f59e0b;
+        -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
+    }
+
+    .company-rating-badge {
+        display: inline-block;
+        background: var(--surface);
+        color: var(--text-primary);
+        padding: 8px 24px;
+        border-radius: 24px;
+        font-weight: 700;
+        font-size: 18px;
+        border: 2px solid var(--border);
+        margin: 8px 0;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .rating-value {
+        color: var(--primary-blue-dark);
+        font-size: 20px;
+    }
+
+    .rating-max {
+        color: var(--text-light);
+        font-size: 16px;
+    }
+
+    .review-count {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-top: 8px;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        border: 2px solid;
+        letter-spacing: 0.3px;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fbbf24;
+    }
+
+    .status-approved {
+        background: #d1fae5;
+        color: #065f46;
+        border-color: #10b981;
+    }
+
+    .status-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #ef4444;
+    }
+
+    
+
+    .job-card:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .job-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary-blue-dark);
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid var(--light-blue);
+        letter-spacing: -0.5px;
+        line-height: 1.3;
+    }
+
+    .job-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 32px;
+        padding-bottom: 28px;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: var(--background);
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        transition: all 0.2s ease;
+    }
+
+    .meta-item:hover {
+        background: var(--surface);
+        border-color: var(--secondary-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .meta-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .meta-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .meta-value i {
+        font-size: 20px;
+    }
+
+    .badge-custom {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-blue-dark);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: -0.3px;
+    }
+
+    .section-title i {
+        color: var(--secondary-blue);
+        font-size: 22px;
+    }
+
+    .description-text {
+        color: var(--text-secondary);
+        line-height: 1.8;
+        font-size: 15px;
+        margin-bottom: 32px;
+        background: var(--background);
+        padding: 24px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--secondary-blue);
+    }
+
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 32px;
+    }
+
+    .skill-badge {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        color: var(--primary-blue);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border: 2px solid #bfdbfe;
+        transition: all 0.2s ease;
+        letter-spacing: 0.2px;
+    }
+
+    .skill-badge:hover {
+        background: var(--secondary-blue);
+        color: white;
+        border-color: var(--secondary-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--secondary-blue) !important;
+        color: var(--secondary-blue) !important;
+        border-radius: var(--radius-sm);
+        padding: 10px 20px;
+        font-weight: 600;
+        font-size: 14px;
+        background: transparent;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--secondary-blue) !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .apply-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        padding: 16px 48px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: var(--radius-sm);
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .apply-btn:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .apply-btn:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+ 
+
+    .review-card {
+        background: var(--background);
+        border-radius: var(--radius-sm);
+        padding: 24px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border);
+        transition: all 0.2s ease;
+    }
+
+    .review-card:hover {
+        box-shadow: var(--shadow-sm);
+        border-color: var(--secondary-blue);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .user-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 14px;
+        border: 3px solid var(--light-blue);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    }
+
+    .user-avatar-placeholder {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+        margin-right: 14px;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .user-info {
+        flex: 1;
+    }
+
+    .user-name {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+        font-size: 15px;
+        letter-spacing: -0.2px;
+    }
+
+    .review-date {
+        font-size: 12px;
+        color: var(--text-light);
+        font-weight: 500;
+    }
+
+    .review-stars-container {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .review-star {
+        font-size: 18px;
+        color: #f59e0b;
+        -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.3);
+    }
+
+    .review-text {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        font-size: 14px;
+        background: var(--surface);
+        padding: 20px;
+        border-radius: var(--radius-sm);
+        border-left: 4px solid var(--secondary-blue);
+    }
+
+    .no-reviews-card {
+        background: var(--background);
+        border-radius: var(--radius-sm);
+        padding: 60px 20px;
+        text-align: center;
+        border: 2px dashed var(--border);
+    }
+
+    .no-reviews-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--border), transparent);
+        margin: 32px 0;
+    }
+
+    @@media (max-width: 768px) {
+        .company-card {
+            position: static;
+            margin-bottom: 24px;
+        }
+
+        .job-title {
+            font-size: 24px;
+        }
+
+        .job-meta {
+            grid-template-columns: 1fr;
+        }
+
+        .apply-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .job-card,
+        .reviews-section {
+            padding: 24px;
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    #jobContent {
+        animation: fadeIn 0.5s ease;
+    }
+</style>
+
+
+<div id="loadingSpinner" class="loading-spinner">
+    <div class="spinner-border text-primary" role="status" style="width: 3.5rem; height: 3.5rem;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3" style="color: var(--text-secondary); font-weight: 500;">Loading job details...</p>
+</div>
+
+<div id="jobContent" style="display: none;">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="company-card">
+                <img id="companyLogo" src="/logo/default-logo.png" alt="Company Logo" class="company-logo"
+                    onerror="this.src='/logo/default-logo.png'">
+                <h2 class="company-name" id="companyName"></h2>
+                <p class="company-location">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span id="companyLocation"></span>
+                </p>
+                <p class="company-email" id="companyEmail"></p>
+
+                <div class="rating-section">
+                    <div class="rating-stars" id="starRating"></div>
+                    <div class="company-rating-badge" id="integerRating"></div>
+                    <div class="review-count" id="reviewCount"></div>
+                </div>
+
+                <div id="applicationStatus" style="display: none;">
+                    <hr>
+                    <div class="text-center">
+                        <strong
+                            style="color: var(--text-secondary); font-size: 14px; display: block; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Application
+                            Status</strong>
+                        <span id="statusBadge" class="status-badge"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Right Side - Job Details -->
+        <div class="col-lg-8">
+            <div class="job-card">
+                <h1 class="job-title" id="jobRole"></h1>
+
+                <div class="job-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Location</span>
+                        <span class="meta-value">
+                            <i class="bi bi-geo-alt-fill" style="color: #3b82f6;"></i>
+                            <span id="jobLocation"></span>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Job Type</span>
+                        <span class="meta-value">
+                            <i class="bi bi-briefcase-fill" style="color: #8b5cf6;"></i>
+                            <span class="badge bg-primary badge-custom" id="jobType"></span>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Salary</span>
+                        <span class="meta-value">
+                            <i class="bi bi-cash-stack" style="color: #10b981;"></i>
+                            <span id="jobSalary"></span>
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Experience</span>
+                        <span class="meta-value">
+                            <i class="bi bi-graph-up-arrow" style="color: #f59e0b;"></i>
+                            <span id="jobExperience"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <i class="bi bi-file-text"></i>
+                    Job Description
+                </div>
+                <div class="description-text" id="jobDescription"></div>
+
+                <div class="section-title">
+                    <i class="bi bi-tools"></i>
+                    Required Skills
+                </div>
+                <div class="skills-container" id="skillsContainer"></div>
+
+                <div id="jdFileSection" style="display: none; margin-top: 30px;">
+                    <a id="jdDownload" href="#" target="_blank" class="btn btn-outline-primary">
+                        <i class="bi bi-download"></i> Download Job Description
+                    </a>
+                </div>
+
+                <hr>
+
+                <div class="text-center">
+                    <button id="applyBtn" class="btn apply-btn">
+                        <i class="bi bi-send-fill"></i> Apply for this Job
+                    </button>
+                </div>
+            </div>
+
+            <div class="reviews-section">
+                <h3 class="section-title">
+                    <i class="bi bi-star-fill"></i>
+                    Company Reviews
+                    <span class="badge bg-warning text-dark" id="totalReviewsBadge"></span>
+                </h3>
+
+                <!-- Add filter buttons here -->
+                <div class="reviews-filter mb-4">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <span class="text-muted me-2" style="font-size: 14px; font-weight: 500;">Filter by
+                            rating:</span>
+                        <button class="btn btn-sm btn-outline-primary filter-btn active" data-rating="0">
+                            <i class="bi bi-stars"></i> All
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" data-rating="5">
+                            <i class="bi bi-star-fill"></i> 5 Stars
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" data-rating="4">
+                            <i class="bi bi-star-fill"></i> 4 Stars
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" data-rating="3">
+                            <i class="bi bi-star-fill"></i> 3 Stars
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" data-rating="2">
+                            <i class="bi bi-star-fill"></i> 2 Stars
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning filter-btn" data-rating="1">
+                            <i class="bi bi-star-fill"></i> 1 Star
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted" id="filteredCount">Showing all reviews</small>
+                        <button class="btn btn-sm btn-link p-0" id="clearFilterBtn" style="display: none;">
+                            <i class="bi bi-x-circle"></i> Clear filter
+                        </button>
+                    </div>
+                </div>
+
+                <div id="reviewsContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Multi-Step Apply Modal -->
+<div class="modal fade" id="applyModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border-radius: 16px; overflow: hidden;">
+            <!-- Premium Header -->
+            <div class="modal-header" style="
+                background: linear-gradient(135deg, #0d47a1, #1565c0);
+                color: #fff;
+                font-weight: 600;
+                font-size: 18px;
+                padding: 20px 30px;
+                border-bottom: 1px solid #93c5fd;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+            ">
+                <h5 class="modal-title m-0">Apply for Job</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    id="modalCloseBtn"></button>
+            </div>
+
+            <div class="modal-body" style="padding: 35px 40px 40px;">
+                <!-- Progress Indicator - Updated -->
+                <div class="progress-container" style="margin-bottom: 35px;">
+                    <div class="progress"
+                        style="height: 6px; border-radius: 10px; background-color: #dbeafe; overflow: visible; position: relative;">
+                        <div id="progressBar" class="progress-bar" style="
+                            background: linear-gradient(90deg, #93c5fd, #60a5fa);
+                            border-radius: 10px;
+                            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                            box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+                            position: relative;
+                            width: 33.33%;
+                        "></div>
+                    </div>
+                    <div class="progress-label"
+                        style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 13px; color: #64748b; font-weight: 500;">
+                        <span id="stepIndicator">Step 1 of 3</span>
+                        <span id="stepName">Personal Info</span>
+                    </div>
+                </div>
+
+                <form id="applyForm">
+                 <input type="hidden" id="jobIdInput" name="c_job_id" value="@ViewBag.JobId">
+
+                    <!-- Step 1: Personal Information -->
+                    <div class="modal-step active" id="step1">
+                        <div class="step-title"
+                            style="font-size: 24px; font-weight: 700; color: #1e3a8a; margin-bottom: 8px; letter-spacing: -0.5px;">
+                            Personal Information
+                        </div>
+                        <div class="step-subtitle"
+                            style="font-size: 14px; color: #64748b; margin-bottom: 28px; font-weight: 400;">
+                            Help recruiters understand who you are
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label"
+                                style="font-size: 14px; font-weight: 600; color: #1e40af; margin-bottom: 8px; display: block;">
+                                Full Name *
+                            </label>
+                            <input type="text" class="form-control" id="nameInput" name="c_name" required style="
+                                border: 1.5px solid #bfdbfe;
+                                border-radius: 10px;
+                                padding: 12px 16px;
+                                font-size: 14px;
+                                transition: all 0.2s ease;
+                                background: #f8fafc;
+                            ">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label"
+                                style="font-size: 14px; font-weight: 600; color: #1e40af; margin-bottom: 8px; display: block;">
+                                Email Address *
+                            </label>
+                            <input type="email" class="form-control" id="emailInput" name="c_email" required style="
+                                border: 1.5px solid #bfdbfe;
+                                border-radius: 10px;
+                                padding: 12px 16px;
+                                font-size: 14px;
+                                transition: all 0.2s ease;
+                                background: #f8fafc;
+                            ">
+                            <small class="text-muted">We'll send application updates to this email</small>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Resume Upload -->
+                    <div class="modal-step" id="step2">
+                        <div class="step-title"
+                            style="font-size: 24px; font-weight: 700; color: #1e3a8a; margin-bottom: 8px; letter-spacing: -0.5px;">
+                            Upload Your Resume
+                        </div>
+                        <div class="step-subtitle"
+                            style="font-size: 14px; color: #64748b; margin-bottom: 28px; font-weight: 400;">
+                            PDF/DOC format only • Maximum file size: 5 MB
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <div style="
+                                border: 2px dashed #93c5fd;
+                                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                                border-radius: 12px;
+                                padding: 30px 20px;
+                                text-align: center;
+                                transition: all 0.3s ease;
+                            ">
+                                <input type="file" class="form-control" id="resumeInput" name="resumeform"
+                                    accept=".pdf,.doc,.docx" required style="
+                                    display: none;
+                                ">
+                                <button type="button" id="browseBtn" class="btn" style="
+                                    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+                                    color: #ffffff;
+                                    border: none;
+                                    border-radius: 8px;
+                                    padding: 12px 28px;
+                                    font-weight: 600;
+                                    font-size: 14px;
+                                    transition: all 0.2s ease;
+                                    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.25);
+                                ">
+                                    📄 Choose Resume
+                                </button>
+                                <p class="mt-3 mb-0" style="color: #64748b; font-size: 14px;">
+                                    or drag and drop your resume here
+                                </p>
+                                <div id="selectedFileName" class="mt-3 text-success" style="
+                                    font-size: 14px;
+                                    font-weight: 500;
+                                    display: none;
+                                ">
+                                    <i class="bi bi-check-circle"></i>
+                                    <span id="fileNameDisplay"></span>
+                                    <small class="text-muted d-block mt-1" id="fileSizeDisplay"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Preview -->
+                    <div class="modal-step" id="step3">
+                        <div class="step-title"
+                            style="font-size: 24px; font-weight: 700; color: #1e3a8a; margin-bottom: 8px; letter-spacing: -0.5px;">
+                            Review your application
+                        </div>
+                        <div class="step-subtitle"
+                            style="font-size: 14px; color: #64748b; margin-bottom: 28px; font-weight: 400;">
+                            You will not be able to make changes after you submit your application.
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 style="color: #64748b; font-size: 15px; font-weight: 600; margin: 0;">
+                                    Contact information
+                                </h6>
+                                <button type="button" class="btn btn-link btn-sm p-0" id="editContactBtn" style="
+                                    color: #3b82f6;
+                                    text-decoration: none;
+                                    font-weight: 500;
+                                ">
+                                    Edit
+                                </button>
+                            </div>
+
+                            <div class="preview-card" style="
+                                background: #ffffff;
+                                border: 1.5px solid #e0e7ff;
+                                border-radius: 12px;
+                                padding: 20px;
+                                margin-bottom: 15px;
+                            ">
+                                <div class="preview-label" style="
+                                    font-weight: 400;
+                                    color: #94a3b8;
+                                    font-size: 13px;
+                                    margin-bottom: 8px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.5px;
+                                ">Full name</div>
+                                <div class="preview-value" id="previewName" style="
+                                    color: #1e293b;
+                                    font-size: 18px;
+                                    font-weight: 600;
+                                "></div>
+                            </div>
+
+                            <div class="preview-card" style="
+                                background: #ffffff;
+                                border: 1.5px solid #e0e7ff;
+                                border-radius: 12px;
+                                padding: 20px;
+                                margin-bottom: 15px;
+                            ">
+                                <div class="preview-label" style="
+                                    font-weight: 400;
+                                    color: #94a3b8;
+                                    font-size: 13px;
+                                    margin-bottom: 8px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.5px;
+                                ">Email address</div>
+                                <div class="preview-value" id="previewEmail" style="
+                                    color: #1e293b;
+                                    font-size: 18px;
+                                    font-weight: 600;
+                                "></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 style="color: #64748b; font-size: 15px; font-weight: 600; margin: 0;">
+                                    CV
+                                </h6>
+                                <button type="button" class="btn btn-link btn-sm p-0" id="editResumeBtn" style="
+                                    color: #3b82f6;
+                                    text-decoration: none;
+                                    font-weight: 500;
+                                ">
+                                    Edit
+                                </button>
+                            </div>
+
+                            <div class="preview-card" style="
+                                background: #ffffff;
+                                border: 1.5px solid #e0e7ff;
+                                border-radius: 12px;
+                                padding: 20px;
+                            ">
+                                <div class="resume-preview" style="
+                                    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                                    border-radius: 12px;
+                                    padding: 30px 20px;
+                                    text-align: center;
+                                    margin-top: 10px;
+                                    border: 2px dashed #93c5fd;
+                                ">
+                                    <div class="resume-icon"
+                                        style="font-size: 48px; color: #3b82f6; margin-bottom: 15px;">📄
+                                    </div>
+                                    <div class="resume-filename" id="previewResume" style="
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                        color: #1e293b;
+                                        margin-bottom: 5px;
+                                        word-break: break-word;
+                                    "></div>
+                                    <small class="text-muted d-block" id="previewResumeSize"></small>
+                                </div>
+                                <iframe id="resumePreviewFrame" class="resume-preview-embed" style="
+                                    width: 100%;
+                                    height: 400px;
+                                    border: 1px solid #dee2e6;
+                                    border-radius: 8px;
+                                    margin-top: 10px;
+                                    background: white;
+                                    display: none;
+                                "></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Updated Footer -->
+            <div class="modal-footer" style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 25px 40px;
+                border-top: 1px solid #e0e7ff;
+                background: #f8fafc;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+            ">
+                <div>
+                    <button type="button" class="btn btn-outline-secondary" id="prevBtn" style="
+                        display: none;
+                        min-width: 120px;
+                        border-radius: 10px;
+                        padding: 12px 24px;
+                        font-weight: 600;
+                        font-size: 14px;
+                        transition: all 0.2s ease;
+                        background: transparent;
+                        border: 1.5px solid #bfdbfe !important;
+                        color: #64748b;
+                    ">
+                        ← Back
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="
+                        min-width: 120px;
+                        border-radius: 10px;
+                        padding: 12px 24px;
+                        font-weight: 600;
+                        font-size: 14px;
+                        transition: all 0.2s ease;
+                        background: transparent;
+                        border: 1.5px solid #bfdbfe !important;
+                        color: #64748b;
+                    ">
+                        Cancel
+                    </button>
+
+                    <button type="button" class="btn btn-primary" id="nextBtn" style="
+                        min-width: 120px;
+                        border-radius: 10px;
+                        padding: 12px 24px;
+                        font-weight: 600;
+                        font-size: 14px;
+                        transition: all 0.2s ease;
+                        background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+                        color: #ffffff;
+                        border: none;
+                        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25);
+                    ">
+                        Next →
+                    </button>
+
+                    <button type="button" class="btn btn-success" id="submitApplication" style="
+                        display: none;
+                        min-width: 120px;
+                        border-radius: 10px;
+                        padding: 12px 24px;
+                        font-weight: 600;
+                        font-size: 14px;
+                        transition: all 0.2s ease;
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: #ffffff;
+                        border: none;
+                        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+                    ">
+                        Submit Application
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+
+        const JWT_TOKEN = '@Context.Session.GetString("JWT")';
+        const jobId = @jobId;
+
+function authHeaders() {
+    return {
+        'Authorization': 'Bearer ' + JWT_TOKEN
+    };
+}
+        let allReviews = [];
+        let originalAllReviews = []; // Store ALL reviews from API
+        let filteredReviews = [];
+        let currentFilter = 0;
+        let reviewsPerPage = 3;
+        let visibleReviewCount = 3;
+        let currentPage = 1;
+        let totalPages = 1;
+        let jobData = null;
+        let currentStep = 1;
+        let applicationData = {
+            name: '',
+            email: '',
+            resumeFile: null
+        };
+
+        // ⭐ CHANGE THESE VALUES TO TEST DIFFERENT IDS
+           // ← Change this to test different companies
+
+        const MVC_BASE_URL = window.location.origin; // http://localhost:5229
+        const API_BASE_URL = "http://localhost:5140/api/ApplicantApi";
+        $(document).ready(function () {
+            console.log('🔍 Debugging Info:');
+            console.log('MVC URL:', MVC_BASE_URL);
+            console.log('API URL:', API_BASE_URL);
+            console.log('Job ID:', jobId);
+            
+
+            loadJobDetails();
+            checkApplicationStatus();
+            setupModalSteps();
+
+        });
+        function getUserProfileImageUrl(userProfileImage, userName) {
+            if (!userProfileImage) {
+                // Use avatar service as fallback
+                const name = userName || 'User';
+                const firstLetter = name.charAt(0).toUpperCase();
+                return `https://ui-avatars.com/api/?name=${encodeURIComponent(firstLetter)}&background=random&color=fff&size=50`;
+            }
+
+            // Use MVC URL for user images
+            return `${MVC_BASE_URL}/user_images/${userProfileImage}`;
+        }
+        function getCompanyLogoUrl(companyImage) {
+            if (!companyImage) {
+                return `${MVC_BASE_URL}/logo/default-logo.png`;
+            }
+            return `${MVC_BASE_URL}/logo/${companyImage}`;
+        }
+        function getJdFileUrl(jdFile) {
+            if (!jdFile) return null;
+            return `${MVC_BASE_URL}/jd/${jdFile}`;
+        }
+        function testAllImagePaths() {
+            const paths = [
+                '/user_images/default.jpg',
+                '~/user_images/default.jpg',
+                '../user_images/default.jpg',
+                './user_images/default.jpg',
+                'user_images/default.jpg',
+                '/wwwroot/user_images/default.jpg',
+                '/MVC/wwwroot/user_images/default.jpg',
+                '/images/default.jpg',
+                '/img/default.jpg',
+                '/profile/default.jpg'
+            ];
+
+            console.log('🔍 Testing image paths:');
+            paths.forEach(path => {
+                const img = new Image();
+                img.onload = function () {
+                    console.log(`✅ ${path} - LOADED (${this.width}x${this.height})`);
+                };
+                img.onerror = function () {
+                    console.log(`❌ ${path} - FAILED`);
+                };
+                img.src = path;
+            });
+        }
+
+        function setupModalSteps() {
+            // Edit buttons in preview
+            $('#editContactBtn').click(function () {
+                goToStep(1);
+            });
+
+            $('#editResumeBtn').click(function () {
+                goToStep(2);
+            });
+
+            // Next button
+            $('#nextBtn').click(function () {
+                if (validateCurrentStep()) {
+                    if (currentStep < 3) {
+                        goToStep(currentStep + 1);
+                    }
+                }
+            });
+
+            // Previous button
+            $('#prevBtn').click(function () {
+                if (currentStep > 1) {
+                    goToStep(currentStep - 1);
+                }
+            });
+
+            // Browse button triggers file input
+            $('#browseBtn').click(function () {
+                $('#resumeInput').click();
+            });
+
+            // Resume file change
+            $('#resumeInput').change(function () {
+                const file = this.files[0];
+                if (file) {
+                    applicationData.resumeFile = file;
+                    $('#fileNameDisplay').text(file.name);
+
+                    // Format file size
+                    const sizeInMB = (file.size / 1024 / 1024).toFixed(2);
+                    $('#fileSizeDisplay').text(`Size: ${sizeInMB} MB`);
+
+                    $('#selectedFileName').show();
+                    $('#browseBtn').html('📄 Change Resume');
+                }
+            });
+
+            // Drag and drop functionality
+            const dropArea = $('#browseBtn').parent();
+            dropArea.on('dragover', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).css({
+                    'border-color': '#60a5fa',
+                    'background': 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)'
+                });
+            });
+
+            dropArea.on('dragleave', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).css({
+                    'border-color': '#93c5fd',
+                    'background': 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)'
+                });
+            });
+
+            dropArea.on('drop', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $(this).css({
+                    'border-color': '#93c5fd',
+                    'background': 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)'
+                });
+
+                const files = e.originalEvent.dataTransfer.files;
+                if (files.length > 0) {
+                    $('#resumeInput')[0].files = files;
+                    $('#resumeInput').trigger('change');
+                }
+            });
+
+            // Reset on modal close
+            $('#applyModal').on('hidden.bs.modal', function () {
+                resetModal();
+            });
+        }
+
+
+        // Add this function to initialize filters
+        function initializeReviewFilters() {
+            // Filter button click handlers
+            $('.filter-btn').click(function () {
+                const rating = parseInt($(this).data('rating'));
+                applyRatingFilter(rating);
+            });
+
+            // Clear filter button
+            $('#clearFilterBtn').click(function () {
+                applyRatingFilter(0);
+            });
+        }
+        // Add this function to apply filters
+        function applyRatingFilter(rating) {
+            currentFilter = rating;
+            visibleReviewCount = 3; // Reset to show 3 reviews when filtering
+
+            // Update active button
+            $('.filter-btn').removeClass('active');
+            $(`.filter-btn[data-rating="${rating}"]`).addClass('active');
+
+            // Filter logic
+            if (rating === 0) {
+                // Show ALL original reviews
+                filteredReviews = [...originalAllReviews];
+                $('#filteredCount').text(`Showing all ${filteredReviews.length} reviews`);
+                $('#clearFilterBtn').hide();
+            } else {
+                // Filter by specific rating from ORIGINAL reviews
+                filteredReviews = originalAllReviews.filter(review => Math.round(review.stars) === rating);
+                $('#filteredCount').text(`Showing ${filteredReviews.length} ${rating}-star review${filteredReviews.length !== 1 ? 's' : ''}`);
+                $('#clearFilterBtn').show();
+            }
+
+            // Display filtered reviews
+            if (filteredReviews.length === 0) {
+                showNoFilteredReviews(rating);
+                $('.reviews-pagination').remove();
+            } else {
+                showVisibleReviews();
+            }
+        }
+        function showVisibleReviews() {
+            const container = $('#reviewsContainer');
+
+            // Show only visible reviews
+            const visibleReviews = filteredReviews.slice(0, visibleReviewCount);
+
+            if (visibleReviews.length === 0) {
+                container.html(`
+                <div class="no-reviews-card">
+                    <div class="no-reviews-icon" style="color: #f59e0b;">🌟</div>
+                    <h5>No Reviews to Show</h5>
+                    <p class="text-muted">No reviews match your current filter.</p>
+                </div>
+            `);
+                return;
+            } const reviewsHtml = visibleReviews.map((review, index) => {
+                const firstLetter = review.userName ? review.userName.charAt(0).toUpperCase() : 'A';
+                const profileImageUrl = getUserProfileImageUrl(review.userProfileImage, review.userName);
+                const reviewStarsHtml = renderSimpleStars(review.stars, 20);
+
+                // Find original index for date calculation
+                const originalIndex = originalAllReviews.findIndex(r =>
+                    r.userName === review.userName &&
+                    r.description === review.description
+                );
+
+                return `
+                <div class="review-card" data-rating="${Math.round(review.stars)}">
+                    <div class="review-header">
+                        <img src="${profileImageUrl}" 
+                             alt="${review.userName}" 
+                             class="user-avatar"
+                             onerror="this.onerror=null; this.src='${MVC_BASE_URL}/user_images/default.jpg';">
+                        <div class="user-info">
+                            <div class="user-name">${review.userName || 'Anonymous User'}</div>
+                            <div class="review-date">${getRelativeTime(originalIndex >= 0 ? originalIndex : index)}</div>
+                        </div>
+                    </div>
+                
+                    <div class="review-stars-container mb-3">
+                        ${reviewStarsHtml}
+                        <span class="ms-3 text-dark fw-bold" style="font-size: 16px;">${review.stars}.0 / 5.0</span>
+                    </div>
+                
+                    <div class="review-text">
+                        ${review.description}
+                    </div>
+                </div>
+            `;
+            }).join('');
+
+            container.html(reviewsHtml);
+
+            // Add "Show More" button if there are more filtered reviews to show
+            setupShowMoreButton();
+        }
+        function setupShowMoreButton() {
+            // Remove existing button
+            $('.reviews-pagination').remove();
+
+            // Only add button if there are more filtered reviews to show
+            if (visibleReviewCount < filteredReviews.length) {
+                const remainingReviews = filteredReviews.length - visibleReviewCount;
+                const nextBatch = Math.min(3, remainingReviews);
+
+                const buttonHtml = `
+                <div class="reviews-pagination">
+                    <button class="btn read-more-btn" id="showMoreReviews">
+                        <i class="bi bi-chevron-down"></i> Show ${nextBatch} More Review${nextBatch !== 1 ? 's' : ''}
+                    </button>
+                    <div class="reviews-pagination-info">
+                        Showing ${Math.min(visibleReviewCount, filteredReviews.length)} of ${filteredReviews.length} reviews
+                    </div>
+                </div>
+            `;
+
+                $('#reviewsContainer').after(buttonHtml);
+
+                // Add click handler
+                $('#showMoreReviews').click(function () {
+                    visibleReviewCount += 3;
+                    showVisibleReviews();
+                });
+            } else if (filteredReviews.length > 3) {
+                // All filtered reviews are visible
+                $('#reviewsContainer').after(`
+                <div class="reviews-pagination">
+                    <div class="reviews-pagination-info">
+                        <i class="bi bi-check-circle text-success"></i> 
+                        All ${filteredReviews.length} reviews are visible
+                    </div>
+                </div>
+            `);
+            }
+        }
+
+        function displayFilteredReviews(reviews) {
+            const container = $('#reviewsContainer');
+
+            const reviewsHtml = reviews.map((review, index) => {
+                const firstLetter = review.userName ? review.userName.charAt(0).toUpperCase() : 'A';
+                const profileImageUrl = getUserProfileImageUrl(review.userProfileImage, review.userName);
+                const reviewStarsHtml = renderSimpleStars(review.stars, 20);
+
+                return `
+                        <div class="review-card" data-rating="${Math.round(review.stars)}">
+                            <div class="review-header">
+                                <img src="${profileImageUrl}" 
+                                     alt="${review.userName}" 
+                                     class="user-avatar"
+                                     onerror="this.onerror=null; this.src='${MVC_BASE_URL}/user_images/default.jpg';">
+                                <div class="user-info">
+                                    <div class="user-name">${review.userName || 'Anonymous User'}</div>
+                                    <div class="review-date">${getRelativeTime(index)}</div>
+                                </div>
+                            </div>
+                
+                            <div class="review-stars-container mb-3">
+                                ${reviewStarsHtml}
+                                <span class="ms-3 text-dark fw-bold" style="font-size: 16px;">${review.stars}.0 / 5.0</span>
+                            </div>
+                
+                            <div class="review-text">
+                                ${review.description}
+                            </div>
+                        </div>
+                    `;
+            }).join('');
+
+            container.html(reviewsHtml);
+        }
+
+        // Add this function for when no reviews match filter
+        function showNoFilteredReviews(rating) {
+            $('#reviewsContainer').html(`
+                            <div class="no-reviews-card">
+                                <div class="no-reviews-icon" style="color: #f59e0b;">🌟</div>
+                                <h5>No ${rating}-Star Reviews</h5>
+                                <p class="text-muted">There are no ${rating}-star reviews for this company.</p>
+                                <button class="btn btn-sm btn-outline-primary mt-2" onclick="applyRatingFilter(0)">
+                                    <i class="bi bi-arrow-left"></i> View All Reviews
+                                </button>
+                            </div>
+                        `);
+        }
+
+
+        // Add filter stats function (optional - shows count for each rating)
+        function updateFilterStats(reviews) {
+            const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+            reviews.forEach(review => {
+                const roundedRating = Math.round(review.stars);
+                if (roundedRating >= 1 && roundedRating <= 5) {
+                    counts[roundedRating]++;
+                }
+            });
+
+            // Update filter buttons with counts (optional)
+            [1, 2, 3, 4, 5].forEach(rating => {
+                const btn = $(`.filter-btn[data-rating="${rating}"]`);
+                if (counts[rating] > 0) {
+                    btn.html(`<i class="bi bi-star-fill"></i> ${rating} Stars <span class="badge bg-warning text-dark ms-1">${counts[rating]}</span>`);
+                } else {
+                    btn.html(`<i class="bi bi-star-fill"></i> ${rating} Stars`);
+                }
+            });
+        }
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const name = $('#nameInput').val().trim();
+                const email = $('#emailInput').val().trim();
+
+                if (!name) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Name Required',
+                        text: 'Please enter your full name',
+                        confirmButtonColor: '#28a745'
+                    });
+                    return false;
+                }
+
+                if (!email) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Email Required',
+                        text: 'Please enter your email address',
+                        confirmButtonColor: '#28a745'
+                    });
+                    return false;
+                }
+
+                // Email validation
+                const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (!emailRegex.test(email)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Email',
+                        text: 'Please enter a valid email address',
+                        confirmButtonColor: '#28a745'
+                    });
+                    return false;
+                }
+
+                applicationData.name = name;
+                applicationData.email = email;
+                return true;
+            }
+
+            if (currentStep === 2) {
+                const file = $('#resumeInput')[0].files[0];
+
+                if (!file) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Resume Required',
+                        text: 'Please upload your resume',
+                        confirmButtonColor: '#28a745'
+                    });
+                    return false;
+                }
+
+                // File size validation (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'File Too Large',
+                        text: 'Resume must be less than 5MB',
+                        confirmButtonColor: '#28a745'
+                    });
+                    return false;
+                }
+
+                applicationData.resumeFile = file;
+                updatePreview();
+                return true;
+            }
+
+            return true;
+        }
+
+        function goToStep(stepNumber) {
+            currentStep = stepNumber;
+
+            // Update progress bar
+            const progressPercentage = ((stepNumber - 1) / 2) * 100;
+            $('#progressBar').css('width', progressPercentage + '%');
+            $('#stepIndicator').text('Step ' + stepNumber + ' of 3');
+
+            const stepNames = {
+                1: 'Personal Info',
+                2: 'Upload Resume',
+                3: 'Review & Submit'
+            };
+            $('#stepName').text(stepNames[stepNumber]);
+
+            // Update modal content
+            $('.modal-step').removeClass('active');
+            $(`#step${stepNumber}`).addClass('active');
+
+            // Update buttons
+            if (stepNumber === 1) {
+                $('#prevBtn').hide();
+                $('#nextBtn').show().text('Next →');
+                $('#submitApplication').hide();
+            } else if (stepNumber === 2) {
+                $('#prevBtn').show();
+                $('#nextBtn').show().text('Next →');
+                $('#submitApplication').hide();
+            } else if (stepNumber === 3) {
+                $('#prevBtn').show();
+                $('#nextBtn').hide();
+                $('#submitApplication').show();
+            }
+        }
+
+        function updatePreview() {
+            $('#previewName').text(applicationData.name);
+            $('#previewEmail').text(applicationData.email);
+            $('#previewResume').text(applicationData.resumeFile.name);
+
+            const sizeInMB = (applicationData.resumeFile.size / 1024 / 1024).toFixed(2);
+            $('#previewResumeSize').text(`Size: ${sizeInMB} MB`);
+
+            // Show PDF preview if it's a PDF file
+            if (applicationData.resumeFile.type === 'application/pdf') {
+                const fileReader = new FileReader();
+                fileReader.onload = function (e) {
+                    $('#resumePreviewFrame').attr('src', e.target.result).show();
+                };
+                fileReader.readAsDataURL(applicationData.resumeFile);
+            } else {
+                $('#resumePreviewFrame').hide();
+            }
+        }
+
+        function resetModal() {
+            currentStep = 1;
+            applicationData = { name: '', email: '', resumeFile: null };
+
+            $('#applyForm')[0].reset();
+            $('#selectedFileName').hide();
+            $('#fileNameDisplay').text('');
+            $('#fileSizeDisplay').text('');
+            $('#browseBtn').html('📄 Choose Resume');
+            $('#resumePreviewFrame').attr('src', '').hide();
+
+            // Reset progress
+            $('#progressBar').css('width', '33.33%');
+            $('#stepIndicator').text('Step 1 of 3');
+            $('#stepName').text('Personal Info');
+
+            // Reset steps
+            $('.modal-step').removeClass('active');
+            $('#step1').addClass('active');
+
+            // Reset buttons
+            $('#prevBtn').hide();
+            $('#nextBtn').show().text('Next →');
+            $('#submitApplication').hide();
+        }
+        function loadJobDetails() {
+            console.log('📡 Loading job details...');
+
+            $.ajax({
+                url: `${API_BASE_URL}/apply/${jobId}`,
+                type: "GET",
+                   headers: authHeaders(), 
+                dataType: "json",
+                crossDomain: true,
+                timeout: 10000,
+                success: function (data) {
+                    console.log('✅ Job data received');
+                    jobData = data;
+                    displayJobDetails(data);
+
+                    $('#loadingSpinner').hide();
+                    $('#jobContent').fadeIn();
+                },
+                error: function (xhr, status, error) {
+                    console.error('❌ Error loading job:', xhr.status);
+                    $('#loadingSpinner').hide();
+
+                    let errorMessage = 'Failed to load job details';
+                    if (xhr.status === 0) {
+                        errorMessage = 'Cannot connect to API. Make sure it\'s running on port 5140.';
+                    } else if (xhr.status === 404) {
+                        errorMessage = `Job with ID ${jobId} not found.`;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMessage,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        }
+
+        function displayJobDetails(data) {
+            const { jobDetails, companyDetails, companyRating, companyReviews } = data;
+
+            console.log('🏢 Company Image:', companyDetails.c_image);
+            console.log('👤 User Images in reviews:', companyReviews.map(r => r.userProfileImage));
+
+            // Company Details
+            $('#companyName').text(companyDetails.c_name);
+            $('#companyLocation').text(`${companyDetails.c_city}, ${companyDetails.c_state}`);
+            $('#companyEmail').text(companyDetails.c_company_email);
+
+            // Company Logo - Use MVC URL
+            $('#companyLogo').attr('src', getCompanyLogoUrl(companyDetails.c_image));
+
+            // Rating
+            const integerRating = companyRating.averageRating;
+            const companyStarsHtml = renderStarRating(integerRating, 24);
+            $('#starRating').html(companyStarsHtml);
+            $('#integerRating').html(`
+                            <span class="rating-value">${integerRating}</span>
+                            <span class="rating-max"> / 5</span>
+                        `);
+
+            $('#reviewCount').text(`Based on ${companyRating.totalReviews} reviews`);
+            $('#totalReviewsBadge').text(companyRating.totalReviews);
+
+            // Job Details
+            $('#jobRole').text(jobDetails.c_role);
+            $('#jobLocation').text(jobDetails.c_location);
+            $('#jobType').text(jobDetails.c_job_type);
+            $('#jobSalary').text(jobDetails.c_salary);
+            $('#jobExperience').text(jobDetails.c_experience);
+            $('#jobDescription').text(jobDetails.c_description);
+
+            // Skills
+            const skills = jobDetails.c_skills.split(',');
+            const skillsHtml = skills.map(skill =>
+                `<span class="skill-badge">${skill.trim()}</span>`
+            ).join('');
+            $('#skillsContainer').html(skillsHtml);
+
+            // JD File - Use MVC URL
+            if (jobDetails.c_jd_file) {
+                $('#jdDownload').attr('href', getJdFileUrl(jobDetails.c_jd_file));
+                $('#jdFileSection').show();
+            }
+
+            // Reviews
+            displayReviews(companyReviews);
+
+            // Initialize filters AFTER displaying reviews
+            setTimeout(() => {
+                initializeReviewFilters();
+                updateFilterStats(companyReviews);
+            }, 100);
+
+            // Set job ID
+            $('#jobIdInput').val(jobDetails.c_job_id);
+
+            // Show content after loading
+            $('#loadingSpinner').hide();
+            $('#jobContent').fadeIn();
+        }
+
+        // Function to render star rating with icons
+        function renderStarRating(rating, starSize = 24) {
+            let html = '<div class="d-flex justify-content-center align-items-center">';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+
+            // Full stars
+            for (let i = 0; i < fullStars; i++) {
+                html += `<span style="font-size: ${starSize}px; color: #ffc107; margin-right: 8px;">★</span>`;
+            }
+
+            // Half star
+            if (hasHalfStar) {
+                html += `<span style="font-size: ${starSize}px; color: #ffc107; margin-right: 8px;">⯨</span>`;
+            }
+
+            // Empty stars
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                html += `<span style="font-size: ${starSize}px; color: #e4e5e9; margin-right: 8px;">☆</span>`;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        // Function to render simple stars (just filled/empty)
+        function renderSimpleStars(rating, starSize = 18) {
+            let html = '<div class="d-flex align-items-center">';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+
+            // Full stars (filled star emoji)
+            for (let i = 0; i < fullStars; i++) {
+                html += `<span style="font-size: ${starSize}px; color: #ffc107;">★</span>`;
+            }
+
+            // Half star (half star emoji) - not all browsers support this, so we'll use empty or full
+            if (hasHalfStar) {
+                html += `<span style="font-size: ${starSize}px; color: #ffc107;">⯨</span>`; // Half star emoji
+            }
+
+            // Empty stars (empty star emoji)
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                html += `<span style="font-size: ${starSize}px; color: #e4e5e9;">☆</span>`;
+            }
+
+            html += '</div>';
+            return html;
+        }
+        function displayReviews(reviews) {
+            originalAllReviews = [...reviews]; // Store ALL original reviews
+            filteredReviews = [...reviews]; // Start with all reviews
+            currentFilter = 0; // Reset filter
+            visibleReviewCount = 3; // Reset to initial 3
+
+            const container = $('#reviewsContainer');
+
+            if (reviews.length === 0) {
+                container.html(`
+                <div class="no-reviews-card">
+                    <div class="no-reviews-icon">📝</div>
+                    <h5>No Reviews Yet</h5>
+                    <p class="text-muted">Be the first to review this company!</p>
+                </div>
+            `);
+                $('.reviews-filter').hide();
+                $('.reviews-pagination').remove();
+                return;
+            }
+
+            $('.reviews-filter').show();
+
+            // Show first 3 reviews
+            showVisibleReviews();
+
+            // Update filter stats
+            updateFilterStats(reviews);
+
+            // Reset filter button states
+            $('.filter-btn').removeClass('active');
+            $('.filter-btn[data-rating="0"]').addClass('active');
+            $('#filteredCount').text(`Showing all ${reviews.length} reviews`);
+            $('#clearFilterBtn').hide();
+        }
+        function showPageReviews() {
+            const container = $('#reviewsContainer');
+
+            // Calculate start and end index
+            const startIndex = (currentPage - 1) * reviewsPerPage;
+            const endIndex = startIndex + reviewsPerPage;
+            const pageReviews = allReviews.slice(startIndex, endIndex);
+
+            // Generate reviews HTML
+            const reviewsHtml = pageReviews.map((review, index) => {
+                const globalIndex = startIndex + index;
+                const firstLetter = review.userName ? review.userName.charAt(0).toUpperCase() : 'A';
+                const profileImageUrl = getUserProfileImageUrl(review.userProfileImage, review.userName);
+                const reviewStarsHtml = renderSimpleStars(review.stars, 20);
+
+                return `
+                <div class="review-card" data-rating="${Math.round(review.stars)}">
+                    <div class="review-header">
+                        <img src="${profileImageUrl}" 
+                             alt="${review.userName}" 
+                             class="user-avatar"
+                             onerror="this.onerror=null; this.src='${MVC_BASE_URL}/user_images/default.jpg';">
+                        <div class="user-info">
+                            <div class="user-name">${review.userName || 'Anonymous User'}</div>
+                            <div class="review-date">${getRelativeTime(globalIndex)}</div>
+                        </div>
+                    </div>
+                
+                    <div class="review-stars-container mb-3">
+                        ${reviewStarsHtml}
+                        <span class="ms-3 text-dark fw-bold" style="font-size: 16px;">${review.stars}.0 / 5.0</span>
+                    </div>
+                
+                    <div class="review-text">
+                        ${review.description}
+                    </div>
+                </div>
+            `;
+            }).join('');
+
+            container.html(reviewsHtml);
+
+            // Add pagination controls if needed
+            setupPaginationControls();
+        }
+
+        // Function to set up pagination controls
+        function setupPaginationControls() {
+            // Remove existing pagination
+            $('.reviews-pagination').remove();
+
+            // Only add pagination if there are more reviews to show
+            if (allReviews.length > reviewsPerPage && currentPage < totalPages) {
+                const paginationHtml = `
+                <div class="reviews-pagination">
+                    <button class="btn read-more-btn" id="loadMoreReviews">
+                        <i class="bi bi-chevron-down"></i> Load More Reviews
+                    </button>
+                    <div class="reviews-pagination-info" id="paginationInfo">
+                        Showing ${Math.min(currentPage * reviewsPerPage, allReviews.length)} of ${allReviews.length} reviews
+                    </div>
+                </div>
+            `;
+
+                $('#reviewsContainer').after(paginationHtml);
+
+                // Add click handler
+                $('#loadMoreReviews').click(loadMoreReviews);
+            }
+        }
+
+        // Function to update pagination info
+        function updatePaginationInfo() {
+            const showingCount = Math.min(currentPage * reviewsPerPage, allReviews.length);
+            const totalCount = allReviews.length;
+
+            if ($('#paginationInfo').length) {
+                $('#paginationInfo').text(`Showing ${showingCount} of ${totalCount} reviews`);
+            }
+        }
+
+        // Function to load more reviews
+        function loadMoreReviews() {
+            currentPage++;
+
+            // Show next page of reviews
+            const startIndex = (currentPage - 1) * reviewsPerPage;
+            const endIndex = startIndex + reviewsPerPage;
+            const nextPageReviews = allReviews.slice(startIndex, endIndex);
+
+            // Append new reviews
+            const container = $('#reviewsContainer');
+
+            nextPageReviews.forEach((review, index) => {
+                const globalIndex = startIndex + index;
+                const firstLetter = review.userName ? review.userName.charAt(0).toUpperCase() : 'A';
+                const profileImageUrl = getUserProfileImageUrl(review.userProfileImage, review.userName);
+                const reviewStarsHtml = renderSimpleStars(review.stars, 20);
+
+                const reviewHtml = `
+                <div class="review-card" data-rating="${Math.round(review.stars)}">
+                    <div class="review-header">
+                        <img src="${profileImageUrl}" 
+                             alt="${review.userName}" 
+                             class="user-avatar"
+                             onerror="this.onerror=null; this.src='${MVC_BASE_URL}/user_images/default.jpg';">
+                        <div class="user-info">
+                            <div class="user-name">${review.userName || 'Anonymous User'}</div>
+                            <div class="review-date">${getRelativeTime(globalIndex)}</div>
+                        </div>
+                    </div>
+                
+                    <div class="review-stars-container mb-3">
+                        ${reviewStarsHtml}
+                        <span class="ms-3 text-dark fw-bold" style="font-size: 16px;">${review.stars}.0 / 5.0</span>
+                    </div>
+                
+                    <div class="review-text">
+                        ${review.description}
+                    </div>
+                </div>
+            `;
+
+                container.append(reviewHtml);
+            });
+
+            // Update pagination controls
+            if (currentPage >= totalPages) {
+                // No more reviews to load
+                $('.reviews-pagination').remove();
+
+                // Show "All reviews loaded" message
+                $('#reviewsContainer').after(`
+                <div class="reviews-pagination">
+                    <div class="reviews-pagination-info">
+                        <i class="bi bi-check-circle text-success"></i> All ${allReviews.length} reviews loaded
+                    </div>
+                </div>
+            `);
+            } else {
+                // Update pagination info
+                updatePaginationInfo();
+            }
+        }
+
+
+
+        function handleImageError(imgElement, firstLetter) {
+            console.log('🖼️ Image failed to load:', imgElement.src);
+
+            // Hide the broken image
+            imgElement.style.display = 'none';
+
+            // Show the placeholder
+            const placeholder = imgElement.nextElementSibling;
+            if (placeholder && placeholder.classList.contains('user-avatar-placeholder')) {
+                placeholder.style.display = 'flex';
+            }
+
+            // Try alternative image paths as fallback
+            const fileName = imgElement.src.split('/').pop();
+            const alternativePaths = [
+                `/wwwroot/user_images/${fileName}`,
+                `/MVC/wwwroot/user_images/${fileName}`,
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(firstLetter)}&background=random&color=fff&size=50`
+            ];
+
+            // Try each alternative path
+            let currentTry = 0;
+            const tryNextPath = () => {
+                if (currentTry < alternativePaths.length) {
+                    imgElement.src = alternativePaths[currentTry];
+                    currentTry++;
+                }
+            };
+
+            imgElement.onload = function () {
+                console.log('✅ Fallback image loaded:', this.src);
+                this.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            };
+
+            imgElement.onerror = tryNextPath;
+
+            // Start trying alternative paths
+            tryNextPath();
+        }
+
+        function getRelativeTime(index) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            // For demo, show different dates based on index
+            const now = new Date();
+            const reviewDate = new Date();
+            reviewDate.setMonth(now.getMonth() - (index % 12));
+            reviewDate.setDate(now.getDate() - (index * 7) % 30);
+
+            return `${reviewDate.getDate()} ${months[reviewDate.getMonth()]} ${reviewDate.getFullYear()}`;
+        }
+
+        // Rest of your existing JavaScript functions (loadJobDetails, setupModalSteps, etc.)
+
+        function checkApplicationStatus() {
+            $.ajax({
+                url: `${API_BASE_URL}/status/${jobId}`,
+                type: "GET",
+                   headers: authHeaders(), 
+                success: function (status) {
+                    console.log('📋 Application Status:', status);
+
+                    // Handle if status is an object
+                    if (typeof status === 'object' && status !== null) {
+                        console.log('Status is object, extracting...');
+                        status = status.status || status.c_status || null;
+                    }
+
+                    if (status === null || status === undefined || status === '' || status === 'null') {
+                        console.log('No application found, enabling button');
+                        $('#applyBtn').prop('disabled', false);
+                        $('#applyBtn').html('<i class="bi bi-send-fill"></i> Apply for this Job');
+                        return;
+                    }
+
+                    const cleanStatus = String(status).replace(/"/g, '').toLowerCase().trim();
+                    console.log('Clean status:', cleanStatus);
+
+                    if (cleanStatus && cleanStatus !== 'null' && cleanStatus !== '') {
+                        if (cleanStatus === 'pending' || cleanStatus === 'approved') {
+                            // DISABLE button for pending/approved
+                            $('#applyBtn').prop('disabled', true);
+                            console.log('Button disabled for status:', cleanStatus);
+
+                            let statusClass = 'status-pending';
+                            let statusText = cleanStatus.toUpperCase();
+
+                            if (cleanStatus === 'approved') {
+                                statusClass = 'status-approved';
+                                $('#applyBtn').html('<i class="bi bi-check-circle"></i> Already Applied - Approved');
+                            } else {
+                                $('#applyBtn').html('<i class="bi bi-clock-history"></i> Already Applied - Pending');
+                            }
+
+                            $('#statusBadge').removeClass().addClass('status-badge ' + statusClass).text(statusText);
+                            $('#applicationStatus').show();
+                        }
+                        else if (cleanStatus === 'rejected') {
+                            // Enable button for rejected
+                            $('#applyBtn').prop('disabled', false);
+                            console.log('Button enabled for rejected status');
+
+                            $('#applyBtn').html('<i class="bi bi-send-fill"></i> Re-Apply for this Job');
+
+                            $('#statusBadge').removeClass().addClass('status-badge status-rejected').text('REJECTED');
+                            $('#applicationStatus').show();
+                        }
+                        else {
+                            // For any other status, enable button
+                            $('#applyBtn').prop('disabled', false);
+                            $('#applyBtn').html('<i class="bi bi-send-fill"></i> Apply for this Job');
+                        }
+                    }
+                },
+                error: function (xhr) {
+                    console.log('✅ No previous application found or API error');
+                    $('#applyBtn').prop('disabled', false);
+                    $('#applyBtn').html('<i class="bi bi-send-fill"></i> Apply for this Job');
+                }
+            });
+        }
+
+        $('#applyBtn').click(function () {
+            if ($(this).prop('disabled')) {
+                return;
+            }
+            $('#applyModal').modal('show');
+        });
+
+        $('#submitApplication').click(function () {
+            const formData = new FormData();
+            formData.append('c_job_id', $('#jobIdInput').val());
+            formData.append('c_name', applicationData.name);
+            formData.append('c_email', applicationData.email);
+            formData.append('resumeform', applicationData.resumeFile);
+
+            // ✅ DO NOT append c_status - it will be set by DB DEFAULT
+
+            const submitBtn = $(this);
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Submitting...');
+
+            $.ajax({
+                url: `${API_BASE_URL}/apply`,
+                type: "POST",
+                   headers: authHeaders(), 
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    $('#applyModal').modal('hide');
+                    let title = 'Application Submitted!';
+                    let message = 'Your application has been submitted successfully!';
+                    if (result.message && result.message.includes('Re-application')) {
+                        title = 'Re-application Submitted!';
+                        message = 'Your re-application has been submitted successfully!';
+                    }
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Application Submitted!',
+                        html: `
+                        <div class="text-start">
+                            <p>Your application has been submitted successfully!</p>
+                            <p><strong>Application ID:</strong> ${result.applicationId}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-warning">Pending</span></p>
+                        </div>
+                    `,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#28a745'
+                    }).then(() => {
+                        location.reload(); // Refresh to show updated status
+                    });
+                },
+                error: function (xhr) {
+                    console.error('Error details:', xhr);
+
+                    let errorMsg = 'Failed to submit application';
+                    let errorTitle = 'Error';
+
+                    if (xhr.status === 400) {
+                        errorTitle = 'Cannot Apply';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: errorTitle,
+                        text: errorMsg,
+                        confirmButtonColor: '#dc3545'
+                    });
+
+                    submitBtn.prop('disabled', false).text('Submit Application');
+                }
+            });
+        });
+    </script>
+}

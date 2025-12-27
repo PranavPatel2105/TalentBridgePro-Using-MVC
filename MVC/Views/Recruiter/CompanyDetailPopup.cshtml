@@ -1,0 +1,1057 @@
+﻿@{
+    ViewData["Title"] = "Recruiter Onboarding";
+}
+
+<style>
+    /* Modern overlay with blur - Updated colors */
+    .k-overlay {
+        background: rgba(207, 226, 255, 0.4) !important;
+        /* #cfe2ff */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Premium popup styling - Updated colors */
+    .k-window {
+        border-radius: 14px !important;
+        box-shadow: 0 8px 22px rgba(30, 136, 229, 0.15);
+        /* #1e88e5 */
+        border: 1px solid rgba(207, 226, 255, 0.3);
+        /* #cfe2ff */
+        overflow: hidden;
+        max-width: 90vw !important;
+        max-height: 90vh !important;
+    }
+
+    .k-window-titlebar {
+        background: linear-gradient(135deg, #0d47a1, #1565c0);
+        /* Updated */
+        color: #fff;
+        /* Dark blue */
+        font-weight: 600;
+        font-size: 18px;
+        padding: 20px 30px;
+        border-bottom: 1px solid #cfe2ff;
+        /* #cfe2ff */
+    }
+
+    .k-window-content {
+        padding: 35px 40px 40px !important;
+        background: #ffffff;
+        overflow-y: auto;
+        max-height: calc(90vh - 80px);
+    }
+
+    /* Modern progress bar - Updated colors */
+    .progress-container {
+        margin-bottom: 35px;
+    }
+
+    .progress {
+        height: 6px;
+        border-radius: 10px;
+        background-color: #f8fbff;
+        /* Updated */
+        overflow: visible;
+        position: relative;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, #90caf9, #1e88e5);
+        /* Updated to match theme */
+        border-radius: 10px;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 10px rgba(30, 136, 229, 0.3);
+        /* #1e88e5 */
+        position: relative;
+    }
+
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        background: #1e88e5;
+        /* Updated */
+        border-radius: 50%;
+        border: 3px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+        /* #1e88e5 */
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 13px;
+        color: #6c757d;
+        /* Updated to match recruiter form hint color */
+        font-weight: 500;
+    }
+
+    /* Step styling */
+    .step {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .step-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #0d47a1;
+        /* Updated to match recruiter header dark blue */
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+    }
+
+    .step-subtitle {
+        font-size: 14px;
+        color: #6c757d;
+        /* Updated to match recruiter form hint color */
+        margin-bottom: 28px;
+        font-weight: 400;
+    }
+
+    /* Form controls - Updated colors */
+    .form-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0d47a1;
+        /* Updated to match recruiter header dark blue */
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control,
+    .k-input,
+    .k-textbox {
+        border: 1.5px solid #cfe2ff;
+        /* Updated to match recruiter form border */
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        background: #f9fbfd;
+        /* Updated to match recruiter form background */
+    }
+
+    .form-control:focus,
+    .k-input:focus,
+    .k-textbox:focus {
+        border-color: #1e88e5;
+        /* Updated to match primary color */
+        box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+        /* #1e88e5 */
+        outline: none;
+        background: #ffffff;
+    }
+
+    .form-control::placeholder {
+        color: #94a3b8;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    /* Kendo DropDownList styling - Updated colors */
+    .k-dropdown,
+    .k-multiselect {
+        border: 1.5px solid #cfe2ff;
+        /* Updated */
+        border-radius: 10px;
+        background: #f9fbfd;
+        /* Updated */
+        transition: all 0.2s ease;
+    }
+
+    .k-dropdown:hover,
+    .k-multiselect:hover {
+        border-color: #90caf9;
+        /* Updated */
+        background: #ffffff;
+    }
+
+    .k-dropdown.k-state-focused,
+    .k-multiselect.k-state-focused {
+        border-color: #1e88e5;
+        /* Updated */
+        box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+        /* #1e88e5 */
+        background: #ffffff;
+    }
+
+    .k-dropdown .k-input,
+    .k-multiselect .k-input {
+        border: none;
+        padding: 12px 16px;
+        background: transparent;
+    }
+
+    /* MultiSelect wrapper styling */
+    .k-multiselect-wrap {
+        padding: 8px 12px;
+        min-height: 44px;
+    }
+
+    /* MultiSelect selected tags - Updated colors */
+    .k-multiselect .k-chip {
+        background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
+        /* Updated */
+        border: 1px solid #cfe2ff;
+        /* Updated */
+        color: #0d47a1;
+        /* Updated */
+        border-radius: 6px;
+        padding: 4px 8px;
+        margin: 2px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .k-multiselect .k-chip:hover {
+        background: linear-gradient(135deg, #e3f2fd 0%, #cfe2ff 100%);
+        /* Updated */
+    }
+
+    .k-multiselect .k-chip .k-chip-action {
+        color: #0d47a1;
+        /* Updated */
+    }
+
+    .k-multiselect .k-chip .k-chip-action:hover {
+        color: #0d47a1;
+        /* Updated */
+    }
+
+    /* Dropdown popup list styling - Updated colors */
+    .k-list-container.k-popup {
+        border: 1px solid #cfe2ff;
+        /* Updated */
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(13, 71, 161, 0.15);
+        /* #0d47a1 */
+        background: #ffffff;
+    }
+
+    .k-list .k-list-item {
+        padding: 10px 16px;
+        color: #6c757d;
+        /* Updated to match text color */
+        transition: all 0.2s ease;
+    }
+
+    .k-list .k-list-item:hover {
+        background: #e3f2fd;
+        /* Updated */
+        color: #0d47a1;
+        /* Updated */
+    }
+
+    .k-list .k-list-item.k-state-selected {
+        background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
+        /* Updated */
+        color: #0d47a1;
+        /* Updated */
+        font-weight: 500;
+    }
+
+    .k-list .k-list-item.k-state-focused {
+        background: #e3f2fd;
+        /* Updated */
+        box-shadow: inset 0 0 0 2px #90caf9;
+        /* Updated */
+    }
+
+    /* Checkbox in multiselect dropdown - Updated colors */
+    .k-list .k-checkbox:checked {
+        background-color: #1e88e5;
+        /* Updated */
+        border-color: #1e88e5;
+        /* Updated */
+    }
+
+    .k-list .k-checkbox {
+        border-color: #cfe2ff;
+        /* Updated */
+    }
+
+    /* Upload component - Updated colors */
+    .k-upload {
+        border: 2px dashed #cfe2ff;
+        /* Updated */
+        background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 100%);
+        /* Updated */
+        border-radius: 12px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .k-upload:hover {
+        border-color: #1e88e5;
+        /* Updated */
+        background: linear-gradient(135deg, #e3f2fd 0%, #cfe2ff 100%);
+        /* Updated */
+    }
+
+    .k-upload .k-upload-button {
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+        /* Updated to match recruiter header */
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25);
+        /* #1e88e5 */
+    }
+
+    .k-upload .k-upload-button:hover {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        /* Updated to match recruiter header */
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(30, 136, 229, 0.35);
+        /* #1e88e5 */
+    }
+
+    .k-upload-status {
+        margin-top: 15px;
+    }
+
+    /* Footer section - Updated colors */
+    .wizard-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #cfe2ff;
+        /* Updated */
+    }
+
+    .wizard-footer .btn {
+        min-width: 120px;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 1.5px solid #cfe2ff !important;
+        /* Updated */
+        color: #6c757d;
+        /* Updated */
+    }
+
+    .btn-outline-secondary:hover {
+        background: #e3f2fd;
+        /* Updated */
+        border-color: #90caf9 !important;
+        /* Updated */
+        color: #495057;
+        /* Updated */
+    }
+
+    .btn-light {
+        background: #e3f2fd;
+        /* Updated */
+        color: #495057;
+        /* Updated */
+        margin-right: 10px;
+        border: 1px solid #cfe2ff;
+        /* Updated */
+    }
+
+    .btn-light:hover {
+        background: #cfe2ff;
+        /* Updated */
+        color: #343a40;
+        /* Updated */
+        border-color: #90caf9;
+        /* Updated */
+    }
+
+    .btn-primary {
+        background: #1e88e5;
+        /* Updated to match recruiter header */
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25);
+        /* #1e88e5 */
+    }
+
+    .btn-primary:hover {
+        background: #0d47a1;
+        /* Updated to match recruiter header */
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(30, 136, 229, 0.35);
+        /* #1e88e5 */
+    }
+
+    /* Spacing utilities */
+    .mt-3 {
+        margin-top: 20px;
+    }
+
+    /* Input group for better visual hierarchy */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .k-window {
+            width: 95vw !important;
+            max-width: 95vw !important;
+        }
+
+        .k-window-titlebar {
+            padding: 16px 20px;
+            font-size: 16px;
+        }
+
+        .k-window-content {
+            padding: 25px 20px 30px !important;
+        }
+
+        .step-title {
+            font-size: 20px;
+        }
+
+        .step-subtitle {
+            font-size: 13px;
+        }
+
+        .progress-container {
+            margin-bottom: 25px;
+        }
+
+        .wizard-footer {
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 20px;
+        }
+
+        .wizard-footer>div {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+        }
+
+        .wizard-footer .btn {
+            width: 100%;
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .k-window-titlebar {
+            padding: 14px 16px;
+            font-size: 15px;
+        }
+
+        .k-window-content {
+            padding: 20px 16px 25px !important;
+        }
+
+        .step-title {
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .step-subtitle {
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 13px;
+        }
+
+        .form-control,
+        .k-input,
+        .k-textbox {
+            padding: 10px 14px;
+            font-size: 13px;
+        }
+
+        .wizard-footer .btn {
+            padding: 10px 20px;
+            font-size: 13px;
+            min-width: auto;
+        }
+
+        .progress-label {
+            font-size: 12px;
+        }
+    }
+
+    /* Landscape mobile */
+    @@media (max-width: 768px) and (orientation: landscape) {
+        .k-window {
+            max-height: 95vh !important;
+        }
+
+        .k-window-content {
+            max-height: calc(95vh - 70px);
+            overflow-y: auto;
+        }
+
+        .step-title {
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+    }
+
+    /* Large screens - keep centered */
+    @@media (min-width: 1200px) {
+        .k-window {
+            max-width: 650px !important;
+        }
+    }
+
+    .error {
+        color: red;
+    }
+
+    #otpModal {
+        z-index: 12050 !important;
+    }
+
+    .modal-backdrop {
+        z-index: 12040 !important;
+    }
+</style>
+
+<div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-primary shadow-sm">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="otpModalLabel">🔐 OTP Verification</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">An OTP has been sent to your email. It expires in <span id="otpTimer"
+                        class="fw-bold text-primary">05:00</span> minutes.</p>
+                <input type="text" id="otpInput" class="form-control" maxlength="6" placeholder="Enter 6-digit OTP">
+                <span id="otpError" class="text-danger mt-2" style="display:none;"></span>
+                <div class="mt-3 d-flex justify-content-between align-items-center">
+                    <button type="button" id="resendOtpBtn" class="btn btn-outline-primary btn-sm">Resend
+                        OTP</button>
+                    <small class="text-muted">⏱️ Expires in 5 minutes</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="verifyOtpBtn" class="btn btn-primary px-4">Verify OTP</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="onboardingWindow" style="display:none;">
+
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+        <div class="progress">
+            <div id="progressBar" class="progress-bar" style="width:25%;"></div>
+        </div>
+        <div class="progress-label">
+            <span id="stepIndicator">Step 1 of 4</span>
+            <span id="stepName">Personal Info</span>
+        </div>
+    </div>
+
+    <!-- STEP 1: Company Information -->
+    <div id="step1" class="step">
+        <div class="step-title">Tell us about your company</div>
+        <div class="step-subtitle">
+            Help applicants understand your company and work culture
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Company Name</label>
+            <input id="companyName" class="form-control" placeholder="Enter your company name" /> <!-- CHANGED -->
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Company Email</label>
+            <input id="companyEmail" type="email" class="form-control" placeholder="company@example.com" />
+            <span id="companyEmailError" class="error"></span>
+            <!-- CHANGED -->
+        </div>
+    </div>
+
+
+    <!-- STEP 2: Company Location -->
+    <div id="step2" class="step d-none">
+        <div class="step-title">Company Location</div>
+        <div class="step-subtitle">
+            Tell us where your company is based
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">State</label>
+            <input id="companyState" class="form-control" placeholder="e.g., Gujarat" /> <!-- CHANGED -->
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">City</label>
+            <input id="companyCity" class="form-control" placeholder="e.g., Ahmedabad" /> <!-- CHANGED -->
+        </div>
+    </div>
+
+
+    <!-- STEP 3: Company Logo -->
+    <div id="step3" class="step d-none">
+        <div class="step-title">Company Logo</div>
+        <div class="step-subtitle">
+            Upload your company logo (PNG / JPG)
+        </div>
+
+        <div class="form-group">
+            <input id="companyLogoUpload" type="file" /> <!-- CHANGED -->
+        </div>
+    </div>
+
+
+    <!-- STEP 4: Review -->
+    <div id="step4" class="step d-none">
+        <div class="step-title">Review & Submit</div>
+        <div class="step-subtitle">
+            Confirm your company details before submission
+        </div>
+    </div>
+
+
+    <!-- Footer Navigation -->
+    <div class="wizard-footer">
+        <button class="btn" disabled></button>
+
+        <div>
+            <button id="prevBtn" class="btn btn-light d-none">
+                ← Back
+            </button>
+            <button id="nextBtn" class="btn btn-primary">
+                Skip →
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+         const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+        console.log("JWT Token:", token);
+
+        let step = 1;
+        let data = {};
+        let otpTimerInterval = null;
+        let otpExpireSeconds = 300;
+
+
+        let emailValid = false;
+        let emailChecked = false;
+        let emailChecking = false;
+
+
+        const stepNames = {
+            1: "Company Info",
+            2: "Location",
+            3: "Company Logo",
+            4: "Review"
+        };
+        $(document).ready(function () {
+
+            // Initialize Kendo Window
+            let win = $("#onboardingWindow").kendoWindow({
+                width: "600px",
+                title: "Complete Your Profile",
+                modal: true,
+                visible: false,
+                draggable: false,
+                resizable: false,
+                pinned: true,
+                position: {
+                    top: "50%",
+                    left: "50%"
+                },
+                animation: {
+                    open: {
+                        effects: "fadeIn:in",
+                        duration: 300
+                    },
+                    close: {
+                        effects: "fadeOut:out",
+                        duration: 200
+                    }
+                }
+            }).data("kendoWindow");
+
+            // Center the window properly
+            win.center().open();
+
+            // Re-center on window resize
+            $(window).on('resize', function () {
+                if (win && win.element.is(':visible')) {
+                    win.center();
+                }
+            });
+
+            $("#companyLogoUpload").kendoUpload({
+                multiple: false,
+                localization: {
+                    select: "🖼️ Choose Company Logo"
+                },
+                validation: {
+                    allowedExtensions: [".jpg", ".jpeg", ".png"],
+                    maxFileSize: 2097152
+                }
+            });
+
+
+
+            // Event Handlers - Using .on() for better compatibility
+            $(document).on("click", "#nextBtn", function (e) {
+                e.preventDefault();
+                nextStep();
+            });
+
+            $(document).on("click", "#prevBtn", function (e) {
+                e.preventDefault();
+                prevStep();
+            });
+
+        });
+
+        function validateCompanyEmail(onSuccess) {
+
+            let emailInput = $("#companyEmail");
+            let email = emailInput.val().trim();
+
+            // Required check
+            if (!email) {
+                showEmailError("Email is required");
+                return;
+            }
+
+            // Email format check
+            let emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+            if (!emailRegex.test(email)) {
+                showEmailError("Invalid email format");
+                return;
+            }
+
+            // Already verified & unchanged
+            if (emailChecked && emailValid && emailInput.data("lastChecked") === email) {
+                onSuccess();
+                return;
+            }
+
+            // Prevent double API calls
+            if (emailChecking) return;
+            emailChecking = true;
+
+            $.ajax({
+                url: "http://localhost:5140/api/RecruiterApi/CheckEmailExists",
+                type: "GET",
+                data: { email },
+
+                success: function (res) {
+                    emailChecked = true;
+                    emailChecking = false;
+                    emailInput.data("lastChecked", email);
+
+                    if (!res.success) {
+                        showEmailError(res.message || "Email already exists");
+                        emailValid = false;
+                        return;
+                    }
+
+                    clearEmailError();
+                    emailValid = true;
+                    onSuccess();
+                },
+
+                error: function () {
+                    emailChecking = false;
+                    emailValid = false;
+                    showEmailError("Unable to verify email");
+                }
+            });
+        }
+
+
+
+        function nextStep() {
+
+            if (step === 1) {
+                validateCompanyEmail(function () {
+                    proceedNextStep();
+                });
+                return; // STOP here until email API finishes
+            }
+
+            proceedNextStep();
+        }
+
+        function proceedNextStep() {
+
+            collectData();
+
+            if (step < 4) {
+                step++;
+                updateUI();
+            } else {
+                collectData();
+                sendOtp();
+            }
+
+        }
+
+
+        function prevStep() {
+            if (step > 1) {
+                step--;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            // Hide all steps
+            $(".step").addClass("d-none");
+            $("#step" + step).removeClass("d-none");
+
+            // Update buttons
+            $("#prevBtn").toggleClass("d-none", step === 1);
+            $("#nextBtn").html(step === 4 ? "Save & Continue →" : "Skip →");
+
+            // Update progress
+            const progress = (step * 25);
+            $("#progressBar").css("width", progress + "%");
+            $("#stepIndicator").text("Step " + step + " of 4");
+            $("#stepName").text(stepNames[step]);
+        }
+
+        function collectData() {
+            data.c_name = $("#companyName").val() || "";
+            data.c_company_email = $("#companyEmail").val() || "";
+            data.c_state = $("#companyState").val() || "";
+            data.c_city = $("#companyCity").val() || "";
+        }
+
+        /* ================= EMAIL ERROR HELPERS ================= */
+        function showEmailError(msg) {
+            $("#companyEmailError").text(msg).addClass("error");
+        }
+
+        function clearEmailError() {
+            $("#companyEmailError").text("").removeClass("error");
+        }
+
+        // ================= OTP FUNCTIONS =================
+        function startOtpTimer() {
+            clearInterval(otpTimerInterval);
+            let timeLeft = otpExpireSeconds;
+            $("#otpError").hide();
+            $("#verifyOtpBtn").prop("disabled", false);
+
+            otpTimerInterval = setInterval(() => {
+                let minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                let seconds = (timeLeft % 60).toString().padStart(2, '0');
+                $("#otpTimer").text(`${minutes}:${seconds}`);
+
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimerInterval);
+                    $("#otpError").text("OTP expired. Please resend.").show();
+                    $("#verifyOtpBtn").prop("disabled", true);
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function sendOtp() {
+            let email = $("#companyEmail").val();
+
+            if (!email) {
+                alert("Email is required for OTP verification");
+                return;
+            }
+
+            window._tempFormData = { ...data, c_email: email };
+            $("#nextBtn").prop("disabled", true);
+
+            $.ajax({
+                url: "http://localhost:5140/api/UserApi/SendOtp?email=" + encodeURIComponent(email),
+                contentType: "application/json",
+                success: function () {
+                    $("#otpModal").modal('show');
+                    startOtpTimer();
+                },
+                error: function () {
+                    $("#nextBtn").prop("disabled", false);
+                    alert("Failed to send OTP. Please try again.");
+                }
+            });
+        }
+
+        $("#resendOtpBtn").click(function () {
+            if (window._tempFormData?.c_email) {
+                $.ajax({
+                    url: "http://localhost:5140/api/UserApi/SendOtp?email=" + encodeURIComponent(window._tempFormData?.c_email),
+                    contentType: "application/json",
+                    success: function () {
+                        startOtpTimer();
+                        alert("OTP resent successfully! 📧");
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        alert("Failed to resend OTP. Please try again.");
+                    }
+                });
+            }
+        });
+
+        $("#verifyOtpBtn").click(function () {
+            let enteredOtp = $("#otpInput").val().trim();
+            if (!enteredOtp || enteredOtp.length !== 6) {
+                $("#otpError").text("Enter a valid 6-digit OTP").show();
+                return;
+            }
+
+            $.ajax({
+                url: "http://localhost:5140/api/UserApi/VerifyOtp",
+                type: "POST",
+                data: JSON.stringify({ c_email: window._tempFormData.c_email, c_otp: enteredOtp }),
+                contentType: "application/json",
+                success: function () {
+                    clearInterval(otpTimerInterval);
+                    $("#otpModal").modal('hide');
+
+                    let onboardingWin = $("#onboardingWindow").data("kendoWindow");
+                    onboardingWin.close();
+
+                    setTimeout(submitData, 200);
+                },
+                error: function () {
+                    $("#otpError").text("Invalid or expired OTP. Please try again.").show();
+                    $("#nextBtn").prop("disabled", false);
+                }
+            });
+        });
+
+
+        function submitData() {
+
+            Swal.fire({
+                title: 'Saving Your Profile',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            let formData = new FormData();
+
+
+            for (let k in data) {
+                if (data[k]) {
+                    formData.append(k, data[k]);
+                }
+            }
+
+            let upload = $("#companyLogoUpload").data("kendoUpload");
+            if (upload) {
+                let files = upload.getFiles();
+                if (files.length > 0) {
+                    formData.append("imageform", files[0].rawFile);
+                }
+            }
+            @* console.log("id=",@Context.Session.GetInt32("UserId"));
+            var id= "@Context.Session.GetInt32("UserId")";
+            formData.append("c_userid",id); *@
+
+            const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+            console.log("JWT Token:", token);
+            $.ajax({
+                url: "http://localhost:5140/api/RecruiterApi/AddCompanyDetails",
+                type: "POST",
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    setTimeout(() => {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Company Details Successfully Added! 🎉',
+                            background: '#ffffff',
+                            color: '#0d47a1',
+                            timer: 2200,
+                            timerProgressBar: true,   // ⏳ bottom timer line
+                            showConfirmButton: false,
+                            iconColor: '#0d47a1',
+                            didOpen: () => {
+                                const progressBar = Swal.getTimerProgressBar();
+                                if (progressBar) {
+                                    progressBar.style.background = '#90caf9'; // light blue timer
+                                }
+                            }
+                        }).then(() => {
+                            // optional redirect after registration
+                            window.location.href = "/Recruiter/Index";
+                        });
+                    }, 2000);
+
+                    console.log("Company details saved successfully");
+                },
+                error: function (xhr) {
+                    console.log("Error saving company details:", xhr);
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Unable to save your details',
+                        icon: 'error',
+                        confirmButtonColor: '#60a5fa'
+                    });
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,2003 @@
+﻿@{
+    ViewData["Title"] = "TalentBridgePro";
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentBridgePro - Find Your Dream Job</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #F4F8FF;
+            color: #212529;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            top: 60%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .shape-3 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, #1565C0, #1E88E5);
+            bottom: 10%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(20px, 10px) scale(1.05); }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;        /* 👈 Sticky */
+    top: 0;                  /* 👈 Stick to top */
+    width: 100vw;
+            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(13, 71, 161, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            height: 72px;
+            width: 100%;
+            border-radius: 50px;
+            margin: 20px;
+        }
+
+        .nav-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;            
+            padding: 0 2.5rem; 
+            
+            
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+            margin-left: -4px;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #1E88E5;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.4);
+        }
+
+        .btn-switch {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-switch:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        @@keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: #6C757D;
+            margin-bottom: 2.5rem;
+            animation: slideInLeft 0.8s ease-out 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            animation: slideInLeft 0.8s ease-out 0.4s both;
+        }
+
+        .btn-large {
+            padding: 1.2rem 2.8rem;
+            font-size: 1.1rem;
+            border-radius: 30px;
+        }
+
+        .btn-cta {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            color: white;
+            box-shadow: 0 8px 25px rgba(30,136,229,0.3);
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(30,136,229,0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #1E88E5;
+            border: 2px solid #1E88E5;
+        }
+
+        .btn-secondary:hover {
+            background: #E3F2FD;
+            transform: translateY(-3px);
+        }
+
+        /* Hero Visual - Floating Cards */
+        .hero-visual {
+            position: relative;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .floating-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            transition: all 0.4s ease;
+            animation: floatCard 4s infinite ease-in-out;
+            border: 2px solid transparent;
+        }
+
+        .floating-card:nth-child(1) { animation-delay: 0s; }
+        .floating-card:nth-child(2) { animation-delay: 1s; }
+        .floating-card:nth-child(3) { animation-delay: 2s; }
+
+        @@keyframes floatCard {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .floating-card:hover {
+            transform: translateY(-10px) !important;
+            box-shadow: 0 20px 50px rgba(30,136,229,0.15);
+            border-color: #CFE2FF;
+        }
+
+        .job-card {
+            display: flex;
+            align-items: start;
+            gap: 1.2rem;
+        }
+
+        .job-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(30,136,229,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .floating-card:hover .job-icon {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .job-info h3 {
+            color: #212529;
+            font-size: 1.25rem;
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        .job-company {
+            color: #6C757D;
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .job-tags {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #E3F2FD, #CFE2FF);
+            color: #1565C0;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        @* /* Search Section */
+        .search-section {
+            max-width: 1200px;
+            margin: -3rem auto 5rem;
+            padding: 0 2rem;
+            animation: slideUp 0.8s ease-out 0.6s both;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-bar {
+            background: white;
+            border-radius: 25px;
+            padding: 1.5rem;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            border: 2px solid #CFE2FF;
+        }
+
+        .search-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: #F8FBFF;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus-within {
+            border-color: #1E88E5;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(30,136,229,0.1);
+        }
+
+        .search-input i {
+            color: #1E88E5;
+            font-size: 1.2rem;
+        }
+
+        .search-input input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-size: 1rem;
+            color: #212529;
+            outline: none;
+        }
+
+        .search-input input::placeholder {
+            color: #6C757D;
+        } *@
+
+        @* .btn-search {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+            white-space: nowrap;
+            box-shadow: 0 8px 25px rgba(30,136,229,0.3);
+        }
+
+        .btn-search:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(30,136,229,0.5);
+        } *@
+
+        /* Features Section */
+        .features {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .section-title p {
+            font-size: 1.2rem;
+            color: #6C757D;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 60px rgba(30,136,229,0.15);
+            border-color: #CFE2FF;
+        }
+
+        .feature-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #E3F2FD, #CFE2FF);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: #1E88E5;
+            font-size: 2.2rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(30,136,229,0.2);
+        }
+
+        .feature-card:hover .feature-icon {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            color: white;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-card h3 {
+            color: #212529;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #6C757D;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, #0D47A1, #1565C0);
+            color: white;
+            padding: 5rem 2rem;
+            margin: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+        }
+
+        .stats::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -150px;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            animation: fadeIn 0.8s ease-out both;
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.2s; }
+        .stat-item:nth-child(2) { animation-delay: 0.4s; }
+        .stat-item:nth-child(3) { animation-delay: 0.6s; }
+        .stat-item:nth-child(4) { animation-delay: 0.8s; }
+
+        .stat-item h3 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, white, #E3F2FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-item p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        /* Candidate Cards (Recruiter) */
+        .candidate-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            transition: all 0.4s ease;
+            animation: floatCard 4s infinite ease-in-out;
+            border: 2px solid transparent;
+        }
+
+        .candidate-card:nth-child(1) { animation-delay: 0s; }
+        .candidate-card:nth-child(2) { animation-delay: 1s; }
+        .candidate-card:nth-child(3) { animation-delay: 2s; }
+
+        .candidate-card:hover {
+            transform: translateX(10px) !important;
+            box-shadow: 0 20px 50px rgba(30,136,229,0.15);
+            border-color: #CFE2FF;
+        }
+
+        .candidate-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(46,125,50,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .candidate-card:hover .candidate-avatar {
+            transform: scale(1.1);
+        }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-info h4 {
+            color: #212529;
+            margin-bottom: 0.3rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .candidate-info p {
+            color: #6C757D;
+            font-size: 0.95rem;
+        }
+
+        .match-badge {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #2E7D32;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(46,125,50,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .candidate-card:hover .match-badge {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 2rem 1rem;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .search-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-actions {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+            /* ============================================
+           TRENDING COMPANIES SLIDER - WORKING VERSION
+           ============================================ */
+        
+        /* Slider Container */
+        .trending-companies-section {
+            max-width: 1200px;
+            margin: 4rem auto 5rem;
+            padding: 0 2rem;
+            animation: fadeInSlider 1s ease-out;
+        }
+
+        @@keyframes fadeInSlider {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .trending-companies-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .trending-companies-header h2 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.8rem;
+            font-weight: 800;
+        }
+        
+        .trending-companies-header h2::before {
+            content: '⭐ ';
+        }
+
+        .trending-companies-header p {
+            font-size: 1.1rem;
+            color: #6C757D;
+        }
+
+        /* Slider Wrapper */
+        .slider-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 25px;
+            background: white;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+            padding: 3rem 1rem;
+        }
+
+        /* Slider Track */
+        .slider-track {
+            display: flex;
+            gap: 2rem;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Company Card */
+        .company-card {
+            min-width: calc((100% - 4rem) / 3);
+            flex-shrink: 0;
+            background: linear-gradient(145deg, #FFFFFF 0%, #F8FBFF 100%);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Card Shine Effect */
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .company-card:hover::before {
+            left: 100%;
+        }
+
+        .company-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(30, 136, 229, 0.25);
+            border-color: #1E88E5;
+            background: linear-gradient(145deg, #FFFFFF 0%, #E3F2FD 100%);
+        }
+
+        /* Company Logo */
+        .company-logo {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 3.5rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(30, 136, 229, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-logo::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .company-card:hover .company-logo {
+            transform: scale(1.15) rotate(-5deg);
+            box-shadow: 0 15px 40px rgba(30, 136, 229, 0.5);
+        }
+
+        .company-card:hover .company-logo::after {
+            opacity: 1;
+        }
+
+        /* Company Name */
+        .company-name {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #212529;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        /* Company Industry */
+        .company-industry {
+            color: #6C757D;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* Rating Container */
+        .company-rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .stars {
+            color: #FFC107;
+            font-size: 1.15rem;
+            display: flex;
+            gap: 0.15rem;
+        }
+
+        .rating-number {
+            font-weight: 800;
+            color: #212529;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .rating-count {
+            color: #6C757D;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        /* Active Jobs Badge */
+        .active-jobs {
+            background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+            color: #2E7D32;
+            padding: 0.6rem 1.4rem;
+            border-radius: 25px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .company-card:hover .active-jobs {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+        }
+
+        /* Navigation Arrows */
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .slider-arrow {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #FFFFFF, #F8FBFF);
+            border: 3px solid #1E88E5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1E88E5;
+            font-size: 1.4rem;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(30, 136, 229, 0.25);
+        }
+
+        .slider-arrow:hover {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.5);
+        }
+
+        .slider-arrow:active {
+            transform: scale(1.05);
+        }
+
+        /* Dots Indicator */
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.9rem;
+            margin-top: 2.5rem;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #CFE2FF;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(30, 136, 229, 0.2);
+        }
+
+        .dot.active {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            width: 36px;
+            border-radius: 7px;
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+        }
+
+        .dot:hover {
+            background: #1E88E5;
+            transform: scale(1.3);
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 1024px) {
+            .company-card {
+                min-width: calc((100% - 2rem) / 2);
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .trending-companies-header h2 {
+                font-size: 2rem;
+            }
+
+            .company-card {
+                min-width: 100%;
+            }
+
+            .slider-arrow {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+
+            .slider-wrapper {
+                padding: 2rem 0.5rem;
+            }
+
+            .company-logo {
+                width: 90px;
+                height: 90px;
+                font-size: 2.8rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .trending-companies-section {
+                padding: 0 1rem;
+            }
+
+            .company-logo {
+                width: 85px;
+                height: 85px;
+                font-size: 2.5rem;
+            }
+
+            .company-name {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-decoration">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fas fa-briefcase"></i>
+                TalentBridgePro
+            </a>
+            <div class="nav-actions">
+                <a href="#" class="btn btn-switch" id="modeToggle" onclick="toggleMode()">
+                    <i class="fas fa-building" id="toggleIcon"></i>
+                    <span id="toggleText">For Recruiters</span>
+                </a>
+              
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Applicant Landing Page -->
+    <div id="applicantPage">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Find your dream job, faster.</h1>
+                <p>Discover opportunities that match your skills and career goals.</p>
+                <div class="hero-actions">
+                    <a href="/User/Login" class="btn btn-cta btn-large" >Apply for Jobs</a>
+                    <a href="/User/Login" class="btn btn-secondary btn-large" >Sign In</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <div class="job-card">
+                        <div class="job-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="job-info">
+                            <h3>Senior Frontend Developer</h3>
+                            <p class="job-company"><i class="fas fa-building"></i> TechCorp Inc. • Remote</p>
+                            <div class="job-tags">
+                                <span class="tag">React</span>
+                                <span class="tag">TypeScript</span>
+                                <span class="tag">7-8 LPA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <div class="job-card">
+                        <div class="job-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="job-info">
+                            <h3>Product Manager</h3>
+                            <p class="job-company"><i class="fas fa-building"></i> StartupXYZ • Ahemdabad</p>
+                            <div class="job-tags">
+                                <span class="tag">Strategy</span>
+                                <span class="tag">Agile</span>
+                                <span class="tag">6-7 LPA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <div class="job-card">
+                        <div class="job-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <div class="job-info">
+                            <h3>UX/UI Designer</h3>
+                            <p class="job-company"><i class="fas fa-building"></i> Clarent • Surat</p>
+                            <div class="job-tags">
+                                <span class="tag">Figma</span>
+                                <span class="tag">Research</span>
+                                <span class="tag">4-5 LPA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @* <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-bar">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Job title or keyword">
+                </div>
+                <div class="search-input">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" placeholder="Location">
+                </div>
+                <a href="#" class="btn btn-search">Search Jobs</a>
+            </div>
+        </section> *@
+
+         <section class="trending-companies-section" id="trendingCompaniesSlider">
+        <div class="trending-companies-header">
+            <h2>Trending Companies</h2>
+            <p>Top-rated recruiters actively hiring talented professionals</p>
+        </div>
+
+        <div class="slider-wrapper">
+            <div class="slider-track" id="sliderTrack">
+                <!-- Company Cards -->
+                <div class="company-card" data-id="1">
+                    <div class="company-logo"><i class="fab fa-google"></i></div>
+                    <h3 class="company-name">Google Cloud</h3>
+                    <p class="company-industry">Technology • Cloud Computing</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.8</span>
+                        <span class="rating-count">(3.2k)</span>
+                    </div>
+                    <span class="active-jobs">145 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="2">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #00A4EF, #0078D4);"><i class="fab fa-microsoft"></i></div>
+                    <h3 class="company-name">Microsoft Azure</h3>
+                    <p class="company-industry">Enterprise • Software</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.9</span>
+                        <span class="rating-count">(2.8k)</span>
+                    </div>
+                    <span class="active-jobs">198 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="3">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF9900, #FF6600);"><i class="fab fa-amazon"></i></div>
+                    <h3 class="company-name">Amazon AWS</h3>
+                    <p class="company-industry">E-commerce • Cloud</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.7</span>
+                        <span class="rating-count">(4.1k)</span>
+                    </div>
+                    <span class="active-jobs">276 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="4">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #0668E1, #0052CC);"><i class="fab fa-facebook"></i></div>
+                    <h3 class="company-name">Meta Platforms</h3>
+                    <p class="company-industry">Social Media • AI</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.9</span>
+                        <span class="rating-count">(1.9k)</span>
+                    </div>
+                    <span class="active-jobs">132 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="5">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #1DB954, #1AA34A);"><i class="fab fa-spotify"></i></div>
+                    <h3 class="company-name">Spotify</h3>
+                    <p class="company-industry">Music • Entertainment</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.6</span>
+                        <span class="rating-count">(1.5k)</span>
+                    </div>
+                    <span class="active-jobs">87 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="6">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF0000, #CC0000);"><i class="fab fa-youtube"></i></div>
+                    <h3 class="company-name">YouTube</h3>
+                    <p class="company-industry">Video • Content</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.5</span>
+                        <span class="rating-count">(2.2k)</span>
+                    </div>
+                    <span class="active-jobs">94 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="7">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #0A66C2, #004182);"><i class="fab fa-linkedin"></i></div>
+                    <h3 class="company-name">LinkedIn</h3>
+                    <p class="company-industry">Professional Network</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.8</span>
+                        <span class="rating-count">(1.7k)</span>
+                    </div>
+                    <span class="active-jobs">112 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="8">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF6B6B, #EE5A6F);"><i class="fab fa-airbnb"></i></div>
+                    <h3 class="company-name">Airbnb</h3>
+                    <p class="company-industry">Travel • Hospitality</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.9</span>
+                        <span class="rating-count">(1.4k)</span>
+                    </div>
+                    <span class="active-jobs">89 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="9">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #7B68EE, #6A5ACD);"><i class="fab fa-slack"></i></div>
+                    <h3 class="company-name">Slack</h3>
+                    <p class="company-industry">Communication</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.8</span>
+                        <span class="rating-count">(1.6k)</span>
+                    </div>
+                    <span class="active-jobs">95 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="10">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF6B35, #F7931E);"><i class="fab fa-shopify"></i></div>
+                    <h3 class="company-name">Shopify</h3>
+                    <p class="company-industry">E-commerce</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.7</span>
+                        <span class="rating-count">(1.8k)</span>
+                    </div>
+                    <span class="active-jobs">124 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="11">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #00C4CC, #00A8B5);"><i class="fab fa-uber"></i></div>
+                    <h3 class="company-name">Uber Technologies</h3>
+                    <p class="company-industry">Transportation • Logistics</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.4</span>
+                        <span class="rating-count">(2.3k)</span>
+                    </div>
+                    <span class="active-jobs">187 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="12">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #1DA1F2, #0C85D0);"><i class="fab fa-twitter"></i></div>
+                    <h3 class="company-name">X Corp (Twitter)</h3>
+                    <p class="company-industry">Social • Technology</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.4</span>
+                        <span class="rating-count">(1.3k)</span>
+                    </div>
+                    <span class="active-jobs">76 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="13">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #E4405F, #C13584);"><i class="fab fa-instagram"></i></div>
+                    <h3 class="company-name">Instagram</h3>
+                    <p class="company-industry">Social Media • Photography</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.7</span>
+                        <span class="rating-count">(2.0k)</span>
+                    </div>
+                    <span class="active-jobs">103 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="14">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF4500, #FF5700);"><i class="fab fa-reddit"></i></div>
+                    <h3 class="company-name">Reddit Inc.</h3>
+                    <p class="company-industry">Community • Discussion</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.3</span>
+                        <span class="rating-count">(950)</span>
+                    </div>
+                    <span class="active-jobs">68 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="15">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #00D9FF, #0099CC);"><i class="fab fa-dropbox"></i></div>
+                    <h3 class="company-name">Dropbox</h3>
+                    <p class="company-industry">Cloud Storage • SaaS</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.6</span>
+                        <span class="rating-count">(1.1k)</span>
+                    </div>
+                    <span class="active-jobs">72 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="16">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #00B140, #00B140);"><i class="fab fa-whatsapp"></i></div>
+                    <h3 class="company-name">WhatsApp</h3>
+                    <p class="company-industry">Messaging • Communication</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.6</span>
+                        <span class="rating-count">(1.2k)</span>
+                    </div>
+                    <span class="active-jobs">81 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="17">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #5865F2, #404EED);"><i class="fab fa-discord"></i></div>
+                    <h3 class="company-name">Discord Inc.</h3>
+                    <p class="company-industry">Gaming • Community</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.9</span>
+                        <span class="rating-count">(890)</span>
+                    </div>
+                    <span class="active-jobs">63 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="18">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #9146FF, #772CE8);"><i class="fab fa-twitch"></i></div>
+                    <h3 class="company-name">Twitch</h3>
+                    <p class="company-industry">Live Streaming • Gaming</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.5</span>
+                        <span class="rating-count">(1.0k)</span>
+                    </div>
+                    <span class="active-jobs">79 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="19">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF6A00, #EE5A00);"><i class="fab fa-paypal"></i></div>
+                    <h3 class="company-name">PayPal Holdings</h3>
+                    <p class="company-industry">Fintech • Payments</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.3</span>
+                        <span class="rating-count">(2.5k)</span>
+                    </div>
+                    <span class="active-jobs">156 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="20">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #F24E1E, #FF7262);"><i class="fab fa-figma"></i></div>
+                    <h3 class="company-name">Figma</h3>
+                    <p class="company-industry">Design • Collaboration</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">5.0</span>
+                        <span class="rating-count">(780)</span>
+                    </div>
+                    <span class="active-jobs">52 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="21">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF6347, #FF4500);"><i class="fab fa-netflix"></i></div>
+                    <h3 class="company-name">Netflix</h3>
+                    <p class="company-industry">Streaming • Entertainment</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.6</span>
+                        <span class="rating-count">(2.4k)</span>
+                    </div>
+                    <span class="active-jobs">142 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="22">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #FF6900, #FF5722);"><i class="fab fa-salesforce"></i></div>
+                    <h3 class="company-name">Salesforce</h3>
+                    <p class="company-industry">CRM • Enterprise</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.8</span>
+                        <span class="rating-count">(3.1k)</span>
+                    </div>
+                    <span class="active-jobs">218 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="23">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #1769FF, #1E3A8A);"><i class="fab fa-atlassian"></i></div>
+                    <h3 class="company-name">Atlassian</h3>
+                    <p class="company-industry">Software • Collaboration</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-number">4.7</span>
+                        <span class="rating-count">(1.9k)</span>
+                    </div>
+                    <span class="active-jobs">134 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="24">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #F79F1F, #EA3546);"><i class="fab fa-gitlab"></i></div>
+                    <h3 class="company-name">GitLab</h3>
+                    <p class="company-industry">DevOps • Software</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.9</span>
+                        <span class="rating-count">(870)</span>
+                    </div>
+                    <span class="active-jobs">91 Active Jobs</span>
+                </div>
+
+                <div class="company-card" data-id="25">
+                    <div class="company-logo" style="background: linear-gradient(135deg, #181717, #333333);"><i class="fab fa-github"></i></div>
+                    <h3 class="company-name">GitHub</h3>
+                    <p class="company-industry">Developer Platform</p>
+                    <div class="company-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-number">4.9</span>
+                        <span class="rating-count">(1.5k)</span>
+                    </div>
+                    <span class="active-jobs">108 Active Jobs</span>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="slider-nav">
+                <button class="slider-arrow" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="slider-arrow" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Dots -->
+        <div class="slider-dots" id="sliderDots"></div>
+    </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="section-title">
+                <h2>Why Choose TalentBridgePro?</h2>
+                <p>Everything you need to find your perfect career match</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Quick Applications</h3>
+                    <p>Apply to multiple jobs with one click using your saved profile and resume.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Smart Matching</h3>
+                    <p>AI-powered job recommendations based on your skills and preferences.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Job Alerts</h3>
+                    <p>Get notified instantly when new opportunities match your profile.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your applications and interview schedules in one dashboard.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Company Reviews</h3>
+                    <p>Read authentic reviews from current and former employees.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Career Resources</h3>
+                    <p>Access resume tips, interview prep, and career guidance.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3>50k+</h3>
+                    <p>Active Jobs</p>
+                </div>
+                <div class="stat-item">
+                    <h3>10k+</h3>
+                    <p>Companies</p>
+                </div>
+                <div class="stat-item">
+                    <h3>200k+</h3>
+                    <p>Job Recruiter</p>
+                </div>
+                <div class="stat-item">
+                    <h3>95%</h3>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Recruiter Landing Page -->
+    <div id="recruiterPage" class="hidden">
+
+        <!-- Hero Section -->
+        <section class="hero recruiter-hero">
+            <div class="hero-content">
+                <h1>Hire your next great candidate. Fast.</h1>
+                <p>Post jobs, manage applicants, and build high-performing teams.</p>
+                <div class="hero-actions">
+                    <a href="/User/Login" class="btn btn-cta btn-large" >Post a Job</a>
+                    <a href="/User/Login" class="btn btn-secondary btn-large">Sign In</a>
+                </div>
+            </div>
+            <div class="hero-visual recruiter-visual">
+                <div class="candidate-card">
+                    <div class="candidate-avatar">SA</div>
+                    <div class="candidate-info">
+                        <h4>Shivam Patel</h4>
+                        <p>Senior Software Engineer • 10+ years exp</p>
+                    </div>
+                    <span class="match-badge">99% Match</span>
+                </div>
+                <div class="candidate-card">
+                    <div class="candidate-avatar">MK</div>
+                    <div class="candidate-info">
+                        <h4>Virat Patel</h4>
+                        <p>Product Designer • 5 years exp</p>
+                    </div>
+                    <span class="match-badge">95% Match</span>
+                </div>
+                <div class="candidate-card">
+                    <div class="candidate-avatar">EP</div>
+                    <div class="candidate-info">
+                        <h4>Garv Desai</h4>
+                        <p>Data Scientist • 6 years exp</p>
+                    </div>
+                    <span class="match-badge">92% Match</span>
+                </div>
+            </div>
+        </section>
+
+         
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="section-title">
+                <h2>Powerful Hiring Tools</h2>
+                <p>Everything you need to find and hire top talent</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Talent Pool Access</h3>
+                    <p>Connect with over 200k qualified candidates actively seeking opportunities.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <h3>Smart Filtering</h3>
+                    <p>AI-powered candidate screening based on skills, experience, and culture fit.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Interview Scheduling</h3>
+                    <p>Seamlessly coordinate interviews with integrated calendar tools.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Team Collaboration</h3>
+                    <p>Share feedback and make hiring decisions together with your team.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Hiring Analytics</h3>
+                    <p>Track metrics like time-to-hire, source effectiveness, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>Employer Branding</h3>
+                    <p>Showcase your company culture and attract the right candidates.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3>10k+</h3>
+                    <p>Hiring Companies</p>
+                </div>
+                <div class="stat-item">
+                    <h3>200k+</h3>
+                    <p>Qualified Candidates</p>
+                </div>
+                <div class="stat-item">
+                    <h3>14 Days</h3>
+                    <p>Avg Time to Hire</p>
+                </div>
+                <div class="stat-item">
+                    <h3>92%</h3>
+                    <p>Client Satisfaction</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function toggleMode() {
+            const applicantPage = document.getElementById('applicantPage');
+            const recruiterPage = document.getElementById('recruiterPage');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const toggleText = document.getElementById('toggleText');
+
+            if (applicantPage.classList.contains('hidden')) {
+                // Currently on recruiter, switch to applicant
+                showApplicantPage();
+                toggleIcon.className = 'fas fa-building';
+                toggleText.textContent = 'For Recruiters';
+                 
+                 sessionStorage.setItem("previewRole", "applicant");
+            } else {
+                // Currently on applicant, switch to recruiter
+                showRecruiterPage();
+                toggleIcon.className = 'fas fa-user';
+                toggleText.textContent = 'For Applicants';
+               
+                 sessionStorage.setItem("previewRole", "recruiter");
+            }
+            console.log("Preview Role:", sessionStorage.getItem("previewRole"));
+        }
+
+        function showApplicantPage() {
+            document.getElementById('applicantPage').classList.remove('hidden');
+            document.getElementById('recruiterPage').classList.add('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showRecruiterPage() {
+            document.getElementById('applicantPage').classList.add('hidden');
+            document.getElementById('recruiterPage').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+          // SLIDER JAVASCRIPT
+        (function() {
+            const track = document.getElementById('sliderTrack');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            if (!track) return;
+            
+            let currentIndex = 0;
+            let cardsPerView = 3;
+            let autoSlideInterval;
+            let isTransitioning = false;
+            
+            const cards = Array.from(track.children);
+            const totalCards = cards.length;
+
+            updateCardsPerView();
+
+// Clone first visible cards
+for (let i = 0; i < cardsPerView; i++) {
+    track.appendChild(cards[i].cloneNode(true));
+}
+
+
+            // ===== CLONE FIRST SLIDE CARDS FOR INFINITE LOOP =====
+
+
+
+
+updateCardsPerView();
+
+// Clone only first visible cards
+for (let i = 0; i < cardsPerView; i++) {
+    track.appendChild(cards[i].cloneNode(true));
+}
+
+            function updateCardsPerView() {
+    if (window.innerWidth <= 768) cardsPerView = 1;
+    else if (window.innerWidth <= 1024) cardsPerView = 2;
+    else cardsPerView = 3;
+}
+
+            
+            function getTotalSlides() {
+                return Math.ceil(totalCards / cardsPerView);
+            }
+            
+            function updateSlider(animate = true) {
+                const card = cards[0];
+                if (!card) return;
+                
+                const cardWidth = card.offsetWidth;
+                const gap = 32;
+                const offset = -currentIndex * (cardWidth + gap);
+
+                
+                track.style.transition = animate ? 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+               track.style.transform = `translateX(${offset}px)`;
+
+                
+                updateDots();
+            }
+            
+            function updateDots() {
+                const totalSlides = getTotalSlides();
+                dotsContainer.innerHTML = '';
+                
+                for (let i = 0; i < totalSlides; i++) {
+                    const dot = document.createElement('div');
+                    dot.classList.add('dot');
+                    if (i === currentIndex) dot.classList.add('active');
+                    dot.onclick = () => goToSlide(i);
+                    dotsContainer.appendChild(dot);
+                }
+            }
+            
+            function goToSlide(index) {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                currentIndex = index;
+                updateSlider();
+                setTimeout(() => isTransitioning = false, 600);
+                resetAutoSlide();
+            }
+@*             
+            function nextSlide() {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                
+                const totalSlides = getTotalSlides();
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateSlider();
+                
+                setTimeout(() => isTransitioning = false, 600);
+            }
+             *@
+
+             function nextSlide() {
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    currentIndex++;
+    updateSlider(true);
+
+    const totalSlides = getTotalSlides();
+
+    // When reaching cloned slide, reset silently
+    if (currentIndex === totalSlides) {
+        setTimeout(() => {
+            track.style.transition = 'none';
+            currentIndex = 0;
+            updateSlider(false);
+        }, 600);
+    }
+
+    setTimeout(() => isTransitioning = false, 600);
+}
+
+            function prevSlide() {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                
+                const totalSlides = getTotalSlides();
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateSlider();
+                
+                setTimeout(() => isTransitioning = false, 600);
+            }
+            
+            function startAutoSlide() {
+                autoSlideInterval = setInterval(nextSlide, 4000);
+            }
+            
+            function stopAutoSlide() {
+                clearInterval(autoSlideInterval);
+            }
+            
+            function resetAutoSlide() {
+                stopAutoSlide();
+                startAutoSlide();
+            }
+            
+            // Event Listeners
+            prevBtn.onclick = () => {
+                prevSlide();
+                resetAutoSlide();
+            };
+            
+            nextBtn.onclick = () => {
+                nextSlide();
+                resetAutoSlide();
+            };
+            
+            track.onmouseenter = stopAutoSlide;
+            track.onmouseleave = startAutoSlide;
+            
+            // Touch Support
+            let touchStartX = 0;
+            track.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                stopAutoSlide();
+            });
+            
+            track.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) nextSlide();
+                    else prevSlide();
+                }
+                resetAutoSlide();
+            });
+            
+            // Resize Handler
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    updateCardsPerView();
+                    updateSlider(false);
+                }, 250);
+            });
+            
+            // Initialize
+            updateCardsPerView();
+            updateSlider(false);
+            startAutoSlide();
+            
+        })();
+
+    </script>
+</body>
+</html>

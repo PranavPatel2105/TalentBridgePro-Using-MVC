@@ -1,0 +1,2352 @@
+@{
+    ViewData["Title"] = "Applicant Profile";
+    Layout = "~/Views/Shared/_ApplicantLayout.cshtml";
+    
+}
+
+<style>
+    /* Custom Dialog Styles */
+    .custom-dialog {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(0, 0, 0, 0.6) !important;
+        z-index: 99999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        backdrop-filter: blur(4px);
+    }
+    
+    .dialog-content {
+        background: white !important;
+        border-radius: 16px !important;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15) !important;
+        overflow: hidden !important;
+        animation: dialogSlideIn 0.3s ease-out;
+    }
+
+    @@keyframes dialogSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .dialog-header {
+        background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%) !important;
+        color: white !important;
+        padding: 20px 24px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 3px solid #1E88E5;
+    }
+    
+    .dialog-header h5 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+    
+    .dialog-body {
+        padding: 24px !important;
+        max-height: 70vh !important;
+        overflow-y: auto !important;
+    }
+    
+    .dialog-close {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border: none !important;
+        color: white !important;
+        font-size: 1.5rem !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .dialog-close:hover {
+        background: rgba(255, 255, 255, 0.3) !important;
+        transform: rotate(90deg);
+    }
+
+    @* ####################################################################################################################### *@
+/* Kendo DropDownList styling for Professional Details */
+.k-dropdown,
+.k-multiselect {
+    border: 1.5px solid #bfdbfe;
+    border-radius: 10px;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+    width: 100% !important;
+}
+
+.k-dropdown:hover,
+.k-multiselect:hover {
+    border-color: #93c5fd;
+    background: #ffffff;
+}
+
+.k-dropdown.k-state-focused,
+.k-multiselect.k-state-focused {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    background: #ffffff;
+}
+
+.k-dropdown .k-input,
+.k-multiselect .k-input {
+    border: none;
+    padding: 12px 16px;
+    background: transparent;
+}
+.k-multiselect {
+    min-height: 48px;   /* ⬅ increase this */
+}
+
+
+
+
+/* MultiSelect wrapper styling */
+.k-multiselect-wrap {
+    padding: 8px 12px;
+    min-height: 44px;
+}
+
+/* MultiSelect selected tags */
+.k-multiselect .k-chip {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin: 2px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.k-multiselect .k-chip:hover {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+}
+
+/* MultiSelect close button */
+.k-multiselect .k-chip .k-chip-action {
+    color: #3b82f6 !important;
+}
+
+.k-multiselect .k-chip .k-chip-action:hover {
+    color: #1e40af !important;
+    background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Dropdown popup list styling */
+.k-list-container.k-popup {
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+    background: #ffffff;
+}
+
+.k-list .k-list-item {
+    padding: 10px 16px;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.k-list .k-list-item:hover {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.k-list .k-list-item.k-state-selected {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+    font-weight: 500;
+}
+
+@* ############################################################################################################################# *@
+    /* Color Variables */
+    :root {
+        --primary-blue: #1E88E5;
+        --header-dark: #0D47A1;
+        --header-medium: #1565C0;
+        --light-border: #CFE2FF;
+        --page-bg: #F4F8FF;
+        --upload-bg: #F8FBFF;
+        --input-bg: #F9FBFD;
+        --hover-blue: #E3F2FD;
+        --readonly-bg: #EEF1F4;
+        --text-muted: #6C757D;
+        --text-primary: #212529;
+        --success-green: #2E7D32;
+        --success-bg: #E8F5E9;
+        --error-red: #DC3545;
+        --card-shadow: rgba(0, 0, 0, 0.06);
+    }
+
+    body {
+        background: var(--page-bg);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .profile-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+
+    /* Profile Header */
+    .profile-header {
+        background: white;
+        border-radius: 20px;
+        padding: 48px 40px;
+        color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(30, 136, 229, 0.08);
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--light-border);
+    }
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--header-medium));
+    }
+
+    .profile-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(30, 136, 229, 0.03) 0%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+
+    .profile-image-container {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        margin: 0 auto;
+    }
+
+    .profile-image {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        border: 4px solid #f0f7ff;
+        object-fit: cover;
+        box-shadow: 0 4px 20px rgba(30, 136, 229, 0.15), 0 0 0 8px rgba(30, 136, 229, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .profile-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 24px rgba(30, 136, 229, 0.2), 0 0 0 8px rgba(30, 136, 229, 0.08);
+    }
+
+    .profile-image-upload {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: white;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: var(--primary-blue);
+        border: 2px solid var(--light-border);
+    }
+
+    .profile-image-upload:hover {
+        transform: scale(1.1) translateY(-2px);
+        background: var(--primary-blue);
+        color: white;
+        box-shadow: 0 6px 16px rgba(30, 136, 229, 0.35);
+        border-color: var(--primary-blue);
+    }
+
+    .profile-header h1 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+
+    .profile-header p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .profile-header .badge-blue {
+        font-size: 0.9rem;
+        padding: 8px 20px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    /* Section Cards */
+    .section-card {
+        background: white;
+        border-radius: 20px;
+        padding: 36px;
+        margin-bottom: 28px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(30, 136, 229, 0.08);
+        border: 1px solid var(--light-border);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--header-medium));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(30, 136, 229, 0.15);
+        transform: translateY(-4px);
+        border-color: #93c5fd;
+    }
+
+    .section-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 3px solid var(--light-border);
+        position: relative;
+    }
+
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--header-medium));
+        border-radius: 2px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: 0.3px;
+    }
+
+    .section-icon {
+        background: linear-gradient(135deg, var(--primary-blue), var(--header-medium));
+        color: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+    }
+
+    /* Buttons */
+    .btn-blue {
+        background: linear-gradient(135deg, var(--primary-blue), var(--header-medium));
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 14px rgba(30, 136, 229, 0.35), 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-blue::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-blue:hover::before {
+        left: 100%;
+    }
+
+    .btn-blue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 136, 229, 0.45), 0 4px 8px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+
+    .btn-blue:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+    }
+
+    .btn-outline-blue {
+        border: 2px solid var(--primary-blue);
+        color: var(--primary-blue);
+        background: white;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-outline-blue::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background: var(--primary-blue);
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 0;
+    }
+
+    .btn-outline-blue {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-outline-blue:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(30, 136, 229, 0.3);
+    }
+
+    .btn-outline-blue:hover::before {
+        width: 100%;
+    }
+
+    .btn-outline-danger {
+        border: 2px solid var(--error-red);
+        color: var(--error-red);
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        background: var(--error-red);
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 24px;
+    }
+
+    .info-item {
+        background: linear-gradient(135deg, #ffffff 0%, var(--input-bg) 100%);
+        padding: 24px;
+        border-radius: 14px;
+        border-left: 5px solid var(--primary-blue);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(135deg, var(--hover-blue), rgba(227, 242, 253, 0.5));
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 0;
+    }
+
+    .info-item > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .info-item:hover {
+        background: var(--hover-blue);
+        transform: translateX(6px) translateY(-2px);
+        box-shadow: 0 4px 16px rgba(30, 136, 229, 0.15);
+        border-left-color: var(--header-medium);
+    }
+
+    .info-item:hover::before {
+        width: 100%;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .info-value {
+        font-size: 1.05rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    /* Timeline Items */
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 24px;
+        border-left: 3px solid var(--light-border);
+    }
+
+    .timeline-item:before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 8px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--primary-blue);
+        box-shadow: 0 0 0 5px var(--hover-blue);
+        transition: all 0.3s ease;
+    }
+
+    .timeline-item:hover:before {
+        transform: scale(1.2);
+        box-shadow: 0 0 0 8px var(--hover-blue);
+    }
+
+    .timeline-content {
+        background: linear-gradient(135deg, #ffffff 0%, var(--input-bg) 100%);
+        padding: 24px;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        border: 1px solid var(--light-border);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .timeline-content:hover {
+        background: white;
+        box-shadow: 0 4px 16px rgba(30, 136, 229, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
+        transform: translateX(6px) translateY(-2px);
+        border-color: #93c5fd;
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 12px;
+    }
+
+    .timeline-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 1.15rem;
+        margin-bottom: 6px;
+    }
+
+    .timeline-meta {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .badge-blue {
+        background: linear-gradient(135deg, var(--primary-blue), var(--header-medium));
+        color: white;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+        letter-spacing: 0.3px;
+    }
+
+    /* Certificate Card */
+    .certificate-card {
+        background: linear-gradient(135deg, #ffffff 0%, var(--input-bg) 100%);
+        padding: 24px;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--light-border);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .certificate-card:hover {
+        background: white;
+        box-shadow: 0 4px 16px rgba(30, 136, 229, 0.12), 0 2px 4px rgba(0, 0, 0, 0.06);
+        transform: translateX(8px) translateY(-2px);
+        border-color: #93c5fd;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-icon:hover {
+        transform: scale(1.1);
+    }
+
+    /* Skills Container - Updated to match DetailPopup style */
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .skill-tag {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border: 1px solid #93c5fd;
+        color: #1e40af;
+        padding: 10px 20px;
+        border-radius: 24px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(147, 197, 253, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .skill-tag:hover {
+        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(147, 197, 253, 0.4);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 40px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-blue);
+        margin-bottom: 16px;
+        opacity: 0.6;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* Form Elements */
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        letter-spacing: 0.2px;
+    }
+
+    .form-control, input[type="text"], input[type="date"], 
+    input[type="number"], select, textarea {
+        display: block;
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--input-bg);
+        border: 2px solid var(--light-border);
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: inherit;
+    }
+
+    .form-control:hover, input:hover, select:hover, textarea:hover {
+        border-color: #93c5fd;
+        background-color: white;
+    }
+
+    .form-control:focus, input:focus, select:focus, textarea:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.15), 0 4px 12px rgba(30, 136, 229, 0.1);
+        outline: none;
+        background-color: white;
+        transform: translateY(-1px);
+    }
+
+    input[readonly] {
+        background-color: #f3f4f6 !important;
+        cursor: not-allowed !important;
+        opacity: 0.8;
+    }
+
+    input[readonly]:hover {
+        border-color: var(--light-border) !important;
+        transform: none !important;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* File Upload Area */
+    .file-upload-area {
+        border: 3px dashed var(--light-border);
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        background: var(--upload-bg);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-area:hover {
+        background: var(--hover-blue);
+        border-color: var(--primary-blue);
+        transform: translateY(-2px);
+    }
+
+    .file-upload-area i {
+        font-size: 2.5rem;
+        color: var(--primary-blue);
+        margin-bottom: 12px;
+    }
+
+    .file-upload-area p {
+        margin: 12px 0 4px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* Form Check */
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--light-border);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-blue);
+        border-color: var(--primary-blue);
+    }
+
+    .form-check-label {
+        cursor: pointer;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    /* Utility Classes */
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    .opacity-75 {
+        opacity: 0.85;
+    }
+
+    .mb-2 { margin-bottom: 0.5rem !important; }
+    .mb-3 { margin-bottom: 1rem !important; }
+    .mt-2 { margin-top: 0.5rem !important; }
+    .mt-3 { margin-top: 1rem !important; }
+    .me-2 { margin-right: 0.5rem !important; }
+    .d-flex { display: flex !important; }
+    .gap-2 { gap: 0.5rem !important; }
+    .flex-wrap { flex-wrap: wrap !important; }
+    .text-end { text-align: right !important; }
+
+    /* Scrollbar Styling */
+    .dialog-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .dialog-body::-webkit-scrollbar-track {
+        background: var(--input-bg);
+        border-radius: 10px;
+    }
+
+    .dialog-body::-webkit-scrollbar-thumb {
+        background: var(--primary-blue);
+        border-radius: 10px;
+    }
+
+    .dialog-body::-webkit-scrollbar-thumb:hover {
+        background: var(--header-medium);
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .profile-container {
+            padding: 16px;
+        }
+
+        .section-card {
+            padding: 20px;
+        }
+
+        .profile-header {
+            padding: 24px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+
+    /* UPDATED: Selected items in dropdown - Blue theme instead of orange */
+.k-list .k-list-item.k-state-selected {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+    font-weight: 500;
+}
+
+.k-list .k-list-item.k-state-focused {
+    background: #eff6ff;
+    box-shadow: inset 0 0 0 2px #93c5fd;
+}
+
+/* UPDATED: Focused + Selected state - Blue theme */
+.k-list .k-list-item.k-state-selected.k-state-focused {
+    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+    color: #1e40af !important;
+}
+
+/* UPDATED: Additional override for Kendo's default orange selected state */
+.k-list-item.k-selected,
+.k-list-optionlabel.k-selected {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    color: #1e40af !important;
+}
+
+/* UPDATED: Force override any remaining orange backgrounds */
+.k-state-selected {
+    background-color: #dbeafe !important;
+    background-image: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+    border-color: #93c5fd !important;
+}
+
+
+</style>
+
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+                <div class="profile-image-container">
+                    <img alt="Profile" class="profile-image" id="profileImagePreview">
+                    <div class="profile-image-upload" onclick="$('#profileImageInput').click()">
+                        <i class="k-icon k-i-camera"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <h1 id="profileName" class="mb-2">Loading...</h1>
+                <p id="profileEmail" class="mb-2 opacity-75"></p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="badge-blue" id="profileRole"></span>
+                    <span class="badge-blue" id="profileStatus"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Basic Info Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon"><i class="k-icon k-i-user"></i></div>
+                Personal Information
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="editBasicInfo()">
+                <i class="k-icon k-i-edit"></i> Edit
+            </button>
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Full Name</div>
+                <div class="info-value" id="infoName">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Gender</div>
+                <div class="info-value" id="infoGender">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Contact</div>
+                <div class="info-value" id="infoContact">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Date of Birth</div>
+                <div class="info-value" id="infoDOB">-</div>
+            </div>
+            <div class="info-item" style="grid-column: span 2;">
+                <div class="info-label">Address</div>
+                <div class="info-value" id="infoAddress">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon"><i class="k-icon k-i-file-txt"></i></div>
+                Professional Details
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="editDetails()">
+                <i class="k-icon k-i-edit"></i> Edit
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <div class="info-label">Bio</div>
+                <div class="info-value" id="detailsBio">-</div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-label">Job Role</div>
+                <div class="info-value" id="detailsJobRole">-</div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-label">Job Type</div>
+                <div class="info-value" id="detailsJobType">-</div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-label">Location</div>
+                <div class="info-value" id="detailsLocation">-</div>
+            </div>
+            <div class="col-md-12 mt-3">
+                <div class="info-label">Skills</div>
+                <div class="skills-container" id="skillsContainer"></div>
+            </div>
+            <div class="col-md-12 mt-3">
+                <div class="info-label">Resume</div>
+                <div id="resumeLink">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Experience Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon"><i class="k-icon k-i-book"></i></div>
+                Experience
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="addExperience()">
+                <i class="k-icon k-i-plus"></i> Add Experience
+            </button>
+        </div>
+        <div id="experienceList">
+            <div class="empty-state">
+                <i class="k-icon k-i-work"></i>
+                <p>Loading experience...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Education Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon"><i class="k-icon k-i-book"></i></div>
+                Education
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="addEducation()">
+                <i class="k-icon k-i-plus"></i> Add Education
+            </button>
+        </div>
+        <div id="educationList">
+            <div class="empty-state">
+                <i class="k-icon k-i-book"></i>
+                <p>Loading education...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificates Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon"><i class="k-icon k-i-file-txt"></i></div>
+                Certificates
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="addCertificate()">
+                <i class="k-icon k-i-plus"></i> Add Certificate
+            </button>
+        </div>
+        <div id="certificateList">
+            <div class="empty-state">
+                <i class="k-icon k-i-certificate"></i>
+                <p>Loading certificates...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden File Inputs -->
+<input type="file" id="profileImageInput" accept="image/*" style="display:none" onchange="handleProfileImageChange(this)">
+
+<!-- Kendo UI CSS and JS References -->
+<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2023.3.117/styles/kendo.default-main.min.css" />
+<script src="https://kendo.cdn.telerik.com/2023.3.117/js/jquery.min.js"></script>
+<script src="https://kendo.cdn.telerik.com/2023.3.117/js/kendo.all.min.js"></script>
+
+<!-- SweetAlert2 for notifications -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section Scripts {
+    
+<script>
+     const JWT_TOKEN = '@Context.Session.GetString("JWT")';
+
+    function authHeaders() {
+        return {
+            'Authorization': 'Bearer ' + JWT_TOKEN
+        };
+    }
+    // ========== DIALOG HELPER FUNCTIONS ==========
+    function showDialog(title, content, width = 600) {
+        // Close any existing dialogs
+        $('.custom-dialog').remove();
+        
+        const dialogId = 'dialog-' + Date.now();
+        const dialogHtml = `
+            <div id="${dialogId}" class="custom-dialog">
+                <div class="dialog-content" style="width: ${width}px; max-width: 90%;">
+                    <div class="dialog-header">
+                        <h5 style="margin: 0; font-weight: 600;">${title}</h5>
+                        <button class="dialog-close" onclick="closeCurrentDialog()">×</button>
+                    </div>
+                    <div class="dialog-body">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('body').append(dialogHtml);
+        return dialogId;
+    }
+
+    function closeCurrentDialog() {
+        $('.custom-dialog').remove();
+    }
+
+    // Helper function to show success messages - Updated to ensure dialog closes first
+    function showSuccess(message, callback) {
+        // FIRST close dialog
+        closeCurrentDialog();
+        
+        // Small delay to ensure dialog is fully closed
+        setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: message,
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                if (callback) callback();
+            });
+        }, 100);
+    }
+
+    // Helper function to show errors - Updated to close dialog first
+    function showError(message) {
+        // FIRST close dialog if it exists
+        closeCurrentDialog();
+        
+        // Small delay to ensure dialog is fully closed
+        setTimeout(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: message,
+                timer: 3000,
+                showConfirmButton: true
+            });
+        }, 100);
+    }
+
+   // For testing - change this based on your logged-in user
+
+    $(document).ready(function() {
+        console.log('Document ready, loading profile data...');
+        loadAllData();
+    });
+
+    function loadAllData() {
+        console.log('Loading all data...');
+        loadUserProfile();
+        loadUserDetails();
+        loadExperience();
+        loadEducation();
+        loadCertificates();
+    }
+
+    // ========== DEBUG HELPER FUNCTION ==========
+    function logApiCall(url, method, data) {
+        console.log(`API Call: ${method} ${url}`);
+        if (data) console.log('Data:', data);
+    }
+
+    function logApiResponse(response) {
+        console.log('API Response:', response);
+        return response;
+    }
+
+    function logApiError(xhr, status, error) {
+        console.error('API Error:', {
+            url: xhr.responseURL,
+            status: xhr.status,
+            statusText: xhr.statusText,
+            error: error,
+            responseText: xhr.responseText
+        });
+    }
+
+    // ========== USER PROFILE ==========
+    function loadUserProfile() {
+        const url = `http://localhost:5140/api/ApplicantApi/profile/vm-user`;
+        console.log('Loading user profile from:', url);
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: authHeaders(),
+            dataType: 'json',
+            success: function(data) {
+                console.log('User profile loaded:', data);
+                
+                $('#profileName').text(data.c_name || 'No Name');
+                $('#profileEmail').text(data.c_email || 'No Email');
+                $('#profileRole').text(data.c_role || 'No Role');
+                $('#profileStatus').text(data.c_status || 'No Status');
+                
+                $('#infoName').text(data.c_name || '-');
+                $('#infoGender').text(data.c_gender || '-');
+                $('#infoContact').text(data.c_contactno || '-');
+                $('#infoDOB').text(data.c_dob ? new Date(data.c_dob).toLocaleDateString() : '-');
+                $('#infoAddress').text(data.c_address || '-');
+                
+                @* if(data.c_profile_image) {
+                    $('#profileImagePreview').attr('src', data.c_profile_image);
+                } *@
+
+                if (data.c_profile_image) {
+                    $('#profileImagePreview').attr(
+                        'src',
+                        '/uploads/profile_images/' + data.c_profile_image
+                    );
+                } else {
+                    $('#profileImagePreview').attr('src', '/images/default-user.png');
+                }
+
+
+
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to load user profile:', error);
+                $('#profileName').text('Error loading profile');
+                showError('Failed to load profile data. Check console for details.');
+            }
+        });
+    }
+
+  function editBasicInfo() {
+    console.log('Edit basic info clicked');
+    $.ajax({
+        url: 'http://localhost:5140/api/ApplicantApi/profile/vm-user',
+        type: 'GET',
+        headers: authHeaders(),   // ✅ JWT added
+        success: function (data) {
+            console.log('User data loaded for edit:', data);
+
+            const content = `
+                <input type="hidden" id="editUserId" >
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea id="editAddress" style="width:100%; height:80px; padding:10px; border:2px solid #e5e7eb; border-radius:8px;">${data.c_address || ''}</textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Contact Number</label>
+                        <input id="editContact" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" value="${data.c_contactno || ''}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input id="editDOB" type="date" readonly
+                               style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px; background-color: #f3f4f6; cursor: not-allowed;"
+                               value="${data.c_dob ? formatDateForInput(data.c_dob) : ''}">
+                        <small class="text-muted" style="display:block;margin-top:4px;font-size:0.85rem;">
+                            Date of birth cannot be changed
+                        </small>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Gender</label>
+                        <select id="editGender" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;">
+                            <option value="">Select Gender</option>
+                            <option value="Male" ${data.c_gender === 'Male' ? 'selected' : ''}>Male</option>
+                            <option value="Female" ${data.c_gender === 'Female' ? 'selected' : ''}>Female</option>
+                            <option value="Other" ${data.c_gender === 'Other' ? 'selected' : ''}>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button class="btn btn-outline-blue me-2" onclick="closeCurrentDialog()">Cancel</button>
+                    <button class="btn btn-blue" onclick="saveBasicInfo()">Save Changes</button>
+                </div>
+            `;
+
+            showDialog('Edit Basic Information', content, 600);
+        },
+        error: function (xhr) {
+            console.error('Failed to load user data for edit:', xhr);
+            showError('Failed to load user data');
+        }
+    });
+}   // ✅ THIS LINE FIXES THE ERROR
+
+    function saveBasicInfo() {
+        console.log('Save basic info clicked');
+        
+        const formData = new FormData();
+       
+        
+        // Only append if value exists
+        const address = $('#editAddress').val();
+        if (address) formData.append('c_address', address);
+        
+        const contact = $('#editContact').val();
+        if (contact) formData.append('c_contactno', contact);
+        
+        const gender = $('#editGender').val();
+        if (gender) formData.append('c_gender', gender);
+        
+        const dob = $('#editDOB').val();
+        if(dob) {
+            formData.append('c_dob', dob);
+        }
+        
+        console.log('Saving basic info...');
+        
+        $.ajax({
+            url: 'http://localhost:5140/api/ApplicantApi/profile/vm-user/update',
+            type: 'POST',
+            headers: authHeaders(),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log('Save successful:', response);
+                showSuccess('Profile updated successfully', loadUserProfile);
+            },
+            error: function(xhr, status, error) {
+                console.error('Save failed - Full error:', xhr);
+                
+                // Try to parse response text for better error message
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    console.error('Error details:', response);
+                    showError('Failed to update: ' + (response.title || response.message || xhr.statusText));
+                } catch {
+                    showError('Failed to update: ' + xhr.status + ' ' + xhr.statusText);
+                }
+            }
+        });
+    }
+
+    // ========== USER DETAILS ==========
+    function loadUserDetails() {
+        const url = `http://localhost:5140/api/ApplicantApi/profile/details`;
+        console.log('Loading user details from:', url);
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: authHeaders(),
+            dataType: 'json',
+            success: function(data) {
+                console.log('User details loaded:', data);
+                
+                if(data) {
+                    $('#detailsBio').text(data.c_bio || '-');
+                    $('#detailsJobRole').text(data.c_job_role || '-');
+                    $('#detailsJobType').text(data.c_job_type || '-');
+                    $('#detailsLocation').text(data.c_location || '-');
+                    
+                    if(data.c_skills) {
+                        const skills = data.c_skills.split(',');
+                        $('#skillsContainer').html(skills.map(s => 
+                            `<span class="skill-tag">${s.trim()}</span>`
+                        ).join(''));
+                    }
+                    
+                    @* if(data.c_resume_file) {
+                        const fileName = data.c_resume_file.split('/').pop();
+                        $('#resumeLink').html(`
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="${data.c_resume_file}" target="_blank" class="btn btn-outline-blue btn-sm">
+                                    <i class="k-icon k-i-file-pdf"></i> View Resume
+                                </a>
+                                <small class="text-muted">${fileName}</small>
+                            </div>
+                        `);
+                    } *@
+                    if (data.c_resume_file) {
+                        $('#resumeLink').html(`
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="/uploads/resumes/${data.c_resume_file}"
+                                target="_blank"
+                                class="btn btn-outline-blue btn-sm">
+                                    <i class="k-icon k-i-file-pdf"></i> View Resume
+                                </a>
+                                <small class="text-muted">${data.c_resume_file}</small>
+                            </div>
+                        `);
+                    }
+
+                     else {
+                        $('#resumeLink').html('<span class="text-muted">No resume uploaded</span>');
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to load user details:', error);
+                $('#detailsBio').text('Error loading details');
+            }
+        });
+    }
+
+function editDetails() {
+    $.ajax({
+    url: 'http://localhost:5140/api/ApplicantApi/profile/details',
+    type: 'GET',
+    headers: authHeaders(),   
+    success: function (data) {
+        console.log('User details data loaded for edit:', data);
+
+        // Create modal HTML with proper ID
+        const modalId = 'editDetailsModal_' + Date.now();
+        const modalHtml = `
+            <div id="${modalId}" class="custom-dialog">
+                <div class="dialog-content" style="width: 700px; max-width: 90%; max-height: 90vh;">
+                    <div class="dialog-header">
+                        <h5 style="margin: 0; font-weight: 600;">Edit Professional Details</h5>
+                        <button class="dialog-close" onclick="closeCurrentDialog()">×</button>
+                    </div>
+                    <div class="dialog-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Bio</label>
+                                <textarea id="editBio" style="width:100%; height:100px; padding:10px; border:2px solid #e5e7eb; border-radius:8px;">${data.c_bio || ''}</textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Job Role</label>
+                                <input id="editJobRole" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" value="${data.c_job_role || ''}">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Employment Type</label>
+                                <select id="editJobType" multiple="multiple"></select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Skills</label>
+                                <select id="editSkills" multiple="multiple"></select>
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Location</label>
+                                <input id="editLocation" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" value="${data.c_location || ''}">
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Resume (PDF only)</label>
+                                <div class="file-upload-area" onclick="$('#editResume').click()">
+                                    <i class="k-icon k-i-upload" style="font-size: 2rem; color: var(--primary-blue);"></i>
+                                    <p class="mb-0 mt-2">Click to upload resume</p>
+                                    <small class="text-muted">PDF only (max 5MB)</small>
+                                </div>
+                                <input type="file" id="editResume" style="display:none" accept=".pdf">
+                                <div id="editResumeFileName" class="mt-2 text-muted">
+                                    ${data.c_resume_file ? 'Current: ' + data.c_resume_file.split('/').pop() : 'No resume uploaded'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <button class="btn btn-outline-blue me-2" onclick="closeCurrentDialog()">Cancel</button>
+                            <button class="btn btn-blue" onclick="saveDetails()">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('.custom-dialog').remove();
+        $('body').append(modalHtml);
+
+        // Kendo initialization stays EXACTLY SAME
+        setTimeout(() => {
+            $("#editSkills").kendoMultiSelect({
+                placeholder: "Select your skills",
+                dataSource: [
+                    "C#", "ASP.NET Core", "ASP.NET MVC", ".NET Framework",
+                    "JavaScript", "TypeScript", "React", "Angular", "Vue.js",
+                    "Node.js", "Python", "Java", "PHP", "Ruby",
+                    "SQL Server", "PostgreSQL", "MySQL", "MongoDB", "Oracle",
+                    "Azure", "AWS", "Google Cloud", "Docker", "Kubernetes",
+                    "Git", "REST API", "GraphQL", "Microservices",
+                    "HTML", "CSS", "Bootstrap", "Tailwind CSS",
+                    "Entity Framework", "Dapper", "Redis", "RabbitMQ",
+                    "Jenkins", "CI/CD", "Agile", "Scrum"
+                ],
+                autoClose: false,
+                height: 320,
+                filter: "contains",
+                value: data.c_skills ? data.c_skills.split(',').map(s => s.trim()) : []
+            });
+
+            $("#editJobType").kendoMultiSelect({
+                placeholder: "Select Employment Type",
+                dataSource: ["Full Time", "Part Time", "Hybrid", "Contract", "Remote"],
+                autoClose: false,
+                height: 320,
+                value: data.c_job_type ? data.c_job_type.split(',').map(s => s.trim()) : []
+            });
+        }, 100);
+
+        $('#editResume').off('change').on('change', function () {
+            if (this.files[0]) {
+                $('#editResumeFileName').text('Selected: ' + this.files[0].name);
+            }
+        });
+    },
+    error: function (xhr) {
+        console.error('Failed to load user details for edit:', xhr);
+        showError('Failed to load details');
+    }
+});
+
+}
+
+
+    function saveDetails() {
+        console.log('Save details clicked');
+        
+        const formData = new FormData();
+       
+        formData.append('c_bio', $('#editBio').val());
+        @* formData.append('c_skills', $('#editSkills').val()); *@
+        // Get selected skills from MultiSelect
+        var skillsWidget = $("#editSkills").data("kendoMultiSelect");
+        formData.append('c_skills', skillsWidget ? skillsWidget.value().join(", ") : "");
+        
+        formData.append('c_job_role', $('#editJobRole').val());
+        @* formData.append('c_job_type', $('#editJobType').val()); *@
+        // Get selected job types from MultiSelect
+        var jobTypeWidget = $("#editJobType").data("kendoMultiSelect");
+        formData.append('c_job_type', jobTypeWidget ? jobTypeWidget.value().join(", ") : "");
+        formData.append('c_location', $('#editLocation').val());
+        
+        // Only append resume if a new file is selected
+        const resume = $('#editResume')[0].files[0];
+        if(resume) {
+            formData.append('resumeform', resume);
+        }
+        
+        console.log('Saving professional details...');
+        
+        $.ajax({
+            url: 'http://localhost:5140/api/ApplicantApi/profile/details/save',
+            type: 'POST',
+            headers: authHeaders(), 
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log('Save details successful:', response);
+                showSuccess('Professional details updated successfully', loadUserDetails);
+            },
+            error: function(xhr, status, error) {
+                console.error('Save details failed:', xhr);
+                showError('Failed to save professional details');
+            }
+        });
+    }
+
+    // ========== EXPERIENCE ==========
+    function loadExperience() {
+        const url = `http://localhost:5140/api/ApplicantApi/profile/experience`;
+        console.log('Loading experience from:', url);
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: authHeaders(), 
+            dataType: 'json',
+            success: function(data) {
+                console.log('Experience loaded:', data);
+                
+                if(!data || data.length === 0) {
+                    $('#experienceList').html(`
+                        <div class="empty-state">
+                            <i class="k-icon k-i-work"></i>
+                            <p>No experience added yet</p>
+                        </div>
+                    `);
+                    return;
+                }
+                
+                let html = '';
+                data.forEach(exp => {
+                    const startDate = exp.c_start_date ? new Date(exp.c_start_date).toLocaleDateString() : '';
+                    const endDate = exp.c_end_date ? new Date(exp.c_end_date).toLocaleDateString() : '';
+                    
+                    html += `
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <div>
+                                        <div class="timeline-title">${exp.c_title || 'No Title'}</div>
+                                        <div class="timeline-meta">${exp.c_company || ''} • ${exp.c_role || ''}</div>
+                                        <div class="timeline-meta">${exp.c_city || ''}, ${exp.c_state || ''}</div>
+                                        <div class="timeline-meta">${startDate} - ${endDate}</div>
+                                        ${exp.c_employment_type ? `<span class="badge-blue mt-2">${exp.c_employment_type}</span>` : ''}
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-blue btn-icon" onclick="editExperience(${exp.c_experience_id})">
+                                            <i class="k-icon k-i-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-icon" onclick="deleteExperience(${exp.c_experience_id})">
+                                            <i class="k-icon k-i-delete"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#experienceList').html(html);
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to load experience:', error);
+                $('#experienceList').html(`
+                    <div class="empty-state">
+                        <i class="k-icon k-i-work"></i>
+                        <p>Error loading experience</p>
+                    </div>
+                `);
+            }
+        });
+    }
+
+    function addExperience() {
+        console.log('Add experience clicked');
+        showExperienceDialog(null);
+    }
+
+   function editExperience(id) {
+    console.log('Edit experience clicked for ID:', id);
+
+    $.ajax({
+        url: 'http://localhost:5140/api/ApplicantApi/profile/experience',
+        type: 'GET',
+        headers: authHeaders(),   
+        success: function (data) {
+            console.log('All experiences loaded:', data);
+
+            const exp = data.find(e => e.c_experience_id === id);
+            if (!exp) {
+                showError('Experience not found');
+                return;
+            }
+
+            console.log('Found experience to edit:', exp);
+            showExperienceDialog(exp);
+        },
+        error: function (xhr) {
+            console.error('Failed to load experience for edit:', xhr);
+            showError('Failed to load experience data');
+        }
+    });
+}
+
+    function showExperienceDialog(exp) {
+        console.log('Showing experience dialog for:', exp);
+        
+        exp = exp || {};
+        const isEdit = !!exp.c_experience_id;
+        
+        // Get today's date in YYYY-MM-DD format for max date restriction
+        const today = new Date().toISOString().split('T')[0];
+        
+        const content = `
+            <input type="hidden" id="expId" value="${exp.c_experience_id || ''}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Title *</label>
+                    <input id="expTitle" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_title || ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Role</label>
+                    <input id="expRole" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_role || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Company *</label>
+                    <input id="expCompany" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_company || ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Employment Type</label>
+                    <select id="expType" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;">
+                        <option value="">Select Type</option>
+                        <option value="Full Time" ${exp.c_employment_type === 'Full Time' ? 'selected' : ''}>Full Time</option>
+                        <option value="Part Time" ${exp.c_employment_type === 'Part Time' ? 'selected' : ''}>Part Time</option>
+                        <option value="Contract" ${exp.c_employment_type === 'Contract' ? 'selected' : ''}>Contract</option>
+                        <option value="Hybrid" ${exp.c_employment_type === 'Hybrid' ? 'selected' : ''}>Hybrid</option>
+                        <option value="Remote" ${exp.c_employment_type === 'Remote' ? 'selected' : ''}>Remote</option>
+
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Start Date *</label>
+                    <input id="expStart" type="date" max="${today}" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_start_date ? formatDateForInput(exp.c_start_date) : ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">End Date *</label>
+                    <input id="expEnd" type="date" max="${today}" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_end_date ? formatDateForInput(exp.c_end_date) : ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">State</label>
+                    <input id="expState" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_state || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">City</label>
+                    <input id="expCity" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${exp.c_city || ''}">
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button class="btn btn-outline-blue me-2" onclick="closeCurrentDialog()">Cancel</button>
+                <button class="btn btn-blue" onclick="saveExperience()">${isEdit ? 'Update' : 'Save'} Experience</button>
+            </div>
+        `;
+        
+        const dialogId = showDialog(isEdit ? 'Edit Experience' : 'Add Experience', content, 700);
+    }
+
+    function formatDateForInput(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const offset = date.getTimezoneOffset();
+        date.setMinutes(date.getMinutes() - offset);
+        return date.toISOString().split('T')[0];
+    }
+
+    function saveExperience() {
+        console.log('Save/Update experience clicked');
+        
+        // Validate required fields
+        const title = $('#expTitle').val()?.trim();
+        const company = $('#expCompany').val()?.trim();
+        const expId = $('#expId').val();
+        const startDate = $('#expStart').val();
+        const endDate = $('#expEnd').val();
+        
+        if(!title) {
+            showError('Please enter title');
+            return;
+        }
+        
+        if(!company) {
+            showError('Please enter company name');
+            return;
+        }
+        
+        if(!startDate) {
+            showError('Please select a start date');
+            return;
+        }
+        
+        if(!endDate) {
+            showError('Please select an end date');
+            return;
+        }
+        
+        // Validate that start date is before end date
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        if(start >= end) {
+            showError('Start date must be before end date');
+            return;
+        }
+        
+        const data = {
+           
+            c_title: $('#expTitle').val(),
+            c_role: $('#expRole').val(),
+            c_company: $('#expCompany').val(),
+            c_employment_type: $('#expType').val(),
+            c_start_date: startDate,
+            c_end_date: endDate,
+            c_state: $('#expState').val(),
+            c_city: $('#expCity').val()
+        };
+
+        if(expId) {
+            data.c_experience_id = parseInt(expId);
+        }
+
+        console.log('Experience data to save/update:', data);
+
+        const url = expId ? 
+            'http://localhost:5140/api/ApplicantApi/profile/experience/update' : 
+            'http://localhost:5140/api/ApplicantApi/profile/experience/add';
+            
+        const method = expId ? 'PUT' : 'POST';
+
+        $.ajax({
+            url: url,
+            type: method,
+             headers: authHeaders(),
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                console.log('Experience save/update successful:', response);
+                showSuccess(`Experience ${expId ? 'updated' : 'added'} successfully`, loadExperience);
+            },
+            error: function(xhr, status, error) {
+                console.error('Experience save/update failed:', xhr);
+                showError(`Failed to ${expId ? 'update' : 'add'} experience`);
+            }
+        });
+    }
+
+    function deleteExperience(id) {
+        console.log('Delete experience clicked for ID:', id);
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:5140/api/ApplicantApi/profile/experience/delete/${id}`,
+                    type: 'DELETE',
+                     headers: authHeaders(),
+                    success: function(response) {
+                        console.log('Delete successful:', response);
+                        showSuccess('Experience has been deleted.', loadExperience);
+                    },
+                    error: function(xhr) {
+                        console.error('Delete failed:', xhr);
+                        showError('Failed to delete experience.');
+                    }
+                });
+            }
+        });
+    }
+
+    // ========== EDUCATION ==========
+    function loadEducation() {
+        const url = `http://localhost:5140/api/ApplicantApi/profile/education`;
+        console.log('Loading education from:', url);
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+             headers: authHeaders(),
+            dataType: 'json',
+            success: function(data) {
+                console.log('Education loaded:', data);
+                
+                if(!data || data.length === 0) {
+                    $('#educationList').html(`
+                        <div class="empty-state">
+                            <i class="k-icon k-i-book"></i>
+                            <p>No education added yet</p>
+                        </div>
+                    `);
+                    return;
+                }
+                
+                let html = '';
+                data.forEach(edu => {
+                    html += `
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <div>
+                                        <div class="timeline-title">${edu.c_degree || ''} in ${edu.c_fieldofstudy || ''}</div>
+                                        <div class="timeline-meta">${edu.c_schoolname || ''}</div>
+                                        <div class="timeline-meta">${edu.c_city || ''}, ${edu.c_state || ''}</div>
+                                        <div class="timeline-meta">${edu.c_startyear || ''} - ${edu.c_endyear || ''}</div>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-blue btn-icon" onclick="editEducation(${edu.c_education_detail_id})">
+                                            <i class="k-icon k-i-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-icon" onclick="deleteEducation(${edu.c_education_detail_id})">
+                                            <i class="k-icon k-i-delete"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#educationList').html(html);
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to load education:', error);
+                $('#educationList').html(`
+                    <div class="empty-state">
+                        <i class="k-icon k-i-book"></i>
+                        <p>Error loading education</p>
+                    </div>
+                `);
+            }
+        });
+    }
+
+    function addEducation() {
+        console.log('Add education clicked');
+        showEducationDialog(null);
+    }
+
+    function editEducation(id) {
+        console.log('Edit education clicked for ID:', id);
+
+        $.ajax({
+            url: 'http://localhost:5140/api/ApplicantApi/profile/education',
+            type: 'GET',
+            headers: authHeaders(),   
+            success: function (data) {
+                console.log('All educations loaded:', data);
+
+                const edu = data.find(e => e.c_education_detail_id === id);
+                if (!edu) {
+                    showError('Education not found');
+                    return;
+                }
+
+                console.log('Found education to edit:', edu);
+                showEducationDialog(edu);
+            },
+            error: function (xhr) {
+                console.error('Failed to load education for edit:', xhr);
+                showError('Failed to load education data');
+            }
+        });
+    }
+
+    function showEducationDialog(edu) {
+        console.log('Showing education dialog for:', edu);
+        
+        edu = edu || {};
+        const isEdit = !!edu.c_education_detail_id;
+        
+        const content = `
+            <input type="hidden" id="eduId" value="${edu.c_education_detail_id || ''}">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">School/University Name *</label>
+                    <input id="eduSchool" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_schoolname || ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Degree *</label>
+                    <input id="eduDegree" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_degree || ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Field of Study</label>
+                    <input id="eduField" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_fieldofstudy || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Start Year *</label>
+                    <input id="eduStartYear" type="number" min="1900" max="2099" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_startyear || ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">End Year *</label>
+                    <input id="eduEndYear" type="number" min="1900" max="2099" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_endyear || ''}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">State</label>
+                    <input id="eduState" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_state || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">City</label>
+                    <input id="eduCity" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" 
+                           value="${edu.c_city || ''}">
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button class="btn btn-outline-blue me-2" onclick="closeCurrentDialog()">Cancel</button>
+                <button class="btn btn-blue" onclick="saveEducation()">${isEdit ? 'Update' : 'Save'} Education</button>
+            </div>
+        `;
+        
+        showDialog(isEdit ? 'Edit Education' : 'Add Education', content, 700);
+    }
+
+    function saveEducation() {
+        console.log('Save/Update education clicked');
+        
+        // Validate required fields
+        const schoolName = $('#eduSchool').val()?.trim();
+        const degree = $('#eduDegree').val()?.trim();
+        const startYear = parseInt($('#eduStartYear').val());
+        const endYear = parseInt($('#eduEndYear').val());
+        const eduId = $('#eduId').val();
+        
+        if(!schoolName) {
+            showError('Please enter school/university name');
+            return;
+        }
+        
+        if(!degree) {
+            showError('Please enter degree');
+            return;
+        }
+        
+        if(!startYear || !endYear) {
+            showError('Please enter both start and end years');
+            return;
+        }
+        
+        if(endYear < startYear) {
+            showError('End year cannot be before start year');
+            return;
+        }
+        
+        const data = {
+            c_schoolname: $('#eduSchool').val(),
+            c_degree: $('#eduDegree').val(),
+            c_fieldofstudy: $('#eduField').val(),
+            c_startyear: startYear,
+            c_endyear: endYear,
+            c_state: $('#eduState').val(),
+            c_city: $('#eduCity').val()
+        };
+
+        if(eduId) {
+            data.c_education_detail_id = parseInt(eduId);
+        }
+
+        console.log('Education data to save/update:', data);
+
+        const url = eduId ? 
+            'http://localhost:5140/api/ApplicantApi/profile/education/update' : 
+            'http://localhost:5140/api/ApplicantApi/profile/education/add';
+            
+        const method = eduId ? 'PUT' : 'POST';
+
+        $.ajax({
+            url: url,
+            type: method,
+            headers: authHeaders(),
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                console.log('Education save/update successful:', response);
+                showSuccess(`Education ${eduId ? 'updated' : 'added'} successfully`, loadEducation);
+            },
+            error: function(xhr, status, error) {
+                console.error('Education save/update failed:', xhr);
+                showError(`Failed to ${eduId ? 'update' : 'add'} education`);
+            }
+        });
+    }
+
+    function deleteEducation(id) {
+        console.log('Delete education clicked for ID:', id);
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:5140/api/ApplicantApi/profile/education/delete/${id}`,
+                    type: 'DELETE',
+                     headers: authHeaders(),
+                    success: function(response) {
+                        console.log('Delete successful:', response);
+                        showSuccess('Education has been deleted.', loadEducation);
+                    },
+                    error: function(xhr) {
+                        console.error('Delete failed:', xhr);
+                        showError('Failed to delete education.');
+                    }
+                });
+            }
+        });
+    }
+
+    // ========== CERTIFICATES ==========
+    function loadCertificates() {
+        const url = `http://localhost:5140/api/ApplicantApi/profile/certificate`;
+        
+        $.ajax({
+            url: url,
+            type: 'GET',
+             headers: authHeaders(),
+            dataType: 'json',
+            success: function(data) {
+                if(!data || data.length === 0) {
+                    $('#certificateList').html(`
+                        <div class="empty-state">
+                            <i class="k-icon k-i-certificate"></i>
+                            <p>No certificates added yet</p>
+                        </div>
+                    `);
+                    return;
+                }
+                
+                let html = '';
+                data.forEach(cert => {
+                    @* const fileUrl = cert.c_certificatefile || ''; *@
+                    const fileName = cert.c_certificatefile || '';
+                    const fileUrl = fileName
+                        ? '/uploads/certificates/' + fileName
+                        : '';
+
+                    @* const fileName = fileUrl ? fileUrl.split('/').pop() : 'No file'; *@
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    
+                    let fileIcon = 'k-i-file';
+                    if (fileExtension === 'pdf') {
+                        fileIcon = 'k-i-file-pdf';
+                    } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                        fileIcon = 'k-i-file-image';
+                    } else if (['doc', 'docx'].includes(fileExtension)) {
+                        fileIcon = 'k-i-file-data';
+                    }
+                    
+                    html += `
+                        <div class="certificate-card">
+                            <div>
+                                <div class="timeline-title mb-2">${cert.c_certificatename || 'No Name'}</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${fileUrl ? 
+                                        `<a href="${fileUrl}" target="_blank" class="btn btn-outline-blue btn-sm">
+                                            <i class="k-icon ${fileIcon}"></i> View
+                                        </a>` : 
+                                        '<span class="text-muted">No file uploaded</span>'
+                                    }
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline-danger btn-icon" onclick="deleteCertificate(${cert.c_certificate_id})">
+                                    <i class="k-icon k-i-delete"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#certificateList').html(html);
+            },
+            error: function() {
+                $('#certificateList').html(`
+                    <div class="empty-state">
+                        <i class="k-icon k-i-certificate"></i>
+                        <p>Error loading certificates</p>
+                    </div>
+                `);
+            }
+        });
+    }
+
+    function addCertificate() {
+        const content = `
+            <div class="mb-3">
+                <label class="form-label">Certificate Name *</label>
+                <input id="certName" style="width:100%; padding:10px; border:2px solid #e5e7eb; border-radius:8px;" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Certificate File *</label>
+                <div class="file-upload-area" onclick="$('#certFile').click()">
+                    <i class="k-icon k-i-upload" style="font-size: 2rem; color: var(--primary-blue);"></i>
+                    <p class="mb-0 mt-2">Click to upload certificate</p>
+                    <small class="text-muted">PDF, JPG, PNG, DOC, DOCX supported (max 10MB)</small>
+                </div>
+                <input type="file" id="certFile" style="display:none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                <div id="certFileName" class="mt-2 text-muted">No file selected</div>
+            </div>
+            <div class="text-end mt-3">
+                <button class="btn btn-outline-blue me-2" onclick="closeCurrentDialog()">Cancel</button>
+                <button class="btn btn-blue" onclick="saveCertificate()">Save Certificate</button>
+            </div>
+        `;
+        
+        const dialogId = showDialog('Add Certificate', content, 600);
+        
+        setTimeout(() => {
+            $('#certFile').on('change', function() {
+                if(this.files[0]) {
+                    const file = this.files[0];
+                    const fileName = file.name;
+                    $('#certFileName').text(`Selected: ${fileName}`);
+                }
+            });
+        }, 100);
+    }
+
+    function saveCertificate() {
+        const certificateName = $('#certName').val();
+        if(!certificateName) {
+            showError('Please enter certificate name');
+            return;
+        }
+        
+        const file = $('#certFile')[0].files[0];
+        if(!file) {
+            showError('Please select a certificate file');
+            return;
+        }
+        
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+            showError('File size should be less than 10MB');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('c_certificatename', certificateName);
+        formData.append('certificateform', file);
+        
+        $.ajax({
+            url: 'http://localhost:5140/api/ApplicantApi/profile/certificate/add',
+            type: 'POST',
+             headers: authHeaders(),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function() {
+                showSuccess('Certificate added successfully', loadCertificates);
+            },
+            error: function() {
+                showError('Failed to add certificate');
+            }
+        });
+    }
+
+    function deleteCertificate(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This certificate will be permanently deleted!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `http://localhost:5140/api/ApplicantApi/profile/certificate/delete/${id}`,
+                    type: 'DELETE',
+                     headers: authHeaders(),
+                    success: function() {
+                        showSuccess('Certificate has been deleted.', loadCertificates);
+                    },
+                    error: function() {
+                        showError('Failed to delete certificate.');
+                    }
+                });
+            }
+        });
+    }
+
+    // ========== PROFILE IMAGE HANDLING ==========
+    function handleProfileImageChange(input) {
+        console.log('Profile image changed');
+        
+        if(input.files && input.files[0]) {
+            const file = input.files[0];
+            console.log('Selected file:', file.name, 'Size:', file.size, 'Type:', file.type);
+            
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                showError('Please select a valid image file (JPEG, PNG, GIF)');
+                return;
+            }
+            
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showError('Image size should be less than 2MB');
+                return;
+            }
+            
+            // Preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#profileImagePreview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(file);
+            
+            // Auto-upload
+            const formData = new FormData();
+            
+            formData.append('imageform', file);
+            
+            console.log('Uploading profile image...');
+            console.log('FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}:`, value instanceof File ? `${value.name} (${value.size} bytes)` : value);
+            }
+            
+            $.ajax({
+                url: 'http://localhost:5140/api/ApplicantApi/profile/vm-user/update',
+                type: 'POST',
+                headers: authHeaders(),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log('Profile image upload successful:', response);
+                    showSuccess('Profile image updated', loadUserProfile);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Profile image upload failed:', xhr);
+                    
+                    // Try to parse error response
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        console.error('Error details:', response);
+                        showError('Failed to update profile image: ' + (response.title || response.message || xhr.statusText));
+                    } catch {
+                        showError('Failed to update profile image: ' + xhr.status + ' ' + xhr.statusText);
+                    }
+                }
+            });
+        }
+    }
+</script>
+}

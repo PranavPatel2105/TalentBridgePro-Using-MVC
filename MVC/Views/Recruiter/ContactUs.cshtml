@@ -1,0 +1,347 @@
+﻿@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "~/Views/Shared/_RecruiterLayout.cshtml";
+    var username = @Context.Session.GetString("Name");
+}
+
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: #eff6ff;
+        margin: 0;
+    }
+
+    .contact-page {
+        max-width: 1200px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+
+    /* HEADER */
+    .contact-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .badge {
+        background: #dbeafe;
+        color: #1d4ed8;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        display: inline-block;
+    }
+
+    .contact-header h1 {
+        font-size: 42px;
+        margin: 15px 0;
+        color: #1e3a8a;
+    }
+
+    .contact-header h1 span {
+        color: #2563eb;
+    }
+
+    .contact-header p {
+        color: #475569;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* GRID */
+    .contact-container {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 30px;
+    }
+
+    /* LEFT INFO */
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .info-card {
+        background: #ffffff;
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        padding: 18px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .info-card:hover {
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+    }
+
+    .info-card h4 {
+        margin: 0;
+        color: #1e40af;
+        font-size: 16px;
+    }
+
+    .info-card p {
+        margin: 0;
+        color: #475569;
+        font-size: 14px;
+    }
+
+    .bi {
+        font-size: 22px;
+        color: #2563eb;
+    }
+
+    /* FORM */
+    .contact-form {
+        background: #ffffff;
+        border: 1px solid #dbeafe;
+        border-radius: 18px;
+        padding: 32px;
+    }
+
+    .contact-form h3 {
+        margin-bottom: 5px;
+        color: #1e40af;
+    }
+
+    .contact-form p {
+        color: #475569;
+        margin-bottom: 20px;
+    }
+
+    .contact-form label {
+        font-weight: 600;
+        color: #1e3a8a;
+        font-size: 14px;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        width: 100%;
+    }
+
+    /* KENDO INPUT STYLE */
+    .k-textbox,
+    .k-textarea {
+        border-radius: 10px !important;
+        border-color: #bfdbfe !important;
+        font-size: 14px;
+    }
+
+    .k-textbox:focus,
+    .k-textarea:focus {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    }
+
+    /* BUTTON */
+    #sendBtn {
+        width: 100%;
+        background: #1565c0;
+        color: white;
+
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px;
+        border: none;
+    }
+
+    #sendBtn:hover {
+        background: #3b82f6;
+    }
+
+    /* ---------------- RESPONSIVE ---------------- */
+
+    /* Tablet */
+    @@media (max-width: 1024px) {
+        .contact-container {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-header h1 {
+            font-size: 36px;
+        }
+    }
+
+    /* Mobile */
+    @@media (max-width: 768px) {
+        .contact-page {
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .contact-header h1 {
+            font-size: 30px;
+        }
+
+        .contact-form {
+            padding: 24px;
+        }
+    }
+
+    /* Small Mobile */
+    @@media (max-width: 480px) {
+        .contact-header h1 {
+            font-size: 26px;
+        }
+
+        .info-card {
+            padding: 14px;
+        }
+
+        .bi {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<div class="contact-page">
+
+    <!-- HEADER -->
+    <div class="contact-header">
+        <span class="badge">Get in touch</span>
+        <h1>Let's start a <span>conversation</span></h1>
+        <p>Have a question or want to work together? We'd love to hear from you.</p>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="contact-container">
+
+        <!-- LEFT -->
+        <div class="contact-info">
+            <div class="info-card">
+                <i class="bi bi-envelope"></i>
+                <div>
+                    <h4>Email</h4>
+                    <p>talent.bridge.pro00@gmail.com</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <i class="bi bi-telephone"></i>
+                <div>
+                    <h4>Phone</h4>
+                    <p>+91 261 498 7320</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <i class="bi bi-geo-alt"></i>
+                <div>
+                    <h4>Office</h4>
+                    <p>401, Trade Center, Ring Road, Surat, Gujarat</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="contact-form">
+            <h3>Send us a message</h3>
+            <p>Fill out the form and we'll get back within 24 hours.</p>
+
+            <form id="contactForm">
+                @* <label>Full Name</label><br />
+                <input id="name" /><br /><br />
+
+                <label>Email</label><br />
+                <input id="email" /><br /><br /> *@
+
+                <label>Subject</label><br />
+                <input id="subject" /><br /><br />
+
+                <label>Message</label><br />
+                <textarea id="message"></textarea><br /><br />
+
+                <button id="sendBtn" type="submit">Send Message</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+        console.log("JWT Token:", token);
+        $(document).ready(function () {
+
+            @* $("#name").kendoTextBox();
+            $("#email").kendoTextBox(); *@
+                $("#subject").kendoTextBox();
+            $("#message").kendoTextArea({ rows: 4 });
+
+
+            $("#contactForm").on("submit", function (e) {
+
+                e.preventDefault();
+
+                @* const name = $("#name").val();
+                const email = $("#email").val(); *@
+                        const subject = $("#subject").val();
+                const message = $("#message").val();
+
+                if (subject === "" || message === "") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Required Fields Missing",
+                        text: "Please fill in Subject and Message before submitting.",
+                        confirmButtonColor: "#2563eb"
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:5140/api/RecruiterApi/AddContactUsDetails",
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    dataType: "json",
+                    data: JSON.stringify({
+                        c_subject: subject,
+                        c_message: message
+                    }),
+                    beforeSend: function () {
+                        $("#sendBtn").prop("disabled", true).text("Sending...");
+                    },
+                    success: function (res) {
+
+                        if (res.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Message Sent!",
+                                text: "Thank you! Your message has been sent successfully.",
+                                confirmButtonColor: "#2563eb"
+                            });
+
+                            $("#contactForm")[0].reset();
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: res.error || "Something went wrong.",
+                                confirmButtonColor: "#ef4444"
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Server Error",
+                            text: "Unable to submit message. Please try again later.",
+                            confirmButtonColor: "#ef4444"
+                        });
+                    },
+                    complete: function () {
+                        $("#sendBtn").prop("disabled", false).text("Send Message");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,627 @@
+﻿
+@{
+    ViewData["Title"] = "Edit Recruiter";
+    Layout = "~/Views/Shared/_RecruiterLayout.cshtml";
+    var username = @Context.Session.GetString("Name");
+    
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Recruiter Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://kendo.cdn.telerik.com/2024.1.319/styles/kendo.default-v2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2024.1.319/js/kendo.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body>
+    <style>
+        body {
+            background: #f4f8ff;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            color: #fff;
+            border-radius: 14px;
+            padding: 22px 26px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .profile-header .icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .card-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        .photo-box {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .photo-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px dashed #cfe2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fbff;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .photo-circle:hover {
+            border-color: #1e88e5;
+            background: #e3f2fd;
+        }
+
+        .photo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-circle .placeholder-icon {
+            font-size: 25px;
+            color: #90caf9;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            background: #f9fbfd;
+        }
+
+        .form-control[readonly] {
+            background: #eef1f4;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .gender-box label {
+            border: 1px solid #dbe3f0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .gender-box input:checked+label {
+            background: #e3f2fd;
+            border-color: #1e88e5;
+            color: #1e88e5;
+        }
+
+        .status-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+
+        .btn-update {
+            background: #1565c0;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 26px;
+        }
+
+        .k-datepicker .k-input-button {
+            border-left: 1px solid #dbe3f0;
+            background: #f9fbfd;
+        }
+
+        /* Modern date picker styling */
+        input[type="date"] {
+            position: relative;
+            padding-right: 40px;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        /* RESPONSIVE STYLES */
+        @@media (max-width: 768px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .profile-header {
+                padding: 18px 20px;
+                margin-bottom: 20px;
+                border-radius: 12px;
+            }
+
+            .profile-header .icon {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+
+            .profile-header h5 {
+                font-size: 1.1rem;
+            }
+
+            .profile-header small {
+                font-size: 0.85rem;
+            }
+
+            .card-box {
+                padding: 18px;
+                margin-bottom: 18px;
+                border-radius: 12px;
+            }
+
+            .card-box h6 {
+                font-size: 1rem;
+            }
+
+            .photo-box {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .photo-circle {
+                width: 140px;
+                height: 140px;
+            }
+
+            .gender-box {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .gender-box label {
+                margin-right: 0;
+                margin-bottom: 0;
+            }
+
+            .btn-update {
+                width: 100%;
+                padding: 12px 26px;
+            }
+
+            .text-end {
+                text-align: center !important;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .profile-header {
+                padding: 15px 18px;
+                gap: 12px;
+            }
+
+            .profile-header .icon {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            .profile-header h5 {
+                font-size: 1rem;
+            }
+
+            .profile-header small {
+                font-size: 0.8rem;
+            }
+
+            .card-box {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .photo-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .photo-circle .placeholder-icon {
+                font-size: 22px;
+            }
+
+            .upload-hint {
+                font-size: 12px;
+            }
+
+            .form-label {
+                font-size: 0.9rem;
+            }
+
+            .form-control {
+                font-size: 0.9rem;
+            }
+
+            textarea.form-control {
+                min-height: 100px;
+            }
+
+            .gender-box label {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @@media (max-width: 400px) {
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .profile-header {
+                padding: 12px 15px;
+            }
+
+            .card-box {
+                padding: 12px;
+            }
+
+            .photo-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .btn-update {
+                font-size: 0.9rem;
+            }
+
+            .gender-box label {
+                padding: 5px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+
+    <div class="container mt-4">
+
+        <div class="profile-header">
+            <div class="icon">👤</div>
+            <div>
+                <h5 class="mb-0">Edit Recruiter Profile</h5>
+                <small>Update your personal information</small>
+            </div>
+        </div>
+
+        <form id="recruiterForm" enctype="multipart/form-data">
+
+            <input type="hidden" id="c_userid" name="c_userid" />
+
+            <!-- PROFILE PHOTO -->
+            <div class="card-box">
+                <h6 class="mb-3">Profile Photo</h6>
+
+                <div class="photo-box">
+                    <div class="photo-circle" id="photoCircle">
+                        <div class="placeholder-icon" id="placeholderIcon">📷</div>
+                        <img src="" id="profileImg" style="display: none;" />
+                    </div>
+                    <input type="file" id="imageform" name="imageform" hidden accept=".jpg,.jpeg,.png" />
+
+                    <div>
+                        <p class="mb-1">
+                            <strong>Click the circle</strong> to upload a professional photo. This will be visible to
+                            job seekers.
+                        </p>
+                        <small class="upload-hint">JPG or PNG only • Max 5MB</small><br />
+                        <small class="text-danger" id="err_image"></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PERSONAL INFORMATION -->
+            <div class="card-box">
+                <h6 class="mb-3">Personal Information</h6>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="c_name" name="c_name" class="form-control"
+                            placeholder="Enter your full name" />
+                        <small class="text-danger" id="err_name"></small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Gender *</label><br />
+                        <div class="gender-box">
+                            <input type="radio" name="c_gender" value="Male" id="male" hidden />
+                            <label for="male">Male</label>
+
+                            <input type="radio" name="c_gender" value="Female" id="female" hidden />
+                            <label for="female">Female</label>
+
+                            <input type="radio" name="c_gender" value="Other" id="other" hidden />
+                            <label for="other">Other</label>
+                        </div>
+                        <small class="text-danger" id="err_gender"></small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mobile Number *</label>
+                        <input type="text" id="c_contactno" name="c_contactno" class="form-control"
+                            placeholder="Enter 10-digit mobile number" />
+                        <small class="text-danger" id="err_mobile"></small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Email Address</label>
+                        <input type="text" id="c_email" name="c_email" class="form-control" readonly />
+                        <small class="text-muted">Email cannot be changed</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Date of Birth *</label>
+                        <input type="date" id="c_dob" name="c_dob" class="form-control" placeholder="dd-mm-yyyy" />
+                        <small class="text-danger" id="err_dob"></small>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label">Address</label>
+                        <textarea id="c_address" name="c_address" class="form-control"
+                            placeholder="Enter your full address"></textarea>
+                        <small class="text-danger" id="err_address"></small>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ACCOUNT INFORMATION -->
+            <div class="card-box">
+                <h6 class="mb-3">Account Information</h6>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Role</label>
+                        <input class="form-control" id="c_role" name="c_role" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Status</label>
+                        <div>
+                            <input class="form-control d-inline-block w-75" id="c_status" name="c_status" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="c_password" name="c_password" />
+            <input type="hidden" id="c_confirmpassword" name="c_confirmpassword" />
+            <!-- BUTTON -->
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary btn-update">
+                    Update Recruiter Profile
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+        console.log("JWT Token For Edit Recruiter:", token);
+
+        $(document).ready(function () {
+
+            // Click on circle to open file picker
+            $("#photoCircle").click(function () {
+                $("#imageform").click();
+            });
+
+            // Preview image when file is selected
+            $("#imageform").change(function (e) {
+                const file = e.target.files[0];
+
+                if (file) {
+                    // Validate file type
+                    if (!["image/jpeg", "image/png"].includes(file.type)) {
+                        $("#err_image").text("Only JPG or PNG images allowed");
+                        this.value = '';
+                        return;
+                    }
+
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        $("#err_image").text("Image size should not exceed 5MB");
+                        this.value = '';
+                        return;
+                    }
+
+                    // Clear error and show preview
+                    $("#err_image").text("");
+
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        $("#profileImg").attr("src", event.target.result).show();
+                        $("#placeholderIcon").hide();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function clearErrors() {
+                $("#err_name,#err_gender,#err_mobile,#err_dob,#err_address,#err_image").text("");
+            }
+
+            function validateRecruiterForm() {
+                clearErrors();
+                let valid = true;
+
+                const name = $("#c_name").val().trim();
+                const gender = $("input[name='c_gender']:checked").val();
+                const mobile = $("#c_contactno").val().trim();
+                const dob = $("#c_dob").val();
+                const address = $("#c_address").val().trim();
+                const image = $("#imageform")[0].files[0];
+
+                if (!name) { $("#err_name").text("Full name is required"); valid = false; }
+                else if (name.length > 100) { $("#err_name").text("Name cannot exceed 100 characters"); valid = false; }
+
+                if (!gender) { $("#err_gender").text("Gender is required"); valid = false; }
+
+                if (!/^[6-9]\d{9}$/.test(mobile)) {
+                    $("#err_mobile").text("Enter valid Indian mobile number");
+                    valid = false;
+                }
+
+                if (!dob) { $("#err_dob").text("Date of birth is required"); valid = false; }
+
+                if (!address) { $("#err_address").text("Address is required"); valid = false; }
+
+                if (address.length > 500) {
+                    $("#err_address").text("Address cannot exceed 500 characters");
+                    valid = false;
+                }
+
+                if (image && !["image/jpeg", "image/png"].includes(image.type)) {
+                    $("#err_image").text("Only JPG or PNG images allowed");
+                    valid = false;
+                }
+
+                return valid;
+            }
+
+            $.ajax({
+                url: "http://localhost:5140/api/RecruiterApi/me",
+                type: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                success: function (res) {
+                    $("#c_userid").val(res.c_userid);
+                    $("#c_name").val(res.c_name);
+                    $("#c_contactno").val(res.c_contactno);
+                    $("#c_email").val(res.c_email);
+                    $("#c_address").val(res.c_address);
+                    $("#c_role").val(res.c_role);
+                    $("#c_status").val(res.c_status);
+                    $("#c_password").val(res.c_password);
+                    $("#c_confirmpassword").val(res.c_password);
+
+                    if (res.c_gender) {
+                        $("#" + res.c_gender.toLowerCase()).prop("checked", true);
+                    }
+
+                    if (res.c_dob) {
+                        $("#c_dob").val(new Date(res.c_dob).toISOString().split("T")[0]);
+                    }
+
+                    if (res.c_profile_image) {
+                        $("#profileImg").attr("src", "/user_images/" + res.c_profile_image).show();
+                        $("#placeholderIcon").hide();
+                    }
+                },
+                error: function (err) {
+                    console.error("GET recruiter failed:", err);
+                }
+            });
+
+
+
+
+            $("#recruiterForm").submit(function (e) {
+                console.log("on submit.........................");
+                e.preventDefault();
+
+                if (!validateRecruiterForm()) {
+                    console.log("Validation failed");
+                    return;
+                }
+
+                const formData = new FormData(this);
+
+                const btn = $(".btn-update");
+                const originalText = btn.text();
+                btn.prop("disabled", true).text("Updating...");
+
+                console.log("Submitting form data to API...");
+
+                $.ajax({
+                    url: "http://localhost:5140/api/RecruiterApi/editrecruiter",
+                    type: "PUT",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+
+                    success: function (response) {
+                        console.log("Success:", response);
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Profile Updated",
+                            text: "Your recruiter profile has been updated successfully.",
+                            confirmButtonColor: "#1e88e5"
+                        });
+
+                        btn.prop("disabled", false).text(originalText);
+                    },
+
+                    error: function (xhr, status, error) {
+                        console.error("Error:", xhr.responseText);
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Update Failed",
+                            text: "Something went wrong. Please try again later.",
+                            confirmButtonColor: "#d33"
+                        });
+
+                        btn.prop("disabled", false).text(originalText);
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+
+</html>

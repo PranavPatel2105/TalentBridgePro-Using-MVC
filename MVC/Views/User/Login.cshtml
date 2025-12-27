@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TalentBridgePro</title>
+
+    <!-- Libraries -->
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2023.3.1010/styles/kendo.common.min.css">
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2023.3.1010/styles/kendo.default.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F4F8FF;
+            overflow-x: hidden;
+        }
+
+        /* ================= NAVBAR (SAME AS INDEX) ================= */
+        .navbar {
+            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+            height: 72px;
+            margin: 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(13, 71, 161, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-wrapper {
+            background: #F4F8FF;
+            /* same as body background */
+            padding-top: 1px;
+            /* creates separation layer */
+        }
+
+        .nav-container {
+            height: 100%;
+            width: 100%;
+            padding: 0 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .home-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .home-icon:hover {
+            background: white;
+            color: #1E88E5;
+            transform: translateY(-2px);
+        }
+
+        /* ================= PAGE LAYOUT ================= */
+        .login-container {
+            display: flex;
+            height: calc(100vh - 112px);
+            /* navbar height + margin */
+        }
+
+        /* LEFT SECTION */
+        .left-section {
+            flex: 1;
+            background: linear-gradient(135deg, #0D47A1, #1565C0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            padding: 60px;
+        }
+
+        .left-section::after {
+            content: '';
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            top: -150px;
+            right: -150px;
+        }
+
+        .brand-content {
+            text-align: center;
+            max-width: 480px;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            font-size: 52px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .brand-title {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .brand-subtitle {
+            font-size: 18px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        /* RIGHT SECTION */
+        .right-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 460px;
+            background: white;
+            border-radius: 25px;
+            padding: 50px 45px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 30px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+        }
+
+        .login-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .login-subtitle {
+            color: #6C757D;
+            font-size: 14px;
+        }
+
+        /* ================= PASSWORD (UNCHANGED LOGIC) ================= */
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .k-input-inner {
+            padding-right: 42px !important;
+        }
+
+        .password-eye {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 16px;
+            color: #6b7280;
+            z-index: 5;
+        }
+
+        .password-eye:hover {
+            color: #1E88E5;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .forgot-password a {
+            font-size: 13px;
+            color: #1E88E5;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* BUTTON */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 16px;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(30, 136, 229, 0.45);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 22px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 18px;
+            font-size: 14px;
+        }
+
+        .login-footer a {
+            color: #1E88E5;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @@media (max-width: 900px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .left-section {
+                height: 40vh;
+            }
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar-wrapper">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="/User/Index" class="logo">
+                    <i class="fas fa-briefcase"></i>
+                    TalentBridgePro
+                </a>
+
+                <a href="/User/Index" class="home-icon" title="Home">
+                    <i class="fas fa-house"></i>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- PAGE -->
+    <div class="login-container">
+
+        <!-- LEFT -->
+        <div class="left-section">
+            <div class="brand-content">
+                <div class="brand-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h1 class="brand-title">Welcome Back</h1>
+                <p class="brand-subtitle">
+                    Sign in to continue your journey with TalentBridgePro.
+                </p>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="right-section">
+            <div class="login-box">
+
+                <div class="login-header">
+                    <div class="login-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2 class="login-title">Sign In</h2>
+                    <p class="login-subtitle">Access your account securely</p>
+                </div>
+
+                <form id="loginForm" class="k-form"></form>
+
+
+                <div class="login-footer">
+                    Don’t have an account? <a href="#" id="registerLink">Create one</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2023.3.1010/js/kendo.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            let role = sessionStorage.getItem("previewRole");
+
+if (role !== "recruiter") {
+    role = "applicant";
+}
+        const registerLink = document.getElementById("registerLink");
+
+        if (role === "recruiter") {
+            registerLink.href = "/Recruiter/Register";
+        } else {
+            registerLink.href = "/Applicant/Register";
+        }
+
+            $("#loginForm").kendoForm({
+                items: [
+                    {
+                        field: "c_email",
+                        label: "Email Address",
+                        editor: function (container, options) {
+                            $(`<input type="email"
+                  name="${options.field}"
+                  required
+                  validationMessage="Please enter your email address"
+                  placeholder="Enter your email" />`)
+                                .appendTo(container)
+                                .kendoTextBox();
+                        },
+                        validation: {
+                            required: {
+                                message: "Please enter your email address"
+                            }
+                        }
+                    }
+                    ,
+                    {
+                        field: "c_password",
+                        label: "Password",
+                        editor: function (container, options) {
+
+                            const wrapper = $("<div class='password-wrapper'></div>")
+                                .appendTo(container);
+
+                            $(
+                                `<input type="password"
+                                    id="${options.field}"
+                                    name="${options.field}"
+                                    required
+                                    validationMessage="Password is required"
+                                    placeholder="Enter your password" />`
+                            )
+                                .appendTo(wrapper)
+                                .kendoTextBox({ width: "100%" });
+
+                            wrapper.find(".k-input")
+                                .append(`
+                                <span class="password-eye" data-target="${options.field}">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            `);
+
+                            container.append(`
+                            <div class="forgot-password">
+                                <a href="/User/ForgotPassword">Forgot Password?</a>
+                            </div>
+                        `);
+                        },
+                        validation: {
+                            required: true
+                        }
+                    },
+                    {
+                        field: "captcha",
+                        label: " ",
+                        editor: function (container) {
+
+                            const captchaDiv = $(`
+            <div id="recaptcha-container"
+                 style="margin-top:10px; min-height:78px;" data-callback="onCaptchaSuccess"
+     data-expired-callback="onCaptchaExpired">
+            </div>
+            <small id="captchaError" style="color:red;"></small>
+        `);
+
+                            container.append(captchaDiv);
+
+                            // Delay render until Google script is ready
+                            setTimeout(function () {
+                                if (typeof grecaptcha !== "undefined") {
+                                    grecaptcha.render("recaptcha-container", {
+                                        sitekey: "6LebQC8sAAAAAJyGJO3VmE8QXfqqMwOwg2cIDZem"
+                                    });
+                                }
+                            }, 500);
+                        }
+                    }
+
+                ],
+                buttonsTemplate: `
+                <button type="submit" class="btn-login mt-3">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </button>
+             `,
+                submit: function (e) {
+                    e.preventDefault();
+
+                    const captchaResponse = grecaptcha.getResponse();
+
+                    if (!captchaResponse) {
+                        $("#captchaError").text("Please verify that you are not a robot");
+                        return;
+                    }
+
+                    const formData = new FormData($("#loginForm")[0]);
+
+                    Swal.fire({
+                        title: 'Signing you in…!',
+                        background: '#ffffff',
+                        color: '#0d47a1',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+
+                    $.ajax({
+    url: "http://localhost:5140/api/UserApi/Login",
+    type: "POST",
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function (apiRes) {
+        console.log("API Response:", apiRes);
+  // 🔥 REQUIRED FOR [Authorize]
+        $.ajax({
+            url: "/User/SaveSession",
+            type: "POST",
+            data: {
+                token: apiRes.token,
+                userid: apiRes.user.userid,
+                name: apiRes.user.name,
+                email: apiRes.user.email,
+                role: apiRes.user.role
+            },
+            success: function () {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Authenticated, Welcome Back! 😀',
+                    html: '<b>TalentBridgePro</b> is preparing your workspace…',
+                    background: '#ffffff',
+                    color: '#0d47a1',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    iconColor: '#0d47a1'
+                }).then(function () {
+                    
+                    // 🔥 Use apiRes here (not Swal result)
+                    switch (apiRes.user.role) {
+                        case "recruiter":
+                            window.location.href = "/Recruiter/Index";
+                            break;
+                        case "applicant":
+                            window.location.href = "/Applicant/Dashboard";
+                            break;
+                        case "admin":
+                            window.location.href = "/Admin/Index";
+                            break;
+                        default:
+                            window.location.href = "/User/Index";
+                            break;
+                    }
+                });
+            },
+            error: function () {
+                Swal.fire({
+                    title: 'Session Error',
+                    text: 'There was an error saving your session. Please try again.',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    },
+    error: function () {
+        Swal.fire('Login Failed', 'Invalid email or password', 'error');
+    }
+});
+
+                }
+            });
+
+            $(document).on("click", ".password-eye", function () {
+                const input = $("#" + $(this).data("target"));
+                const icon = $(this).find("i");
+
+                if (input.attr("type") === "password") {
+                    input.attr("type", "text");
+                    icon.removeClass("fa-eye").addClass("fa-eye-slash");
+                } else {
+                    input.attr("type", "password");
+                    icon.removeClass("fa-eye-slash").addClass("fa-eye");
+                }
+            });
+
+        });
+        function onCaptchaExpired() {
+            $("#captchaError").text("Captcha expired. Please verify again.");
+        }
+
+        function onCaptchaSuccess() {
+            $("#captchaError").text("");
+        }
+    </script>
+
+</body>
+
+</html>

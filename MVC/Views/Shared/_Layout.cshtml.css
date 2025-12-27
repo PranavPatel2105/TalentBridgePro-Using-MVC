@@ -1,0 +1,347 @@
+﻿/* /* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+/*
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a {
+  color: #0077cc;
+}
+
+body {
+    padding-top: 72px;
+}
+
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #0D47A1, #1565C0);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(13, 71, 161, 0.3);
+}
+
+.nav-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2.5rem;
+}
+
+.logo {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+ */
+
+/* wwwroot/css/site.css */
+
+/* Basic Reset & Body */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: #F4F8FF;
+    color: #212529;
+    line-height: 1.6;
+    padding-top: 72px; /* Important: prevents content from hiding under sticky navbar */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Links */
+a {
+    color: #0077cc;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Custom Navbar */
+.navbar {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 72px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(13, 71, 161, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+/* Logo */
+.logo {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+    color: #ffffff;
+}
+
+.logo i {
+    font-size: 1.8rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Right-side Navigation Actions */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* General Button Style */
+.btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+/* Ripple Effect on Hover */
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: 0;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Sign In Button */
+.btn-primary {
+    background: #ffffff;
+    color: #1E88E5;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+}
+
+/* Toggle Button (For Recruiters / For Job Seekers) */
+.btn-switch {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-switch:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.btn-switch.active {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: #ffffff;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.mobile-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Container for Main Content */
+.container {
+    flex: 1;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Footer */
+.footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e5e5e5;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    width: 100%;
+}
+
+.footer .container {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .nav-container {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+    }
+
+    .logo i {
+        font-size: 1.6rem;
+    }
+
+    .nav-actions {
+        gap: 0.8rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    /* Optional: Hide buttons on mobile until you implement dropdown */
+    /* .nav-actions { display: none; } */
+}
+
+@media (max-width: 480px) {
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+}
+
+/* Utility Classes (if needed elsewhere) */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}

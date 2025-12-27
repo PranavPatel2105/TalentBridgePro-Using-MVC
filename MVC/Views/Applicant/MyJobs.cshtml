@@ -1,0 +1,1152 @@
+@{
+    ViewData["Title"] = "My Jobs";
+    Layout = "~/Views/Shared/_ApplicantLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - JobPortal</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        .job-card {
+            border-radius: 12px;
+            transition: all .2s ease;
+            border: 1.5px solid #e5e7eb;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .1);
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .tab-count {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .nav-link.active .tab-count {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .card-title {
+            color: #111827;
+            font-size: 18px;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 8px;
+        }
+
+        .k-overlay {
+            background: rgba(191, 219, 254, 0.4) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Premium popup styling */
+        .k-window {
+            border-radius: 16px !important;
+            box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(147, 197, 253, 0.3);
+            overflow: hidden;
+            max-width: 90vw !important;
+            max-height: 90vh !important;
+        }
+
+        .k-window-titlebar {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            color: #fff;
+            font-weight: 600;
+            font-size: 18px;
+            padding: 20px 30px;
+            border-bottom: 1px solid #93c5fd;
+        }
+
+        .k-window-content {
+            padding: 35px 40px 40px !important;
+            background: #ffffff;
+            overflow-y: auto;
+            max-height: calc(90vh - 80px);
+        }
+
+        /* Modern progress bar */
+        .progress-container {
+            margin-bottom: 35px;
+        }
+
+        .progress {
+            height: 6px;
+            border-radius: 10px;
+            background-color: #dbeafe;
+            overflow: visible;
+            position: relative;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #93c5fd, #60a5fa);
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            background: #60a5fa;
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(96, 165, 250, 0.3);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Step styling */
+        .step {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .step-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 28px;
+            font-weight: 400;
+        }
+
+        /* Form controls */
+        .form-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control,
+        .k-input,
+        .k-textbox {
+            border: 1.5px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: #f8fafc;
+        }
+
+        .form-control:focus,
+        .k-input:focus,
+        .k-textbox:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            outline: none;
+            background: #ffffff;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        /* Kendo DropDownList styling */
+        .k-dropdown,
+        .k-multiselect {
+            border: 1.5px solid #bfdbfe;
+            border-radius: 10px;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .k-dropdown:hover,
+        .k-multiselect:hover {
+            border-color: #93c5fd;
+            background: #ffffff;
+        }
+
+        .k-dropdown.k-state-focused,
+        .k-multiselect.k-state-focused {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            background: #ffffff;
+        }
+
+        .k-dropdown .k-input,
+        .k-multiselect .k-input {
+            border: none;
+            padding: 12px 16px;
+            background: transparent;
+        }
+
+        /* MultiSelect wrapper styling */
+        .k-multiselect-wrap {
+            padding: 8px 12px;
+            min-height: 44px;
+        }
+
+        /* MultiSelect selected tags */
+        .k-multiselect .k-chip {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            border-radius: 6px;
+            padding: 4px 8px;
+            margin: 2px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .k-multiselect .k-chip:hover {
+            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+        }
+
+        /* MultiSelect close button (×) - Blue theme */
+        .k-multiselect .k-chip .k-chip-action {
+            color: #3b82f6 !important;
+        }
+
+        .k-multiselect .k-chip .k-chip-action:hover {
+            color: #1e40af !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Additional override for Kendo's default orange */
+        .k-chip-remove-button .k-icon {
+            color: #3b82f6 !important;
+        }
+
+        .k-chip-remove-button:hover .k-icon {
+            color: #1e40af !important;
+        }
+
+        /* Dropdown popup list styling */
+        .k-list-container.k-popup {
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+            background: #ffffff;
+        }
+
+        .k-list .k-list-item {
+            padding: 10px 16px;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        .k-list .k-list-item:hover {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        /* UPDATED: Selected items in dropdown - Blue theme instead of orange */
+        .k-list .k-list-item.k-state-selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+            color: #1e40af !important;
+            font-weight: 500;
+        }
+
+        .k-list .k-list-item.k-state-focused {
+            background: #eff6ff;
+            box-shadow: inset 0 0 0 2px #93c5fd;
+        }
+
+        /* UPDATED: Focused + Selected state - Blue theme */
+        .k-list .k-list-item.k-state-selected.k-state-focused {
+            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%) !important;
+            color: #1e40af !important;
+        }
+
+        /* UPDATED: Additional override for Kendo's default orange selected state */
+        .k-list-item.k-selected,
+        .k-list-optionlabel.k-selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+            color: #1e40af !important;
+        }
+
+        /* UPDATED: Force override any remaining orange backgrounds */
+        .k-state-selected {
+            background-color: #dbeafe !important;
+            background-image: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+            border-color: #93c5fd !important;
+        }
+
+        /* Checkbox in multiselect dropdown */
+        .k-list .k-checkbox:checked {
+            background-color: #60a5fa;
+            border-color: #60a5fa;
+        }
+
+        .k-list .k-checkbox {
+            border-color: #bfdbfe;
+        }
+
+        /* Upload component */
+        .k-upload {
+            border: 2px dashed #93c5fd;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .k-upload:hover {
+            border-color: #60a5fa;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .k-upload .k-upload-button {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.25);
+        }
+
+        .k-upload .k-upload-button:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(96, 165, 250, 0.35);
+        }
+
+        .k-upload-status {
+            margin-top: 15px;
+        }
+
+        /* Footer section */
+        .wizard-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e7ff;
+        }
+
+        .wizard-footer .btn {
+            min-width: 120px;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            border: 1.5px solid #bfdbfe !important;
+            color: #64748b;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #eff6ff;
+            border-color: #93c5fd !important;
+            color: #475569;
+        }
+
+        .btn-light {
+            background: #eff6ff;
+            color: #475569;
+            margin-right: 10px;
+            border: 1px solid #dbeafe;
+        }
+
+        .btn-light:hover {
+            background: #dbeafe;
+            color: #334155;
+            border-color: #bfdbfe;
+        }
+
+        .btn-primary {
+            background: #1e88e5;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: #0d47a1;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(30, 136, 229, 0.35);
+        }
+
+        /* Spacing utilities */
+        .mt-3 {
+            margin-top: 20px;
+        }
+
+        /* Input group for better visual hierarchy */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .k-window {
+                width: 95vw !important;
+                max-width: 95vw !important;
+            }
+
+            .k-window-titlebar {
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+
+            .k-window-content {
+                padding: 25px 20px 30px !important;
+            }
+
+            .step-title {
+                font-size: 20px;
+            }
+
+            .step-subtitle {
+                font-size: 13px;
+            }
+
+            .progress-container {
+                margin-bottom: 25px;
+            }
+
+            .wizard-footer {
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 25px;
+                padding-top: 20px;
+            }
+
+            .wizard-footer>div {
+                width: 100%;
+                display: flex;
+                gap: 10px;
+            }
+
+            .wizard-footer .btn {
+                width: 100%;
+                flex: 1;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .k-window-titlebar {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
+
+            .k-window-content {
+                padding: 20px 16px 25px !important;
+            }
+
+            .step-title {
+                font-size: 18px;
+                margin-bottom: 6px;
+            }
+
+            .step-subtitle {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                font-size: 13px;
+            }
+
+            .form-control,
+            .k-input,
+            .k-textbox {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .wizard-footer .btn {
+                padding: 10px 20px;
+                font-size: 13px;
+                min-width: auto;
+            }
+
+            .progress-label {
+                font-size: 12px;
+            }
+        }
+
+        /* Landscape mobile */
+        @@media (max-width: 768px) and (orientation: landscape) {
+            .k-window {
+                max-height: 95vh !important;
+            }
+
+            .k-window-content {
+                max-height: calc(95vh - 70px);
+                overflow-y: auto;
+            }
+
+            .step-title {
+                font-size: 18px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+        }
+
+        /* Large screens - keep centered */
+        @@media (min-width: 1200px) {
+            .k-window {
+                max-width: 650px !important;
+            }
+        }
+
+        /* REMOVE blue background behind selected/hover stars */
+        .k-rating .k-rating-item {
+            background: transparent !important;
+        }
+
+        /* On hover */
+        .k-rating .k-rating-item:hover {
+            background: transparent !important;
+        }
+
+        /* On selected */
+        .k-rating .k-rating-item.k-selected {
+            background: transparent !important;
+        }
+
+        /* Focus state remove */
+        .k-rating .k-rating-item.k-focus {
+            background: transparent !important;
+        }
+
+        .k-rating .k-rating-item.k-selected .k-icon {
+            color: #FFD700 !important;
+            /* Gold yellow */
+        }
+
+        /* Ensure stars on hover are also yellow */
+        .k-rating .k-rating-item:hover .k-icon {
+            color: #FFC107 !important;
+            transform: scale(1.25) !important;
+            /* Amber yellow */
+        }
+
+        /* Empty stars - keep gray/light */
+        .k-rating .k-icon {
+            color: #FFC107 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="reviewWindow" style="display:none;">
+        <form id="reviewForm" enctype="multipart/form-data">
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress">
+                    <div id="progressBar" class="progress-bar" style="width:25%;"></div>
+                </div>
+                <div class="progress-label">
+                    <span id="stepIndicator">Step 1 of 4</span>
+                    <span id="stepName">Work Environment</span>
+                </div>
+            </div>
+
+            <!-- STEP 1 -->
+            <div id="step1" class="step">
+                <div class="step-title">Share Your Company Experience</div>
+                <div class="step-subtitle">
+                    Help applicants understand your experience about the company
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Work Culture & Environment</label>
+                    <input id="workCulture" class="rating" />
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div id="step2" class="step d-none">
+
+                <div class="form-group">
+                    <label class="form-label">Management & Leadership</label>
+                    <input id="management" class="rating" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Career Growth & Learning</label>
+                    <input id="career" class="rating" />
+                </div>
+            </div>
+
+            <!-- STEP 3-->
+            <div id="step3" class="step d-none">
+
+                <div class="form-group">
+                    <label class="form-label">Work-Life Balance</label>
+                    <input id="workLife" class="rating" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Compensation & Benefits</label>
+                    <input id="compensation" class="rating" />
+                </div>
+            </div>
+
+            <!-- STEP 4: Resume Upload -->
+            <div id="step4" class="step d-none">
+                <div class="step-title">Write Your Review</div>
+
+                <div class="form-group">
+                    <textarea id="description" class="form-control" rows="5"
+                        placeholder="How was your experience with this company? Share your thoughts to help other applicants make informed decisions..."
+                        required></textarea>
+                </div>
+            </div>
+
+
+            <!-- Footer Navigation -->
+            <div class="wizard-footer">
+                <button class="btn" disabled></button>
+
+                <div>
+                    <button id="prevBtn" class="btn btn-light d-none">
+                        ← Back
+                    </button>
+                    <button id="nextBtn" class="btn btn-primary">
+                        Next →
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container mt-4">
+        <h2 class="mb-3">My jobs</h2>
+
+        <!-- TABS -->
+        <ul class="nav nav-tabs mb-4" id="jobTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-type="saved" style="cursor: pointer;">
+                    <span class="tab-count" id="savedCount">0</span> Saved
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-type="applied" style="cursor: pointer;">
+                    <span class="tab-count" id="appliedCount">0</span> Applied
+                </a>
+            </li>
+        </ul>
+
+        <!-- CONTENT -->
+        <div id="jobsContent">
+            <p class="text-muted">Loading...</p>
+        </div>
+    </div>
+
+
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- jQuery -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const JWT_TOKEN = '@Context.Session.GetString("JWT")';
+        let JOB_ID = null;
+
+        let total = 0;
+        let count = 0;
+        let step = 1;
+
+
+        const stepNames = {
+            1: "Work Environment",
+            2: "Growth & Leadership",
+            3: "Balance & Benefits",
+            4: "Overall Experience"
+        };
+
+        function authHeaders() {
+            return {
+                'Authorization': 'Bearer ' + JWT_TOKEN
+            };
+        }
+
+        $(document).ready(function () {
+            $("#reviewWindow").kendoWindow({
+                title: "Company Review & Feedback",
+                width: 600,
+                modal: true,
+                visible: false,
+                draggable: false,
+                resizable: false,
+                pinned: true,
+                position: {
+                    top: "50%",
+                    left: "50%"
+                },
+                animation: {
+                    open: {
+                        effects: "fadeIn:in",
+                        duration: 300
+                    },
+                    close: {
+                        effects: "fadeOut:out",
+                        duration: 200
+                    }
+                }
+            });
+
+            $(document).on("click", "#nextBtn", function (e) {
+                e.preventDefault();
+                nextStep();
+            });
+
+            $(document).on("click", "#prevBtn", function (e) {
+                e.preventDefault();
+                prevStep();
+            });
+
+            initToggleRating("#workCulture");
+            initToggleRating("#management");
+            initToggleRating("#career");
+            initToggleRating("#workLife");
+            initToggleRating("#compensation");
+            loadJobs("saved");
+            loadJobCount("applied");
+        });
+
+        function initToggleRating(selector) {
+
+            var rating = $(selector).kendoRating({
+                min: 1,
+                max: 5,
+                value: null,
+                label: false
+            }).data("kendoRating");
+
+            var previousValue = null;
+
+            rating.wrapper.on("click", `.k-rating-item`, function (e) {
+                setTimeout(() => {
+                    console.log("rating.value() : " + rating.value());
+                    console.log("previousValue : " + previousValue);
+                    if (previousValue === rating.value()) {
+                        rating.value(null);
+                        previousValue = null;
+                    }
+                    else {
+                        previousValue = rating.value();
+                    }
+                }, 300);
+            });
+        }
+
+        function openReviewWindow(jobid) {
+            JOB_ID = jobid;
+            $("#reviewWindow").data("kendoWindow").open().center();
+        }
+
+        $(window).on('resize', function () {
+            if ($("#reviewWindow").data("kendoWindow") && $("#reviewWindow").data("kendoWindow").element.is(':visible')) {
+                $("#reviewWindow").data("kendoWindow").center();
+            }
+        });
+
+        function nextStep() {
+
+            if (step < 4) {
+                step++;
+                updateUI();
+            } else {
+                submitData();
+            }
+        }
+
+        function prevStep() {
+            if (step > 1) {
+                step--;
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            // Hide all steps
+            $(".step").addClass("d-none");
+            $("#step" + step).removeClass("d-none");
+
+            // Update buttons
+            $("#prevBtn").toggleClass("d-none", step === 1);
+            $("#nextBtn").html(step === 4 ? "Save & Continue →" : "Next →");
+
+            // Update progress
+            const progress = (step * 25);
+            $("#progressBar").css("width", progress + "%");
+            $("#stepIndicator").text("Step " + step + " of 4");
+            $("#stepName").text(stepNames[step]);
+        }
+
+
+        function submitData() {
+            $("#reviewWindow").data("kendoWindow").close();
+
+            Swal.fire({
+                title: 'Saving Your Review',
+                text: 'Please wait...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            let ratings = [
+                $("#workCulture").data("kendoRating").value(),
+                $("#management").data("kendoRating").value(),
+                $("#career").data("kendoRating").value(),
+                $("#workLife").data("kendoRating").value(),
+                $("#compensation").data("kendoRating").value()
+            ];
+
+            let validRatings = ratings.filter(rating => rating !== null && rating !== undefined);
+
+            let avgStars = 0;
+
+            if (validRatings.length > 0) {
+                avgStars = Math.round(validRatings.reduce((a, b) => a + b, 0) / 5);
+            }
+
+            let formData = new FormData();
+            formData.append("jobId", JOB_ID);
+            formData.append("c_stars", avgStars);
+            formData.append("c_description", $("#description").val());
+
+            $.ajax({
+                url: "http://localhost:5140/api/ApplicantApi/GiveCompanyReview",
+                type: "POST",
+                headers: authHeaders(),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    setTimeout(() => {
+                        Swal.close();
+
+                        if (res.success) {
+                            Swal.fire({
+                                title: 'Thank you!',
+                                text: 'Your review has been submitted successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#60a5fa'
+                            }).then(() => {
+
+                                window.location.href = "/Applicant/MyJobs";
+                            });
+                        }
+                        else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: res.message,
+                                icon: 'error',
+                                confirmButtonColor: '#60a5fa'
+                            });
+                        }
+                    }, 2000);
+
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: xhr.responseJSON?.message || 'Unable to save your review',
+                        icon: 'error',
+                        confirmButtonColor: '#60a5fa'
+                    });
+                }
+            });
+
+            clearData();
+        }
+
+        function clearData() {
+            $("#workCulture").data("kendoRating").value(null);
+            $("#management").data("kendoRating").value(null);
+            $("#career").data("kendoRating").value(null);
+            $("#workLife").data("kendoRating").value(null);
+            $("#compensation").data("kendoRating").value(null);
+            $("#description").val("")
+        }
+
+        function loadJobs(type) {
+            $("#jobsContent").html("<p class='text-muted'>Loading...</p>");
+
+            $.ajax({
+                url: `http://localhost:5140/api/ApplicantApi/${type}`,
+                method: 'GET',
+                headers: authHeaders(),
+                success: function (res) {
+                    $(`#${type}Count`).text(res.length);
+
+                    if (!res || res.length === 0) {
+                        showEmptyState(type);
+                        return;
+                    }
+
+                    let html = "<div class='row'>";
+                    res.forEach(j => {
+                        html += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card job-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-1">${j.c_role}</h5>
+                                    <span class="badge ${type === "saved" ? "bg-info" : "bg-success"}">
+                                        ${j.c_status}
+                                    </span>
+                                </div>
+                                <h6 class="text-muted mb-2">
+                                    <i class="fa fa-building"></i> ${j.c_company_name}
+                                </h6>
+                                <p class="card-text mb-2">
+                                    <i class="fa fa-map-marker-alt"></i> <b>Location :</b> ${j.c_location} · 
+                                    <i class="fa fa-briefcase"></i> <b>Job Type :</b> ${j.c_job_type} · 
+                                    <i class="fa fa-clock"></i> <b>Experience :</b> ${j.c_experience} 
+                                </p>
+                                <p class="card-text">
+                                    <span class="rec-meta-item">
+                                        <span class="meta-icon"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+                                        <span class="meta-label"> <b> Salary :</b> </span>
+                                    </span>${j.c_salary} LPA
+                                </p>
+                                 <div class="d-flex gap-2 align-items-center flex-wrap">
+    ${type === "saved" ? `
+        <button class="btn btn-primary btn-sm" onclick="applyFromSaved(${j.c_job_id})">
+            <i class="fa fa-paper-plane"></i> Apply
+        </button>
+
+
+        
+        <button class="btn btn-danger btn-sm" onclick='removeSavedJob(${j.c_job_id})'>
+            <i class="fa fa-trash"></i> Remove
+        </button>
+    ` : `
+        <small class="text-muted me-2">
+            
+        </small>
+
+        ${j.c_status === "accepted" ? `
+            <button class="btn btn-outline-success btn-sm"
+                id="btnReview" onclick='openReviewWindow(${j.c_job_id})'>
+                <i class="fa fa-star"></i> Give Feedback
+            </button>
+        ` : ``}
+    `}
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    });
+                    html += "</div>";
+
+                    $("#jobsContent").html(html);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading jobs:", error);
+                    $("#jobsContent").html(`
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> Failed to load jobs. Please try again.
+                    <br><small>${error} - ${xhr.status}</small>
+                </div>
+            `);
+                }
+            });
+        }
+
+
+        // Remove Saved Job function
+        function removeSavedJob(jobId) {
+            Swal.fire({
+                title: 'Remove this job?',
+                text: 'Are you sure you want to remove this job from your saved list?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `http://localhost:5140/api/ApplicantApi/remove-saved/${jobId}`,
+                        method: 'DELETE',
+                        headers: authHeaders(),
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: 'Removed!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#4f46e5',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                // Reload the saved jobs list
+                                loadJobs("saved");
+                                // Update the count
+                                setTimeout(() => {
+                                    loadJobCount("saved");
+                                }, 500);
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.message || 'Failed to remove job',
+                                    icon: 'error',
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Failed to remove job. Please try again.',
+                                icon: 'error',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Rest of your existing functions remain the same...
+        function showEmptyState(type) {
+            $("#jobsContent").html(`
+            <div class="text-center mt-5 py-5">
+                <div class="mb-4">
+                    <i class="fa fa-folder-open fa-5x text-muted"></i>
+                </div>
+                <h4>No jobs ${type} yet</h4>
+                <p class="text-muted mb-4">Jobs you ${type === 'saved' ? 'save' : 'apply to'} will appear here.</p>
+                <p class="text-primary fw-bold">Not seeing a job?</p>
+                <a href="/Applicant/Dashboard" class="btn btn-primary mt-2">
+                    Find jobs <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
+        `);
+        }
+
+        function applyFromSaved(jobId) {
+            Swal.fire({
+                title: 'Apply to this job?',
+                text: 'Do you want to apply for this saved job?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, apply!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href=`/Applicant/ApplyJob?jobId=${jobId}`;
+                }
+            });
+        }
+
+        // Default load
+
+
+        function loadJobCount(type) {
+            $.ajax({
+                url: `http://localhost:5140/api/ApplicantApi/${type}`,
+                method: 'GET',
+                headers: authHeaders(),
+                success: res => $(`#${type}Count`).text(res.length),
+                error: () => $(`#${type}Count`).text('0')
+            });
+        }
+
+        // Tab click
+        $("#jobTabs .nav-link").click(function () {
+            $("#jobTabs .nav-link").removeClass("active");
+            $(this).addClass("active");
+            loadJobs($(this).data("type"));
+        });
+        function goToCompanyReview(jobId, companyId) {
+            window.location.href = `/Applicant/tempCompanyReview?jobId=${jobId}&companyId=${companyId}`;
+        }
+
+    </script>
+
+</body>
+
+</html>

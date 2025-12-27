@@ -1,0 +1,608 @@
+﻿@{
+    ViewData["Title"] = "View Applicants";
+    Layout = "~/Views/Shared/_RecruiterLayout.cshtml";
+    var username = @Context.Session.GetString("Name");
+    
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://kendo.cdn.telerik.com/2024.1.319/styles/kendo.default-v2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<style>
+    .applicant-card {
+        background: #fff;
+        border-radius: 13px;
+        padding: 18px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+        transition: transform .25s ease, box-shadow .25s ease;
+        height: 100%;
+        border: 2px solid #1565c0;
+    }
+
+    .applicant-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+        border-color: #0d47a1;
+    }
+
+    .skill-badge {
+        background: #e3f2fd;
+        color: #0d47a1;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin-right: 6px;
+        display: inline-block;
+        margin-top: 6px;
+    }
+
+    .page-header {
+        background: linear-gradient(90deg, #0d47a1, #1565c0);
+        color: #fff;
+        border-radius: 20px;
+        padding: 22px 28px;
+        margin-bottom: 28px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .page-header .icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .page-header h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .page-header small {
+        opacity: 0.85;
+        font-size: 14px;
+    }
+
+    .view-cv-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 22px;
+        border-radius: 999px;
+        border: 2px solid #1e88e5;
+        color: #1e88e5;
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+    .view-cv-btn:hover {
+        background: #1e88e5;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    /* Modal Header */
+    .applicant-modal-header {
+        background: linear-gradient(135deg, #1a73e8, #0d47a1);
+        color: #fff;
+        padding: 16px 22px;
+    }
+
+    .modal-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    /* Modal Body */
+    .applicant-modal-body {
+        padding: 24px;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 12px 0;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .info-block {
+        padding: 14px 0;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+    .label {
+        font-weight: 600;
+        color: #1f2937;
+        width: 90px;
+    }
+
+    .value {
+        color: #374151;
+        text-align: left;
+        max-width: none;
+        flex: 1;
+    }
+
+    .search-wrapper {
+        width: 100%;
+
+    }
+
+    .search-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+    }
+
+    .search-icon {
+        font-size: 18px;
+        margin-left: 10px;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        padding: 10px;
+        color: #374151;
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .search-btn {
+        background: #1565c0;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 26px;
+        font-weight: 600;
+        transition: background .25s ease;
+        white-space: nowrap;
+    }
+
+    .search-btn:hover {
+        background: #4338ca;
+    }
+
+    /* ===== RESPONSIVE STYLES ===== */
+
+    /* Tablets and below */
+    @@media (max-width: 768px) {
+        .page-header {
+            padding: 16px 20px;
+            border-radius: 16px;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .page-header .icon {
+            width: 42px;
+            height: 42px;
+            font-size: 20px;
+        }
+
+        .page-header h5 {
+            font-size: 1.1rem;
+        }
+
+        .page-header small {
+            font-size: 13px;
+        }
+
+        .search-box {
+            flex-direction: column;
+            padding: 16px;
+            gap: 12px;
+        }
+
+        .search-icon {
+            display: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 12px 26px;
+        }
+
+        .applicant-modal-body {
+            padding: 16px;
+        }
+
+        .info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 16px 0;
+        }
+
+        .label {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .value {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .info-block {
+            padding: 16px 0;
+        }
+
+        .skill-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+        }
+
+        .applicant-card {
+            padding: 16px;
+        }
+
+        .view-cv-btn {
+            padding: 6px 18px;
+            font-size: 13px;
+        }
+    }
+
+    /* Mobile phones */
+    @@media (max-width: 576px) {
+        .container {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .page-header {
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .page-header .icon {
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+        }
+
+        .page-header h5 {
+            font-size: 1rem;
+        }
+
+        .page-header small {
+            font-size: 12px;
+        }
+
+        .search-wrapper {
+            margin-bottom: 1rem !important;
+        }
+
+        .search-box {
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .search-input {
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .search-btn {
+            font-size: 14px;
+            padding: 10px 20px;
+        }
+
+        .applicant-card {
+            padding: 14px;
+            border-radius: 10px;
+        }
+
+        .applicant-card h6 {
+            font-size: 0.95rem;
+        }
+
+        .applicant-card small {
+            font-size: 12px;
+        }
+
+        .modal-dialog {
+            margin: 0.5rem;
+        }
+
+        .applicant-modal-header {
+            padding: 12px 16px;
+        }
+
+        .modal-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+        }
+
+        .applicant-modal-header h5 {
+            font-size: 1rem;
+        }
+
+        .applicant-modal-body {
+            padding: 12px;
+        }
+
+        .info-row,
+        .info-block {
+            padding: 12px 0;
+        }
+
+        .label {
+            font-size: 13px;
+        }
+
+        .value {
+            font-size: 13px;
+        }
+
+        .skill-badge {
+            font-size: 10px;
+            padding: 2px 7px;
+            margin-right: 4px;
+            margin-top: 4px;
+        }
+
+        .view-cv-btn {
+            padding: 6px 16px;
+            font-size: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Extra small devices */
+    @@media (max-width: 400px) {
+        .page-header h5 {
+            font-size: 0.9rem;
+        }
+
+        .page-header small {
+            font-size: 11px;
+        }
+
+        .applicant-card h6 {
+            font-size: 0.9rem;
+        }
+
+        .search-input::placeholder {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="icon">👥</div>
+        <div>
+            <h5 class="mb-0">Applicants</h5>
+            <small class="opacity-75">All registered applicants</small>
+        </div>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-wrapper mb-4">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchText" class="search-input" placeholder="Search applicant skills..." />
+            <button class="search-btn" id="btnSearch">
+                Find Applicants
+            </button>
+        </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="row" id="applicantCards"></div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="applicantModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;">
+
+            <!-- HEADER -->
+            <div class="modal-header applicant-modal-header">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="modal-icon">👤</div>
+                    <h5 class="modal-title mb-0">Applicant Details</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body applicant-modal-body">
+
+                <div class="info-row">
+                    <span class="label">Name</span>
+                    <span class="value" id="m_name"></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Email</span>
+                    <span class="value" id="m_email"></span>
+                </div>
+
+                <div class="info-block">
+                    <div class="label">Bio</div>
+                    <div class="value text-muted" id="m_bio"></div>
+                </div>
+
+                <div class="info-row">
+                    <span class="label">Skills</span>
+                    <span class="value" id="m_skills"></span>
+                </div>
+
+                <div class="info-row align-items-center">
+                    <span class="label">Resume</span>
+                    <span id="m_resume"></span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // 🔹 GLOBAL function (IMPORTANT)
+    function viewDetails(userid) {
+        window.location.href = "/Recruiter/ApplicantDetails?userid=" + userid;
+    }
+
+    const token = "@Html.Raw(Context.Session.GetString("JWT"))";
+    console.log("JWT Token:", token);
+
+    $(document).ready(function () {
+
+        loadApplicants();
+
+        $("#btnSearch").click(function () {
+            let q = $("#searchText").val().trim();
+            if (q === "") {
+                loadApplicants();
+            } else {
+                searchApplicants(q);
+            }
+        });
+
+        $("#searchText").on("keypress", function (e) {
+            if (e.which === 13) {
+                $("#btnSearch").click();
+            }
+        });
+
+        function loadApplicants() {
+            $.ajax({
+                url: "http://localhost:5140/api/RecruiterApi/applicants",
+                type: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                success: function (res) {
+                    renderCards(res);
+                },
+                error: function (err) {
+                    console.error("Failed to load applicants:", err);
+                }
+            });
+        }
+
+        function searchApplicants(q) {
+            $.ajax({
+                url: "http://localhost:5140/api/RecruiterApi/searchapplicants",
+                type: "GET",
+                data: { query: q },
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                success: function (res) {
+                    renderCards(res);
+                },
+                error: function (err) {
+                    console.error("Search failed:", err);
+                }
+            });
+        }
+
+        function renderCards(res) {
+            const box = $("#applicantCards");
+            box.empty();
+
+            if (!res.data || res.data.length === 0) {
+                box.append(`<p class="text-muted text-center w-100">No applicants found</p>`);
+                return;
+            }
+
+            res.data.forEach(app => {
+                let skills = "";
+                if (app.c_skills) {
+                    app.c_skills.split(",").forEach(s => {
+                        skills += `<span class="skill-badge">${s.trim()}</span>`;
+                    });
+                }
+
+                box.append(`
+                    <div class="col-12 col-sm-6 col-lg-4 mb-4">
+                        <div class="applicant-card" onclick='openModal(${JSON.stringify(app)})'>
+                            <h6 class="fw-bold">${app.c_name}</h6>
+                            <small class="text-muted">${app.c_email}</small>
+                            <div class="mt-2">${skills || "-"}</div>
+
+                            <div class="d-flex gap-2 mt-3">
+                                <button class="btn btn-sm btn-outline-primary flex-fill"
+                                    onclick="event.stopPropagation(); viewDetails(${app.c_userid})">
+                                    Details
+                                </button>
+
+                                @* <a class="btn btn-sm btn-outline-success flex-fill"
+                                href="mailto:${app.c_email}"
+                                onclick="event.stopPropagation();">
+                                    Contact
+                                </a> *@
+
+                                <a class="btn btn-sm btn-outline-primary flex-fill"
+                                href="https://mail.google.com/mail/?view=cm&fs=1&to=${app.c_email}"
+                                target="_blank"
+                                onclick="event.stopPropagation();">
+                                Contact
+                                </a>
+                            </div> 
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        // 🔹 Modal open (GLOBAL)
+        window.openModal = function (app) {
+            $("#m_name").text(app.c_name);
+            $("#m_email").text(app.c_email);
+            $("#m_bio").text(app.c_bio || "—");
+            $("#m_skills").text(app.c_skills || "-");
+
+            $("#m_resume").html(
+                app.c_resume_file
+                    ? `<a href="/uploads/resumes/${app.c_resume_file}" target="_blank" class="view-cv-btn">View CV</a>`
+                    : "N/A"
+            );
+
+            new bootstrap.Modal(document.getElementById("applicantModal")).show();
+        };
+    });
+</script>

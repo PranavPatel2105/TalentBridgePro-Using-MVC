@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Wizard</title>
+    <style>
+        /* ================= PAGE ================= */
+        body {
+            background: #f4f8ff;
+            padding: 20px 0;
+        }
+
+        /* ================= WIZARD CARD ================= */
+        #wizard {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 32px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ================= WIZARD HEADER ================= */
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+
+        .wizard-header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0d47a1;
+            margin-bottom: 6px;
+        }
+
+        .wizard-header p {
+            font-size: 14px;
+            color: #607d8b;
+            margin: 0;
+        }
+
+        /* ================= STEPS ================= */
+        .k-wizard-steps {
+            margin-bottom: 32px;
+        }
+
+        /* Step circle */
+        .k-wizard .k-step-indicator {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            border: 2px solid #cfe2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Step icon */
+        .k-wizard .k-step-indicator .k-icon {
+            font-size: 18px;
+            color: #1e88e5;
+        }
+
+        /* Active step */
+        .k-wizard .k-step.k-step-current .k-step-indicator {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            border-color: #1565c0;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.35);
+        }
+
+        .k-wizard .k-step.k-step-current .k-icon {
+            color: #ffffff;
+        }
+
+        /* Done step */
+        .k-wizard .k-step.k-step-done .k-step-indicator {
+            background: #1e88e5;
+            border-color: #1e88e5;
+        }
+
+        .k-wizard .k-step.k-step-done .k-icon {
+            color: #ffffff;
+        }
+
+        /* Step label */
+        .k-wizard .k-step-label {
+            font-weight: 500;
+            color: #455a64;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .k-wizard .k-step.k-step-current .k-step-label {
+            color: #0d47a1;
+            font-weight: 600;
+        }
+
+        /* Step connector */
+        .k-wizard .k-step-line {
+            background: #dbe7ff;
+        }
+
+        .k-wizard .k-step.k-step-done .k-step-line {
+            background: #1e88e5;
+        }
+
+        /* ================= FORM ITEMS ================= */
+        .k-form-field {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .k-form-field.has-error {
+            margin-bottom: 8px;
+        }
+
+        .k-form-label {
+            font-weight: 500;
+            color: #455a64;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        /* ================= FIX WIZARD CONTENT HEIGHT ================= */
+        .k-wizard-content {
+            min-height: 300px;
+        }
+
+        .k-wizard .k-form {
+            min-height: 300px;
+        }
+
+        /* ================= INPUTS (NO DOUBLE BORDER) ================= */
+        .k-wizard .k-input-inner,
+        .k-wizard .k-input,
+        .k-wizard .k-textbox,
+        .k-wizard .k-picker,
+        .k-wizard .k-dropdown,
+        .k-wizard .k-dateinput {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent;
+            height: 44px;
+            font-size: 15px;
+        }
+
+        /* TextArea specific height */
+        .k-wizard textarea.k-input-inner {
+            height: 100px !important;
+            resize: vertical;
+        }
+
+        /* Single border on wrapper */
+        .k-wizard .k-input-solid,
+        .k-wizard .k-picker-solid,
+        .k-wizard .k-dropdown-solid,
+        .k-wizard .k-textbox-solid {
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            background: #f9fbfd;
+            width: 100%;
+        }
+
+        /* Focus */
+        .k-wizard .k-input-solid.k-focus,
+        .k-wizard .k-picker-solid.k-focus,
+        .k-wizard .k-dropdown-solid.k-focus,
+        .k-wizard .k-textbox-solid.k-focus {
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 0.15rem rgba(30, 136, 229, .2);
+        }
+
+        /* ================= BUTTONS ================= */
+        .k-wizard-buttons {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        /* NEXT / DONE button */
+        .k-wizard .k-button.k-primary,
+        .k-wizard [data-wizard-next].k-button-solid-primary,
+        .k-wizard [data-wizard-done].k-button-solid-primary {
+            background: #1e88e5 !important;
+            border: none !important;
+            border-radius: 10px;
+            padding: 11px 28px;
+            font-weight: 500;
+            height: 44px;
+            font-size: 15px;
+        }
+
+        .k-wizard .k-button.k-primary:hover,
+        .k-wizard [data-wizard-next].k-button-solid-primary:hover,
+        .k-wizard [data-wizard-done].k-button-solid-primary:hover {
+            background: #1565c0 !important;
+        }
+
+        /* PREVIOUS button */
+        .k-wizard .k-button:not(.k-primary) {
+            border-radius: 10px;
+            padding: 11px 28px;
+            height: 44px;
+            font-size: 15px;
+            border: 1px solid #ced4da;
+            background: #ffffff;
+        }
+
+        .k-wizard .k-button:not(.k-primary):hover {
+            background: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+        /* ================= VALIDATION ================= */
+        .k-invalid,
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        .error-msg {
+            font-size: 13px;
+            display: block;
+            margin-top: 6px;
+            color: #dc3545;
+            font-weight: 500;
+            min-height: 0;
+            transition: all 0.2s ease;
+        }
+
+        /* Hide Kendo's default error messages to prevent duplicates */
+        .k-form-error {
+            display: none !important;
+        }
+
+        /* Adjust wrapper when showing error */
+        .k-input-solid.is-invalid,
+        .k-picker-solid.is-invalid,
+        .k-dropdown-solid.is-invalid,
+        .k-textbox-solid.is-invalid {
+            background: #fff5f5;
+        }
+
+        /* ================= FILE UPLOAD ================= */
+        #imageform {
+            width: 100%;
+            border: 2px dashed #cfe2ff;
+            border-radius: 12px;
+            padding: 20px;
+            background: #f9fbfd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #imageform:hover {
+            background: #e3f2fd;
+            border-color: #1e88e5;
+        }
+
+        .upload-area {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #1e88e5;
+            margin-bottom: 12px;
+        }
+
+        /* ================= MODAL ================= */
+        .modal-content {
+            border-radius: 14px;
+        }
+
+        .modal-header {
+            border-radius: 14px 14px 0 0;
+            padding: 20px 24px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        #otpInput {
+            height: 44px;
+            font-size: 18px;
+            letter-spacing: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @@media (max-width: 576px) {
+            #wizard {
+                padding: 24px 16px;
+            }
+
+            .k-wizard-buttons {
+                flex-direction: column;
+            }
+
+            .k-wizard .k-button {
+                width: 100%;
+            }
+        }
+
+        /* ================= PAGE BACKGROUND ================= */
+        body {
+            background:
+                radial-gradient(circle at top left, #e3f2fd, transparent 40%),
+                radial-gradient(circle at bottom right, #e8f0ff, transparent 40%),
+                #f4f8ff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+            height: 72px;
+            margin: 20px;
+            border-radius: 50px;
+            box-shadow:
+                0 6px 30px rgba(13, 71, 161, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            height: 100%;
+            width: 100%;
+            padding: 0 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+        }
+
+        .home-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .home-icon:hover {
+            background: #fff;
+            color: #1E88E5;
+        }
+
+        /* ================= FLOATING BACKGROUND ================= */
+        .bg-decoration {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.12;
+            animation: floatBubble 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            top: 12%;
+            left: 6%;
+        }
+
+        .shape-2 {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            bottom: 15%;
+            right: 8%;
+        }
+
+        .shape-3 {
+            width: 260px;
+            height: 260px;
+            background: linear-gradient(135deg, #1565C0, #1E88E5);
+            top: 55%;
+            left: 55%;
+        }
+
+        @@keyframes floatBubble {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate(20px, -30px) scale(1.05);
+            }
+
+            50% {
+                transform: translate(-25px, 20px) scale(0.95);
+            }
+
+            75% {
+                transform: translate(15px, -15px) scale(1.03);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating Background -->
+    <div class="bg-decoration">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">TalentBridgePro</a>
+            <a href="/" class="home-icon" style="margin-left: auto;">🏠</a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div id="wizard">
+                    <!-- Wizard header will be added dynamically by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-primary shadow-sm">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="otpModalLabel">🔐 OTP Verification</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">An OTP has been sent to your email. It expires in <span id="otpTimer"
+                            class="fw-bold text-primary">05:00</span> minutes.</p>
+                    <input type="text" id="otpInput" class="form-control" maxlength="6" placeholder="Enter 6-digit OTP">
+                    <span id="otpError" class="text-danger mt-2" style="display:none;"></span>
+                    <div class="mt-3 d-flex justify-content-between align-items-center">
+                        <button type="button" id="resendOtpBtn" class="btn btn-outline-primary btn-sm">Resend
+                            OTP</button>
+                        <small class="text-muted">⏱️ Expires in 5 minutes</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="verifyOtpBtn" class="btn btn-primary px-4">Verify OTP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2024.1.130/js/kendo.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            let otpExpireSeconds = 300;
+            let otpTimerInterval;
+            let emailValid = false;
+            let contactValid = false;
+
+            // ================= CENTRALIZED ERROR HANDLING =================
+            function showFieldError(input, message) {
+                let $input = $(input);
+                let $wrapper = $input.closest('.k-input-solid, .k-picker-solid, .k-dropdown-solid, .k-textbox-solid');
+                let $formField = $input.closest('.k-form-field');
+
+                // Add invalid class to wrapper
+                if ($wrapper.length) {
+                    $wrapper.addClass("is-invalid");
+                } else {
+                    $input.addClass("is-invalid");
+                }
+
+                // Add error class to form field
+                $formField.addClass("has-error");
+
+                // Remove ALL error messages in the form field (including Kendo's)
+                $formField.find(".error-msg").remove();
+                $formField.find(".k-form-error").remove();
+
+                // Show or create error message
+                if (!$wrapper.length) $wrapper = $input;
+
+                // Add new error message
+                $wrapper.after(`<span class="error-msg">${message}</span>`);
+            }
+
+            function removeFieldError(input) {
+                let $input = $(input);
+                let $wrapper = $input.closest('.k-input-solid, .k-picker-solid, .k-dropdown-solid, .k-textbox-solid');
+                let $formField = $input.closest('.k-form-field');
+
+                // Remove invalid class from wrapper
+                if ($wrapper.length) {
+                    $wrapper.removeClass("is-invalid");
+                } else {
+                    $input.removeClass("is-invalid");
+                }
+
+                // Remove error class from form field
+                $formField.removeClass("has-error");
+
+                // Remove ALL error messages in the form field
+                $formField.find(".error-msg").remove();
+                $formField.find(".k-form-error").remove();
+            }
+
+            // ================= FIELD-SPECIFIC VALIDATION =================
+
+            // Name validation
+            function validateEmail(input) {
+                let value = $(input).val().trim();
+
+                if (!value) {
+                    return true; // Let required validation handle empty
+                }
+
+                // Simple email regex pattern
+                const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+                if (!emailPattern.test(value)) {
+                    showFieldError(input, "Invalid email format");
+                    return false;
+                } else {
+                    removeFieldError(input);
+                    return true;
+                }
+            }
+
+            function validateName(input) {
+                let value = $(input).val().trim();
+
+                if (!value) {
+                    return true; // Let required validation handle empty
+                }
+
+                if (value.length < 2) {
+                    showFieldError(input, "Name must be at least 2 characters");
+                    return false;
+                } else {
+                    removeFieldError(input);
+                    return true;
+                }
+            }
+
+            // Password validation
+            function validatePassword(input) {
+                let password = $(input).val();
+                let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,15}$/;
+
+                if (!password) {
+                    return true; // Let required validation handle empty
+                }
+
+                if (!regex.test(password)) {
+                    showFieldError(
+                        input,
+                        "Password must be 8–15 chars, include uppercase, lowercase, number & special character"
+                    );
+                    return false;
+                } else {
+                    removeFieldError(input);
+                    return true;
+                }
+            }
+
+            // Confirm password validation
+            function validateConfirmPassword(input) {
+                let password = $("input[name='c_password']").val();
+                let confirm = $(input).val();
+
+                if (!confirm) {
+                    return true; // Let required validation handle empty
+                }
+
+                if (password !== confirm) {
+                    showFieldError(input, "Passwords do not match");
+                    return false;
+                } else {
+                    removeFieldError(input);
+                    return true;
+                }
+            }
+
+            // Contact number validation
+            function validateContactNo(input) {
+                let value = $(input).val().trim();
+                let regex = /^[6-9]\d{9}$/;
+
+                if (!value) {
+                    return true; // Let required validation handle empty
+                }
+
+                if (!regex.test(value)) {
+                    showFieldError(input, "Contact number must be 10 digits and start with 6–9");
+                    contactValid = false;
+                    return false;
+                } else {
+                    removeFieldError(input);
+                    return true;
+                }
+            }
+
+            // ================= REAL-TIME INPUT VALIDATION =================
+            $(document).on("input", "input[name='c_name']", function () {
+                validateName(this);
+            });
+
+            $(document).on("input", "input[name='c_password']", function () {
+                validatePassword(this);
+            });
+
+            $(document).on("input", "input[name='c_confirmpassword']", function () {
+                validateConfirmPassword(this);
+            });
+
+            $(document).on("input", "input[name='c_email']", function () {
+                let value = $(this).val().trim();
+                if (value) {
+                    validateEmail(this);
+                } else {
+                    removeFieldError(this);
+                }
+            });
+            // ================= AJAX VALIDATIONS =================
+
+            // Email exists check
+            $(document).on("blur", "input[name='c_email']", function () {
+                let email = $(this).val().trim().toLowerCase();
+                let input = this;
+
+                if (!email) return;
+                if ($(this).data("lastChecked") === email) return;
+
+                $(this).data("lastChecked", email);
+
+                $.ajax({
+                    url: "http://localhost:5140/api/RecruiterApi/CheckEmailExistsRecruiter?email=" + encodeURIComponent(email),
+                        type: "GET",
+                    success: function (res) {
+                        if (!res.success) {
+                            showFieldError(input, res.message || "Email already exists");
+                            emailValid = false;
+                        } else {
+                            removeFieldError(input);
+                            emailValid = true;
+                        }
+                    }
+                });
+            });
+
+            // Contact number exists check
+            $(document).on("blur", "input[name='c_contactno']", function () {
+                let value = $(this).val().trim();
+                let input = this;
+
+                if (!value) return;
+
+                // First validate format
+                if (!validateContactNo(input)) return;
+
+                if ($(this).data("lastChecked") === value) return;
+                $(this).data("lastChecked", value);
+
+                $.ajax({
+                    url: "http://localhost:5140/api/RecruiterApi/CheckContactNoExistsRecruiter?contactno=" + encodeURIComponent(value),
+                    type: "GET",
+                    success: function (res) {
+                        if (!res.success) {
+                            showFieldError(input, res.message || "Contact number already exists");
+                            contactValid = false;
+                        } else {
+                            removeFieldError(input);
+                            contactValid = true;
+                        }
+                    }
+                });
+            });
+
+            // ================= KENDO WIZARD =================
+            let isGoingBack = false; // Flag to track if Previous button was clicked
+
+            // Track Previous button clicks
+            $(document).on("click", "[data-role='wizard'] .k-button:not(.k-primary)", function () {
+                isGoingBack = true;
+            });
+
+            // Track Next/Done button clicks
+            $(document).on("click", "[data-role='wizard'] .k-button.k-primary, [data-wizard-next], [data-wizard-done]", function () {
+                isGoingBack = false;
+            });
+
+            let wizard = $("#wizard").kendoWizard({
+                pager: true,
+                steps: [
+                    {
+                        title: "Personal",
+                        icon: "user",
+                        buttons: ["next"],
+                        form: {
+                            items: [
+                                {
+                                    field: "c_name",
+                                    label: "Name",
+                                    validation: {
+                                        required: { message: "Name is required" }
+                                    }
+                                },
+                                {
+                                    field: "c_gender",
+                                    label: "Gender",
+                                    editor: "DropDownList",
+                                    editorOptions: {
+                                        optionLabel: "Select Gender",
+                                        dataSource: ["Male", "Female", "Other"]
+                                    },
+                                    validation: { required: { message: "Gender is required" } }
+                                },
+                                {
+                                    field: "c_dob",
+                                    label: "Date of Birth",
+                                    editor: "DatePicker",
+                                    editorOptions: {
+                                        max: new Date(new Date().getFullYear() - 16, new Date().getMonth(), new Date().getDate()),
+                                        format: "yyyy-MM-dd"
+                                    },
+                                    validation: { required: { message: "Date of Birth is required" } }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        title: "Account",
+                        icon: "lock",
+                        buttons: ["previous", "next"],
+                        form: {
+                            items: [
+                                {
+                                    field: "c_email",
+                                    label: "Email",
+                                    validation: {
+                                        required: { message: "Email is required" },
+                                        email: { message: "Invalid Email Format" }
+                                    }
+                                },
+                                {
+                                    field: "c_password",
+                                    label: "Password",
+                                    editor: function (container, options) {
+                                        $('<input type="password" name="' + options.field + '" class="k-textbox" required data-required-msg="Password is required"/>')
+                                            .appendTo(container).kendoTextBox();
+                                    }
+                                },
+                                {
+                                    field: "c_confirmpassword",
+                                    label: "Confirm Password",
+                                    editor: function (container, options) {
+                                        $('<input type="password" name="' + options.field + '" class="k-textbox" required data-required-msg="Confirm Password is required" />')
+                                            .appendTo(container).kendoTextBox();
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        title: "Contact",
+                        icon: "home",
+                        buttons: ["previous", "next"],
+                        form: {
+                            items: [
+                                {
+                                    field: "c_contactno",
+                                    label: "Contact No",
+                                    validation: { required: { message: "Contact No is required" } }
+                                },
+                                {
+                                    field: "c_address",
+                                    label: "Address",
+                                    editor: "TextArea",
+                                    validation: { required: { message: "Address is required" } }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        title: "Confirmation",
+                        icon: "check",
+                        buttons: ["previous", "done"],
+                        content: `
+                            <div class="upload-area">
+                                <div class="upload-icon">📷</div>
+                                <h5 class="mb-3">Upload Profile Image</h5>
+                                <input type="file" id="imageform" accept="image/png,image/jpeg,image/jpg" class="form-control" />
+                                <p class="mt-3 text-muted small">Accepted formats: PNG, JPEG, JPG</p>
+                            </div>
+                        `
+                    }
+                ],
+
+                next: function (e) {
+                    // Bypass validation if going back
+                    if (isGoingBack) {
+                        isGoingBack = false; // Reset flag
+                        return;
+                    }
+
+                    // Step 1 - Personal Info Validation
+                    if (e.step.options.index === 0) {
+                        let nameInput = $("input[name='c_name']")[0];
+                        if (!validateName(nameInput)) {
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
+                    // Step 2 - Account Validation
+                    if (e.step.options.index === 1) {
+                        let passwordInput = $("input[name='c_password']")[0];
+                        let confirmInput = $("input[name='c_confirmpassword']")[0];
+
+                        if (!validatePassword(passwordInput) || !validateConfirmPassword(confirmInput)) {
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
+                    if (e.step.options.index === 1) {
+                        let emailInput = $("input[name='c_email']")[0];
+                        if (!validateEmail(emailInput)) {
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
+
+                    // Step 3 - Contact Validation
+                    if (e.step.options.index === 2) {
+                        let contactInput = $("input[name='c_contactno']")[0];
+                        let value = $(contactInput).val().trim();
+                        let regex = /^[6-9]\d{9}$/;
+
+                        if (!value) {
+                            showFieldError(contactInput, "Contact No is required");
+                            e.preventDefault();
+                            return;
+                        }
+
+                        if (!regex.test(value)) {
+                            showFieldError(contactInput, "Contact number must be 10 digits and start with 6–9");
+                            e.preventDefault();
+                            return;
+                        }
+
+                        removeFieldError(contactInput);
+                    }
+                },
+
+                done: function (e) {
+                    if (!emailValid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Email Exists',
+                            text: 'Please use a different email address',
+                            background: '#ffffff',
+                            color: '#0d47a1',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#1E88E5',
+                            iconColor: '#d32f2f'
+                        });
+                        e.preventDefault();
+                        return;
+                    }
+                    if (!contactValid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Contact Exists',
+                            text: 'Please use a different contact number',
+                            background: '#ffffff',
+                            color: '#0d47a1',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#1E88E5',
+                            iconColor: '#d32f2f'
+                        });
+                        e.preventDefault();
+                        return;
+                    }
+                    Swal.fire({
+                        title: 'Sending OTP…',
+                        background: '#ffffff',
+                        color: '#0d47a1',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+                    sendOtp(e);
+                }
+            }).data("kendoWizard");
+
+            // Add wizard header after wizard is initialized
+            wizard.element.prepend(`
+                <div class="wizard-header">
+                    <h2>Sign Up</h2>
+                    <p>Create your TalentBridgePro account in a few simple steps</p>
+                </div>
+            `);
+
+            function startOtpTimer() {
+                clearInterval(otpTimerInterval);
+                let timeLeft = otpExpireSeconds;
+                $("#otpError").hide();
+                $("#verifyOtpBtn").prop("disabled", false);
+
+                otpTimerInterval = setInterval(() => {
+                    let minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                    let seconds = (timeLeft % 60).toString().padStart(2, '0');
+                    $("#otpTimer").text(`${minutes}:${seconds}`);
+
+                    if (timeLeft <= 0) {
+                        clearInterval(otpTimerInterval);
+                        $("#otpError").text("OTP expired. Please resend.").show();
+                        $("#verifyOtpBtn").prop("disabled", true);
+                    }
+                    timeLeft--;
+                }, 1000);
+            }
+
+            function sendOtp(e) {
+                let model = {};
+                e.forms.forEach(f => Object.assign(model, f._model));
+                window._tempFormData = model;
+
+                if (!model.c_email) {
+                    alert("Email is required for OTP verification");
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:5140/api/UserApi/SendOtp?email=" + encodeURIComponent(model.c_email),
+                    contentType: "application/json",
+                    success: function () {
+                        Swal.close();
+                        $("#otpModal").modal('show');
+                        startOtpTimer();
+                    },
+                    error: function (xhr) {
+                        console.log(xhr);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'OTP Failed',
+                            text: 'Failed to send OTP. Please try again.',
+                            background: '#ffffff',
+                            color: '#0d47a1',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#1E88E5',
+                            iconColor: '#d32f2f'
+                        });
+                    }
+                });
+            }
+
+            $("#resendOtpBtn").click(function () {
+                if (window._tempFormData?.c_email) {
+                    $.ajax({
+                        url: "http://localhost:5140/api/UserApi/SendOtp?email=" + encodeURIComponent(window._tempFormData?.c_email),
+                        contentType: "application/json",
+                        success: function () {
+                            startOtpTimer();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'OTP Resent',
+                                text: 'A new OTP has been sent to your email',
+                                background: '#ffffff',
+                                color: '#0d47a1',
+                                timer: 2000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                iconColor: '#0d47a1',
+                                didOpen: () => {
+                                    const bar = Swal.getTimerProgressBar();
+                                    if (bar) bar.style.background = '#90caf9';
+                                }
+                            });
+                        },
+                        error: function (xhr) {
+                            console.log(xhr);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Resend Failed',
+                                text: 'Failed to resend OTP. Please try again.',
+                                background: '#ffffff',
+                                color: '#0d47a1',
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#1E88E5',
+                                iconColor: '#d32f2f'
+                            });
+                        }
+                    });
+                }
+            });
+
+            $("#verifyOtpBtn").click(function () {
+                let enteredOtp = $("#otpInput").val().trim();
+                if (!enteredOtp || enteredOtp.length !== 6) {
+                    $("#otpError").text("Enter a valid 6-digit OTP").show();
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://localhost:5140/api/UserApi/VerifyOtp",
+                    type: "POST",
+                    data: JSON.stringify({ c_email: window._tempFormData.c_email, c_otp: enteredOtp }),
+                    contentType: "application/json",
+                    success: function () {
+                        clearInterval(otpTimerInterval);
+                        $("#otpModal").modal('hide');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OTP Verified ✅',
+                            html: '<b>TalentBridgePro</b> is creating your account…',
+                            background: '#ffffff',
+                            color: '#0d47a1',
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            iconColor: '#0d47a1',
+                            didOpen: () => {
+                                const bar = Swal.getTimerProgressBar();
+                                if (bar) bar.style.background = '#90caf9';
+                            }
+                        }).then(() => {
+                            submitFormData(window._tempFormData);
+                        });
+                    },
+                    error: function () {
+                        $("#otpError").text("Invalid or expired OTP. Please try again.").show();
+                    }
+                });
+            });
+
+            function submitFormData(model) {
+                let formData = new FormData();
+                for (let k in model) formData.append(k, model[k]);
+
+                let dob = new Date(model.c_dob);
+                formData.set("c_dob", `${dob.getFullYear()}-${(dob.getMonth() + 1).toString().padStart(2, '0')}-${dob.getDate().toString().padStart(2, '0')}`);
+                formData.append("c_status", "active");
+                formData.append("c_role", "recruiter");
+
+                let fileInput = $("#imageform")[0];
+                if (fileInput.files[0]) {
+                    formData.append("imageform", fileInput.files[0]);
+                }
+
+                $.ajax({
+                    url: "http://localhost:5140/api/UserApi/Register",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        var apiRes = response;
+
+                        $.ajax({
+                            url: "/User/SaveSession",
+                            type: "POST",
+                            data: {
+                                token: apiRes.token,
+                                userid: apiRes.user.userid,
+                                name: apiRes.user.name,
+                                email: apiRes.user.email,
+                                role: apiRes.user.role
+                            },
+                            success: function () {
+                                $.ajax({
+                                    url: "http://localhost:5140/api/UserApi/SendWelcomeMail?email=" + formData.get("c_email") + "&username=" + formData.get("c_name"),
+                                    type: "GET",
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (mailRes) {
+                                        console.log(mailRes);
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Registration Successful 🎉',
+                                            html: '<b>TalentBridgePro</b> has created your account successfully!',
+                                            background: '#ffffff',
+                                            color: '#0d47a1',
+                                            timer: 2200,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            iconColor: '#0d47a1',
+                                            didOpen: () => {
+                                                const progressBar = Swal.getTimerProgressBar();
+                                                if (progressBar) {
+                                                    progressBar.style.background = '#90caf9';
+                                                }
+                                            }
+                                        }).then(() => {
+                                            window.location.href = "/Recruiter/CompanyDetailPopup";
+                                        });
+                                    },
+                                    error: function (xhr) {
+                                        console.log(xhr);
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Registration Successful 🎉',
+                                            html: '<b>TalentBridgePro</b> has created your account successfully!<br><small>Welcome email could not be sent.</small>',
+                                            background: '#ffffff',
+                                            color: '#0d47a1',
+                                            timer: 2200,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false,
+                                            iconColor: '#0d47a1',
+                                            didOpen: () => {
+                                                const progressBar = Swal.getTimerProgressBar();
+                                                if (progressBar) {
+                                                    progressBar.style.background = '#90caf9';
+                                                }
+                                            }
+                                        }).then(() => {
+                                            window.location.href = "/";
+                                        });
+                                    }
+                                });
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Registration Failed ❌',
+                                    text: 'Something went wrong while saving your data. Please try again.',
+                                    background: '#ffffff',
+                                    color: '#0d47a1',
+                                    confirmButtonText: 'Try Again',
+                                    confirmButtonColor: '#1E88E5',
+                                    iconColor: '#d32f2f'
+                                });
+                            }
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Registration Failed ❌',
+                            text: 'Could not retrieve user details. Please try again.',
+                            background: '#ffffff',
+                            color: '#0d47a1',
+                            confirmButtonText: 'Try Again',
+                            confirmButtonColor: '#1E88E5',
+                            iconColor: '#d32f2f'
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
